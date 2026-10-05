@@ -168,6 +168,10 @@ img{display:block;max-width:100%}
 .stat .v.link{font-size:15px}
 .stat .v svg{color:var(--color-neutral-500)}
 .stat .l{font-size:11px;color:var(--color-neutral-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.facts{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px;color:var(--color-neutral-300)}
+.facts span{display:flex;gap:5px;align-items:center}
+.facts svg{color:var(--color-accent-300);font-size:15px}
+.sub-h{font-size:15px;margin-top:18px;color:var(--color-text)}
 .overview{font-size:14px;line-height:1.55;color:var(--color-neutral-300);margin:16px 0 4px;text-wrap:pretty}
 .cast-row{display:flex;gap:12px;margin-top:16px;overflow-x:auto;scrollbar-width:none}
 .cast-row::-webkit-scrollbar{display:none}

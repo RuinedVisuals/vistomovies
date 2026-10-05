@@ -34,6 +34,10 @@ export function km(v:{lng:number|null;lat:number|null},from:[number,number]){
  const x=Math.sin(dLa/2)**2+Math.cos(from[1]*r)*Math.cos(v.lat*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(x));
 }
 export const kmLabel=(k:number|null)=>k==null?'—':k.toFixed(1).replace('.',',')+' χλμ';
+/** Real booking link when the source has one; otherwise a search for the cinema's own ticketing page
+ *  (we never invent a booking URL). */
+export const ticketsUrl=(cinema:string,film:string|undefined,bookingUrl:string|null|undefined)=>bookingUrl||
+ 'https://www.google.com/search?q='+encodeURIComponent(`${cinema} εισιτήρια${film?' '+film:''}`);
 export const directionsUrl=(v:Venue)=>'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(v.verified&&v.lat!=null?`${v.lat},${v.lng}`:`${v.name}, ${v.address}, Αθήνα`);
 /** Stable hue for placeholder tiles. */
 export const venueHue=(id:string)=>(parseInt(id.slice(0,2),16)*1.4)|0;

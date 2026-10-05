@@ -1,10 +1,10 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
-import {CaretLeft,ShareNetwork,Play,ArrowUpRight,Translate,NavigationArrow,Sun,Armchair,Ticket,MapTrifold,ArrowsOutSimple,MoonStars,CalendarDots} from '@phosphor-icons/react';
+import {CaretLeft,ShareNetwork,Play,ArrowUpRight,Translate,NavigationArrow,Sun,Armchair,Ticket,MapTrifold,ArrowsOutSimple,MoonStars,CalendarDots,Clock,CalendarBlank,FilmSlate} from '@phosphor-icons/react';
 import {useApp} from '../lib/context';
 import {back,setQuery,useRoute} from '../lib/router';
 import {gsap,useEntrance,reducedMotion} from '../lib/motion';
 import {tmdbImage} from '../lib/data';
-import {SYNTAGMA,km,kmLabel} from '../lib/geo';
+import {SYNTAGMA,km,kmLabel,ticketsUrl} from '../lib/geo';
 import {VERSION_SHORT,HALL_LABEL,clock,dayScope,filmRoute,groupBy,hallType,runtimeLabel,shortDay,uniq,version,wdGen,cinemaRoute} from '../lib/derive';
 import {filmKey} from '../lib/types';
 import {DateStrip,HeartButton,Link,hueOf} from './ui';
@@ -17,7 +17,7 @@ const cap=(s?:string)=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
 export default function Details({id}:{id:string}){
  const app=useApp();const {query}=useRoute();
  const {rows,films,catalog,todayIso,week,venueByName,userLoc,savedFilms}=app;
- const page=useRef<HTMLDivElement>(null),body=useRef<HTMLDivElement>(null),bg=useRef<HTMLImageElement>(null);
+ const programmeRef=useRef<HTMLDivElement>(null),page=useRef<HTMLDivElement>(null),body=useRef<HTMLDivElement>(null),bg=useRef<HTMLImageElement>(null);
  const day=query.get('date')||todayIso;
  const filmRows=useMemo(()=>rows.filter(r=>filmRoute(r).id===id),[rows,id]);
  // A saved film that is no longer in the programme can still be opened.
@@ -75,19 +75,30 @@ export default function Details({id}:{id:string}){
     <h1 data-a>{title||'Η ταινία δεν βρέθηκε'}</h1>
     <div data-a className="detail-sub">{subtitle}</div>
     {meta&&meta.genres.length>0&&<div data-a style={{display:'flex',flexWrap:'wrap',gap:6,marginTop:12}}>{meta.genres.map(g=><span key={g} className="tag tag-neutral">{g}</span>)}</div>}
-    {meta&&<div data-a className="stat-grid">
-     <div className="stat"><div className="v">{meta.vote!=null?meta.vote.toFixed(1):'—'}</div><div className="l">TMDB · {meta.voteCount.toLocaleString('el-GR')}</div></div>
-     {meta.imdbId?<a className="stat" href={'https://www.imdb.com/title/'+meta.imdbId+'/'} target="_blank" rel="noreferrer"><div className="v link">IMDb<ArrowUpRight size={13}/></div><div className="l">{meta.imdbId}</div></a>
-      :<div className="stat"><div className="v link">IMDb</div><div className="l">—</div></div>}
-     <a className="stat" href={'https://letterboxd.com/tmdb/'+meta.tmdbId} target="_blank" rel="noreferrer"><div className="v link">Letterboxd<ArrowUpRight size={13}/></div><div className="l">/tmdb/{meta.tmdbId}</div></a>
-    </div>}
-    {meta?.overview&&<><p data-a className="overview">{meta.overview}</p>
-     <div data-a className="source-line"><Translate/>{meta.overviewLanguage==='en'?'Περίληψη στα αγγλικά · δεν υπάρχει ελληνική στο TMDB':'Ελληνική περίληψη · TMDB'}</div></>}
+    <div data-a className="stat-grid">
+     <a className="stat" href={meta?'https://www.themoviedb.org/movie/'+meta.tmdbId:'https://www.themoviedb.org/search/movie?query='+encodeURIComponent(title)} target="_blank" rel="noreferrer">
+      <div className="v">{meta?.vote!=null?Math.round(meta.vote*10)+'%':'—'}<ArrowUpRight size={13}/></div><div className="l">{meta?.vote!=null?`TMDB · ${meta.voteCount.toLocaleString('el-GR')} ψήφοι`:'TMDB · αναζήτηση'}</div></a>
+     <a className="stat" href={meta?.imdbId?'https://www.imdb.com/title/'+meta.imdbId+'/':'https://www.imdb.com/find/?s=tt&q='+encodeURIComponent(meta?.originalTitle||title)} target="_blank" rel="noreferrer">
+      <div className="v link">IMDb<ArrowUpRight size={13}/></div><div className="l">{meta?.imdbId||'αναζήτηση'}</div></a>
+     <a className="stat" href={meta?'https://letterboxd.com/tmdb/'+meta.tmdbId:'https://letterboxd.com/search/films/'+encodeURIComponent(title)+'/'} target="_blank" rel="noreferrer">
+      <div className="v link">Letterboxd<ArrowUpRight size={13}/></div><div className="l">{meta?'/tmdb/'+meta.tmdbId:'αναζήτηση'}</div></a>
+    </div>
+    <button data-a type="button" className="btn btn-primary btn-block" style={{marginTop:12,height:48,fontSize:15}} disabled={!programme.length}
+     onClick={()=>programmeRef.current?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth',block:'start'})}>
+     <Ticket/>{programme.length?`Εισιτήρια · ${programme.length} σινεμά ${scope}`:`Χωρίς προβολές ${scope}`}</button>
+    <div data-a className="facts">
+     <span><Clock/>{meta?.runtime?runtimeLabel(meta.runtime):'Διάρκεια —'}</span>
+     {meta?.year&&<span><CalendarBlank/>{meta.year}</span>}
+     {(meta?.genres[0]||catalog.movies[key]?.genre)&&<span><FilmSlate/>{meta?.genres[0]||catalog.movies[key]?.genre}</span>}
+    </div>
+    <h3 data-a className="sub-h">Περιγραφή</h3>
+    <p data-a className="overview" style={{marginTop:6}}>{meta?.overview||(meta===undefined?'Η περιγραφή θα εμφανιστεί μόλις φορτώσουν τα στοιχεία από το TMDB.':'Δεν υπάρχει διαθέσιμη περιγραφή για αυτή την ταινία.')}</p>
+    {meta?.overview&&<div data-a className="source-line"><Translate/>{meta.overviewLanguage==='en'?'Περίληψη στα αγγλικά · δεν υπάρχει ελληνική στο TMDB':'Ελληνική περίληψη · TMDB'}</div>}
     {meta&&meta.cast.length>0&&<div data-a className="cast-row">{meta.cast.map((c,i)=><div className="cast" key={c.name+i}>
      <div className="av" style={{background:`oklch(.34 .03 ${[270,30,200,120,330][i%5]})`}}>{c.profile?<img src={tmdbImage(c.profile,'w185')!} alt="" loading="lazy"/>:c.name.split(/[\s.]+/).filter(Boolean).map(w=>w[0]).join('').slice(0,3).toUpperCase()}</div>
      <div className="n">{c.name}</div><div className="r">{c.role}</div></div>)}</div>}
 
-    <div data-a className="section-head" style={{margin:'28px 0 10px'}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">ενημ. {clock(week?.checkedAt)} · Αθηνόραμα</span></div>
+    <div data-a ref={programmeRef} className="section-head" style={{margin:'28px 0 10px',scrollMarginTop:70}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">ενημ. {clock(week?.checkedAt)} · Αθηνόραμα</span></div>
     <div data-a style={{margin:'0 -20px'}}><DateStrip className="pad" value={day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d})}/></div>
     {programme.length>0&&<MiniMap pins={pins} label={`${programme.length} σινεμά · ${shortDay(day)}`} to={`/map?mode=film&film=${filmId}`}/>}
     {!programme.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={22} color="var(--color-neutral-500)"/>
@@ -100,7 +111,7 @@ export default function Details({id}:{id:string}){
      <div className="times">{p.times.map(r=><span key={r.id||r.date+r.time} className="time-chip stack"><span>{r.time}</span>
       <small className={r.afterMidnight?'late':''}>{r.afterMidnight?shortDay(r.date):VERSION_SHORT[version(r)]}</small></span>)}</div>
      <div className="actions">
-      {p.booking&&<a className="btn btn-primary" href={p.booking} target="_blank" rel="noreferrer"><Ticket/>Εισιτήρια</a>}
+      <a className="btn btn-primary" href={ticketsUrl(p.name,title,p.booking)} target="_blank" rel="noreferrer" title={p.booking?undefined:'Η πηγή δεν δίνει σύνδεσμο κράτησης — αναζήτηση της σελίδας εισιτηρίων του σινεμά'}><Ticket/>Εισιτήρια</a>
       {p.v&&<Link className="btn btn-secondary" to={`/map?mode=film&film=${filmId}&cinema=${p.v.id}`}><MapTrifold/>Στον χάρτη</Link>}
      </div>
     </div>)}</div>

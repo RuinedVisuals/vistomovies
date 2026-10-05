@@ -5,7 +5,7 @@ import {useApp} from '../lib/context';
 import {back,setQuery,useRoute} from '../lib/router';
 import {useEntrance} from '../lib/motion';
 import {tmdbImage} from '../lib/data';
-import {directionsUrl,venueHue} from '../lib/geo';
+import {directionsUrl,ticketsUrl,venueHue} from '../lib/geo';
 import {normalize} from '../lib/types';
 import {HALL_LABEL,VERSION_SHORT,cinemaInfo,cinemaRoute,dayScope,filmRoute,groupBy,hallType,shortDay,sortTimes,timeKey,uniq,updatedLabel,version} from '../lib/derive';
 import {DateStrip,Link,Poster,Segmented,StarButton} from './ui';
@@ -69,7 +69,7 @@ export function CinemaPage({id}:{id:string}){
   {label:'Οδηγίες',Icon:NavigationArrow,href:directionsUrl(v)},
   {label:'Website',Icon:Globe,href:v.website||sourceUrl},
   {label:'Κλήση',Icon:Phone,href:v.phone?'tel:'+v.phone.replace(/\s/g,''):undefined},
-  {label:'Εισιτήρια',Icon:Ticket,href:booking||undefined},
+  {label:'Εισιτήρια',Icon:Ticket,href:ticketsUrl(v.name,undefined,booking)},
  ];
  const types=uniq(weekRows.map(r=>hallType(r,v)));
  return <main className="screen no-nav" style={{paddingTop:0}} ref={ref}>
