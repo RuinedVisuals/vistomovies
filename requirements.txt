@@ -1,0 +1,2 @@
+# Python 3.11+. tzdata supplies Europe/Athens on Windows.
+tzdata>=2024.1

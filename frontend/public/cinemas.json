@@ -1,0 +1,377 @@
+{
+  "source": "Existing local project cinema directory; not a verified live directory",
+  "cinemas": [
+    {
+      "id": "b8c22e14f1e3",
+      "name": "Άστορ",
+      "address": "Σταδίου 28 (είσοδος από στοά Κοραή) (ΜΕΤΡΟ Πανεπιστήμιο)",
+      "summer": false
+    },
+    {
+      "id": "2b8a01cf41a2",
+      "name": "Δεξαμενή",
+      "address": "Πλατεία Δεξαμενής, Κολωνάκι",
+      "summer": true,
+      "coordinates": [
+        23.7417207,
+        37.979145025
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/386094585"
+    },
+    {
+      "id": "6025fbf95fcf",
+      "name": "Εκράν",
+      "address": "Ζωοδ. Πηγής & Αγαθίου, Νεάπολη",
+      "summer": true
+    },
+    {
+      "id": "a016d3f103b0",
+      "name": "Cine Πολεμικό Μουσείο",
+      "address": "Ριζάρη 2, Κέντρο",
+      "summer": true
+    },
+    {
+      "id": "26a0c32696ee",
+      "name": "Cinobo Όπερα",
+      "address": "Ακαδημίας 57",
+      "summer": false
+    },
+    {
+      "id": "1a9616258f41",
+      "name": "Ταινιοθήκη της Ελλάδος",
+      "address": "Ιερά Οδός 48 & Μεγ. Αλεξάνδρου 134-136, (ΜΕΤΡΟ Κεραμεικός)",
+      "summer": false
+    },
+    {
+      "id": "18898b5f2543",
+      "name": "Ζέφυρος",
+      "address": "Τρώων 36, Άνω Πετράλωνα",
+      "summer": true
+    },
+    {
+      "id": "30ddc70fd556",
+      "name": "Θησείον",
+      "address": "Απ. Παύλου 7, Θησείο",
+      "summer": true
+    },
+    {
+      "id": "27b10840d732",
+      "name": "Μικρόκοσμος",
+      "address": "Λεωφ. Συγγρού 106, Κουκάκι, στάση μετρό Συγγρού-Φιξ",
+      "summer": false
+    },
+    {
+      "id": "9c4db8601c15",
+      "name": "Cine Paris",
+      "address": "Κυδαθηναίων 22, Πλάκα",
+      "summer": true
+    },
+    {
+      "id": "59520dd760c4",
+      "name": "Athinaion Experience powered by Allianz",
+      "address": "Λεωφ. Β. Σοφίας 124 (ΜΕΤΡΟ Αμπελόκηποι)",
+      "summer": false
+    },
+    {
+      "id": "4ee947d02158",
+      "name": "Άνεσις Cine",
+      "address": "Λεωφ. Κηφισίας 14, Αμπελόκηποι",
+      "summer": true
+    },
+    {
+      "id": "cf05dc71bad8",
+      "name": "Δαναός",
+      "address": "Λ. Κηφισίας 109 (ΜΕΤΡΟ Πανόρμου)",
+      "summer": false
+    },
+    {
+      "id": "d361e7503410",
+      "name": "Νιρβάνα 1 & 2 Cinemax",
+      "address": "Λ. Αλεξάνδρας 192 (ΜΕΤΡΟ Αμπελόκηποι)",
+      "summer": false
+    },
+    {
+      "id": "fef0c4af738b",
+      "name": "Cine Φιλοθεη",
+      "address": "Πλ. Δροσοπούλου, Φιλοθέη",
+      "summer": true
+    },
+    {
+      "id": "f4222dc42487",
+      "name": "Αβάνα",
+      "address": "Λεωφ. Κηφισίας 234 & Λυκούργου 3",
+      "summer": false
+    },
+    {
+      "id": "ba3efd4d876a",
+      "name": "Αθηνά",
+      "address": "Σολωμού 18, Πλ. Χαλανδρίου",
+      "summer": true
+    },
+    {
+      "id": "a83579ce46cb",
+      "name": "Αίγλη 3D Digital",
+      "address": "Λ. Πεντέλης 98-100, Χαλάνδρι",
+      "summer": true
+    },
+    {
+      "id": "b5243356ee6d",
+      "name": "Cine Αλεξάνδρα",
+      "address": "Ηρ. Πολυτεχνείου 27 (Μετρό Χολαργός), Κάτω Χαλάνδρι",
+      "summer": true
+    },
+    {
+      "id": "15463cf385a5",
+      "name": "Σινέ Παλλήνη",
+      "address": "Ελ. Βενιζέλου 3 & Λεωφ. Μαραθώνος",
+      "summer": true
+    },
+    {
+      "id": "21e97c520610",
+      "name": "Διάνα",
+      "address": "Περικλέους 14, Μαρούσι (ΗΣΑΠ Μαρούσι)",
+      "summer": false
+    },
+    {
+      "id": "a00feaa92895",
+      "name": "Κηφισιά Cinemax",
+      "address": "Λ. Κηφισίας 245, Ζηρίνειο, Κηφισιά (ΗΣΑΠ Κηφισιά)",
+      "summer": false
+    },
+    {
+      "id": "2cfadcf8e72f",
+      "name": "Κηφισιά Cinemax 3",
+      "address": "Δροσίνη 16 (απέναντι στο Βάρσο), Κηφισιά",
+      "summer": false
+    },
+    {
+      "id": "8da6985265fb",
+      "name": "Village Cinemas Μαρούσι, The mall Athens",
+      "address": "Aνδρέα Παπανδρέου (παραπλεύρως Αττικής Οδού) ΗΣΑΠ Νερατζιώτισσα, Μαρούσι",
+      "summer": false
+    },
+    {
+      "id": "55be902d1a26",
+      "name": "Άλσος Dolby Digital",
+      "address": "Δεκελείας 152, Ν.Φιλαδέλφεια",
+      "summer": true
+    },
+    {
+      "id": "d676a040b45a",
+      "name": "Άνοιξις",
+      "address": "Αττική & Ευριπίδου 19, Ν. Ηράκλειο",
+      "summer": true
+    },
+    {
+      "id": "4a9541f07b8f",
+      "name": "Τρία Αστέρια 3D Digital",
+      "address": "Λ. Ηρακλείου 386, Ν. Ηράκλειο",
+      "summer": false
+    },
+    {
+      "id": "1681b7c99c72",
+      "name": "Αελλώ Cinemax",
+      "address": "Πατησίων 140",
+      "summer": true
+    },
+    {
+      "id": "aca01900551d",
+      "name": "Ατενέ",
+      "address": "Λευκωσίας 43, πλ. Αγ. Ανδρέα, Πατήσια",
+      "summer": true
+    },
+    {
+      "id": "d97037e59bdf",
+      "name": "Ηλέκτρα",
+      "address": "Πατησίων 292, Αγ. Λουκάς",
+      "summer": true
+    },
+    {
+      "id": "f0f648580330",
+      "name": "Στέλλα (Δημ. Κιν/φος)",
+      "address": "Τενέδου 34 (Φωκίωνος Νέγρη), Κυψέλη",
+      "summer": true
+    },
+    {
+      "id": "8fba490b2bc6",
+      "name": "Studio new star art cinema",
+      "address": "Σπάρτης & Σταυροπούλου 33, Πλ. Αμερικής",
+      "summer": false
+    },
+    {
+      "id": "bdf83e169087",
+      "name": "Τριανόν",
+      "address": "Κοδριγκτώνος 21 (Πατησίων 101) (ΜΕΤΡΟ Βικτώρια)",
+      "summer": false
+    },
+    {
+      "id": "b697d67947d5",
+      "name": "Αλέκα (Δημ. Κιν/φος)",
+      "address": "3ης Ορ. Ταξιαρχίας 13, πλ. Αλεξανδρή, Ζωγράφου",
+      "summer": true
+    },
+    {
+      "id": "bc56d4375013",
+      "name": "Όασις",
+      "address": "Πρατίνου 7, Παγκράτι",
+      "summer": true
+    },
+    {
+      "id": "b522ccd2b368",
+      "name": "Village Cinemas Παγκράτι",
+      "address": "Υμηττού 110 & Χρεμωνίδου (Εμπ. Κέντρο Athens Millenium), Παγκράτι",
+      "summer": false
+    },
+    {
+      "id": "cffcb3e7be3f",
+      "name": "Μελίνα Μερκούρη (Δημ. Κιν/φος)",
+      "address": "Λεωφ. Ειρήνης 50, Α. Ηλιούπολη",
+      "summer": true
+    },
+    {
+      "id": "0642f772645f",
+      "name": "Νανά Cinemax",
+      "address": "Λ. Βουλιαγμένης 179 (ΜΕΤΡΟ Αγ.Ιωάννης), Δάφνη",
+      "summer": false
+    },
+    {
+      "id": "686108ab5963",
+      "name": "Village Cinemas Αγ. Δημήτριος, Athens Metro Mall - Ag. Dimitrios",
+      "address": "Λ.Βουλιαγμένης 276, Αγ. Δημήτριος",
+      "summer": false
+    },
+    {
+      "id": "347b546d5fa2",
+      "name": "Cinobo Μασκώτ (Δημ. Κιν/φος)",
+      "address": "Κωνσταντινουπόλεως 2, Πάρκο Ηρώων (σταθμός προαστιακού Ρουφ)",
+      "summer": true
+    },
+    {
+      "id": "55df3065dd91",
+      "name": "Σινέ Φλερύ",
+      "address": "Σκίπη 5-7 & Θησέως, Καλλιθέα",
+      "summer": true
+    },
+    {
+      "id": "1b35e55813dd",
+      "name": "Σπόρτιγκ Digital Cinema",
+      "address": "Κ. Παλαιολόγου 18, Ν. Σμύρνη",
+      "summer": true
+    },
+    {
+      "id": "42ec523e1f8d",
+      "name": "Φιλίπ",
+      "address": "Ελ. Βενιζέλου 40, Ν. Σμύρνη,",
+      "summer": true
+    },
+    {
+      "id": "f13da5674ff8",
+      "name": "Άνοιξη Art Cinema 2+1",
+      "address": "Αγωνιστών Στρατοπέδου 49, Χαϊδάρι",
+      "summer": false
+    },
+    {
+      "id": "13d9243fe041",
+      "name": "Λάμπρος Κωνσταντάρας - Ρένα Βλαχοπούλου",
+      "address": "Κουντουριώτου 40 & Μυριοφύτου 55 (ΜΕΤΡΟ Αιγάλεω)",
+      "summer": false
+    },
+    {
+      "id": "a2723f7ffacd",
+      "name": "WestCity Cinemas",
+      "address": "Λ. Κωνσταντινουπόλεως 82B, Περιστέρι",
+      "summer": false
+    },
+    {
+      "id": "2a7795d9601e",
+      "name": "Village Cinemas Ίλιον, Escape Center",
+      "address": "Λεωφ. Δημοκρατίας 67Α, Ίλιον",
+      "summer": false
+    },
+    {
+      "id": "5421cf46f991",
+      "name": "Arian experience",
+      "address": "Λεωφ. Αγγέλου Μεταξά 11, Γλυφάδα (αυλή στοάς Αριάν)",
+      "summer": true
+    },
+    {
+      "id": "196ace1d253f",
+      "name": "Βάρκιζα",
+      "address": "Θάσου 22, Βάρκιζα",
+      "summer": false
+    },
+    {
+      "id": "e7b265e7209c",
+      "name": "Village Cinemas Γλυφάδα",
+      "address": "Ζησιμοπούλου 7 & Α. Μεταξά, Γλυφάδα",
+      "summer": false
+    },
+    {
+      "id": "e1a23acf10ef",
+      "name": "Ορφέας Dolby Digital",
+      "address": "Λ. Σαρωνίδας 60, Σαρωνίδα",
+      "summer": true
+    },
+    {
+      "id": "e58151345263",
+      "name": "Δημ. Κιν. Όνειρο Ρέντη",
+      "address": "Νάξου 32, Αγ. Ιωάννης Ρέντης",
+      "summer": true
+    },
+    {
+      "id": "b54098f3a32e",
+      "name": "Δημ. Κιν. Σινεάκ",
+      "address": "Πλ. Δημαρχείου, Πειραιάς",
+      "summer": false
+    },
+    {
+      "id": "e018401716e1",
+      "name": "Σινέ Μελίνα (Δημ. Κιν/φος)",
+      "address": "Σωκράτους 65, Δραπετσώνα",
+      "summer": true
+    },
+    {
+      "id": "c34567ddaaa7",
+      "name": "Σινέ Νίκαια",
+      "address": "Θηβών 245, Νίκαια (πολυχώρος \"Μάνος Λοϊζος\")",
+      "summer": true
+    },
+    {
+      "id": "11170287194b",
+      "name": "Σινέ Παράδεισος",
+      "address": "Αγ. Γεωργίου & Ζάππα 4, Κορυδαλλός",
+      "summer": false
+    },
+    {
+      "id": "b66f2924091c",
+      "name": "Σινέ Σελήνη",
+      "address": "Αγ. Νικολάου 17 & Πανθέας, Σελήνια Σαλαμίνας",
+      "summer": true
+    },
+    {
+      "id": "3de7d8f573b9",
+      "name": "Village Cinemas Ρέντης, Village Shopping And More",
+      "address": "Πέτρου Ράλλη & Θηβών, Άγιος Ιωάννης Ρέντη",
+      "summer": false
+    },
+    {
+      "id": "31dda0855917",
+      "name": "Άστρον",
+      "address": "Βασ. Λάσκου 4, Μάνδρα",
+      "summer": true
+    },
+    {
+      "id": "7cf5f8cd1273",
+      "name": "Σίσσυ Digital Cinema",
+      "address": "Λ. Μαραθώνος 36, Ν. Μάκρη",
+      "summer": true
+    },
+    {
+      "id": "a219c4abb993",
+      "name": "Ωρωπός 3D Digital Cinema",
+      "address": "Πινδάρου 5, Σκάλα Ωρωπού",
+      "summer": true
+    }
+  ],
+  "coordinateLicense": "OSM coordinates © OpenStreetMap contributors, ODbL https://www.openstreetmap.org/copyright"
+}

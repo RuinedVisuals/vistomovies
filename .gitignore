@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+__pycache__/
+data/
+.idea/
+*.tsbuildinfo
+# Local backups made during the Visto redesign
+*-backup-*/
