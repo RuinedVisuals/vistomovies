@@ -105,7 +105,7 @@ function Feed(){
   </div>
   <div data-a className="hscroll chip-row pad" style={{paddingTop:12}}>{HOME_REGIONS.map(r=>{const on=r?f.area.length===1&&f.area[0]===r:!f.area.length;
    return <button key={r||'all'} type="button" className="chip" aria-pressed={on} onClick={e=>{setQuery({area:r?[r]:null});pop(e.currentTarget,.9)}}>{r||'Όλη η Αθήνα'}</button>})}</div>
-  {mode==='snapshot'&&!loading&&<div className="notice" data-a><Info size={15} style={{flex:'none',marginTop:1}}/>Προβολή αποθηκευμένου στιγμιότυπου — το τοπικό API δεν απαντά.</div>}
+  {!loading&&<SourceNotice/>}
   {loading?<div className="pad" style={{paddingTop:20}}><SkeletonRows/></div>:error?<div className="pad" style={{paddingTop:24}}><div className="empty-card" role="alert"><strong style={{marginTop:0}}>{error}</strong><button className="btn btn-primary" style={{marginTop:12}} onClick={app.retry}>Δοκίμασε ξανά</button></div></div>:<>
    {featured.length>0&&!q&&<>
     <div data-a className="section-head pad" style={{padding:'24px 20px 10px'}}><h2>Στο επίκεντρο</h2><span className="aside">περισσότερα σινεμά</span></div>
@@ -128,6 +128,16 @@ function Feed(){
   <div className="source-line pad" style={{paddingTop:16}}><ClockCounterClockwise/>Πρόγραμμα: Αθηνόραμα · ενημ. {updatedLabel(week?.checkedAt,todayIso)} · Metadata: TMDB</div>
   {sheet&&<FilterSheet filters={f} day={day} onClose={()=>setSheet(false)}/>}
  </main>;
+}
+
+/** Data freshness: snapshot fallback, week not yet published, or a failed update. */
+function SourceNotice(){
+ const {week,mode,todayIso}=useApp();if(!week)return null;
+ const src=week.sources.find(s=>s.source==='athinorama');
+ // Static hosting (snapshot) is normal; the footer already shows when the programme was updated.
+ const msg=todayIso>week.weekEnd?`Το πρόγραμμα της νέας εβδομάδας δεν έχει δημοσιευτεί ακόμη από την πηγή. Ελέγχουμε ξανά αυτόματα· το τελευταίο διαθέσιμο ήταν έως ${shortDay(week.weekEnd)}.`
+  :mode==='api'&&src?.error?`Η τελευταία ενημέρωση δεν ολοκληρώθηκε. Βλέπεις το πρόγραμμα όπως ενημερώθηκε ${updatedLabel(src.lastSuccessAt,todayIso)}.`:'';
+ return msg?<div className="notice" data-a role="status"><Info size={15} style={{flex:'none',marginTop:1}}/>{msg}</div>:null;
 }
 
 function FilmRow({m,to}:{m:FilmSummary;to:string}){

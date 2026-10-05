@@ -1,11 +1,22 @@
 {
-  "source": "Existing local project cinema directory; not a verified live directory",
+  "source": "Project cinema directory; positions from OpenStreetMap (© OpenStreetMap contributors, ODbL) via Overpass/Nominatim",
   "cinemas": [
     {
       "id": "b8c22e14f1e3",
       "name": "Άστορ",
       "address": "Σταδίου 28 (είσοδος από στοά Κοραή) (ΜΕΤΡΟ Πανεπιστήμιο)",
-      "summer": false
+      "summer": false,
+      "website": "https://www.astorcinema.gr/",
+      "coordinates": [
+        23.7327235,
+        37.9795143
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3804256472",
+      "coordinatePrecision": "venue",
+      "area": "Ακαδημία",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/astor-1001004/",
+      "phone": "2103211950"
     },
     {
       "id": "2b8a01cf41a2",
@@ -14,9 +25,14 @@
       "summer": true,
       "coordinates": [
         23.7417207,
-        37.979145025
+        37.979145
       ],
-      "coordinateSource": "https://www.openstreetmap.org/way/386094585"
+      "coordinateSource": "https://www.openstreetmap.org/way/386094585",
+      "coordinatePrecision": "venue",
+      "area": "Κολωνάκι",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/deksameni-1001358/",
+      "phone": "2103623942"
     },
     {
       "id": "6025fbf95fcf",
@@ -28,73 +44,200 @@
       "id": "a016d3f103b0",
       "name": "Cine Πολεμικό Μουσείο",
       "address": "Ριζάρη 2, Κέντρο",
-      "summer": true
+      "summer": true,
+      "website": "https://cinepolemikomouseio.gr/",
+      "coordinates": [
+        23.7454051,
+        37.9749185
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/11451620900",
+      "coordinatePrecision": "venue",
+      "area": "Λυκαβηττός",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/cine_polemiko_mouseio-10011967/",
+      "phone": "2107248278"
     },
     {
       "id": "26a0c32696ee",
       "name": "Cinobo Όπερα",
       "address": "Ακαδημίας 57",
-      "summer": false
+      "summer": false,
+      "coordinates": [
+        23.7335114,
+        37.9822434
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3804241338",
+      "coordinatePrecision": "venue",
+      "area": "Ακαδημία",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/cinobo_opera-1000114/",
+      "phone": "2103638909"
     },
     {
       "id": "1a9616258f41",
       "name": "Ταινιοθήκη της Ελλάδος",
       "address": "Ιερά Οδός 48 & Μεγ. Αλεξάνδρου 134-136, (ΜΕΤΡΟ Κεραμεικός)",
-      "summer": false
+      "summer": false,
+      "website": "http://www.tainiothiki.gr",
+      "coordinates": [
+        23.7126681,
+        37.9809899
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/383407579",
+      "coordinatePrecision": "venue",
+      "area": "Γκάζι",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/tainiothiki_tis_ellados-1000144/",
+      "phone": "2103609695"
     },
     {
       "id": "18898b5f2543",
       "name": "Ζέφυρος",
       "address": "Τρώων 36, Άνω Πετράλωνα",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7128711,
+        37.9696767
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/229640597",
+      "coordinatePrecision": "venue",
+      "area": "Άνω Πετράλωνα",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/zefuros-1001337/",
+      "phone": "2103462677"
     },
     {
       "id": "30ddc70fd556",
       "name": "Θησείον",
       "address": "Απ. Παύλου 7, Θησείο",
-      "summer": true
+      "summer": true,
+      "website": "https://cine-thisio.gr",
+      "coordinates": [
+        23.7203552,
+        37.9726936
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/378922367",
+      "coordinatePrecision": "venue",
+      "area": "Θησείο",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/thiseion-1001248/",
+      "phone": "2103420864"
     },
     {
       "id": "27b10840d732",
       "name": "Μικρόκοσμος",
       "address": "Λεωφ. Συγγρού 106, Κουκάκι, στάση μετρό Συγγρού-Φιξ",
-      "summer": false
+      "summer": false,
+      "website": "https://www.mikrokosmos.gr/",
+      "coordinates": [
+        23.7240222,
+        37.962698
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3485485266",
+      "coordinatePrecision": "venue",
+      "area": "Κουκάκι",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/mikrokosmos-1001558/",
+      "phone": "2109230081"
     },
     {
       "id": "9c4db8601c15",
       "name": "Cine Paris",
       "address": "Κυδαθηναίων 22, Πλάκα",
-      "summer": true
+      "summer": true,
+      "website": "https://www.cineparis.gr/",
+      "coordinates": [
+        23.7308614,
+        37.9719502
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3381036310",
+      "coordinatePrecision": "venue",
+      "area": "Πλάκα",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/cine_paris-1001179/",
+      "phone": "2103252996"
     },
     {
       "id": "59520dd760c4",
       "name": "Athinaion Experience powered by Allianz",
       "address": "Λεωφ. Β. Σοφίας 124 (ΜΕΤΡΟ Αμπελόκηποι)",
-      "summer": false
+      "summer": false,
+      "coordinates": [
+        23.761325,
+        37.9859623
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/747737923",
+      "coordinatePrecision": "venue",
+      "area": "Αμπελόκηποι",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/athinaion_experience_powered_by_allianz-1000115/",
+      "phone": "2107782122"
     },
     {
       "id": "4ee947d02158",
       "name": "Άνεσις Cine",
       "address": "Λεωφ. Κηφισίας 14, Αμπελόκηποι",
-      "summer": true
+      "summer": true,
+      "website": "https://www.anesiscinema.gr/",
+      "coordinates": [
+        23.7623244,
+        37.986987
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/4284407216",
+      "coordinatePrecision": "venue",
+      "area": "Αμπελόκηποι",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/anesis_cine-1001206/",
+      "phone": "2107487912"
     },
     {
       "id": "cf05dc71bad8",
       "name": "Δαναός",
       "address": "Λ. Κηφισίας 109 (ΜΕΤΡΟ Πανόρμου)",
-      "summer": false
+      "summer": false,
+      "website": "https://www.danaoscinema.gr/",
+      "coordinates": [
+        23.7667029,
+        37.9934118
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/5960177974",
+      "coordinatePrecision": "venue",
+      "area": "Γηροκομείο",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/danaos-1000117/",
+      "phone": "2106922655"
     },
     {
       "id": "d361e7503410",
       "name": "Νιρβάνα 1 & 2 Cinemax",
       "address": "Λ. Αλεξάνδρας 192 (ΜΕΤΡΟ Αμπελόκηποι)",
-      "summer": false
+      "summer": false,
+      "website": "https://cinemax.gr/cinemas/136-nirvana",
+      "coordinates": [
+        23.7582059,
+        37.9868544
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/2747907166",
+      "coordinatePrecision": "venue",
+      "area": "Κουντουριώτικα",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/nirbana_1_and_2_cinemax-10009571/",
+      "phone": "2106469398"
     },
     {
       "id": "fef0c4af738b",
       "name": "Cine Φιλοθεη",
       "address": "Πλ. Δροσοπούλου, Φιλοθέη",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7852738,
+        38.0223138
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/451545196",
+      "coordinatePrecision": "venue",
+      "area": "Φιλοθέη",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/cine_filothei-1001275/"
     },
     {
       "id": "f4222dc42487",
@@ -106,139 +249,381 @@
       "id": "ba3efd4d876a",
       "name": "Αθηνά",
       "address": "Σολωμού 18, Πλ. Χαλανδρίου",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7947813,
+        38.0233262
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3048142684",
+      "coordinatePrecision": "venue",
+      "area": "Πλατεία Χαλανδρίου",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/athina-1001456/",
+      "phone": "2106855860"
     },
     {
       "id": "a83579ce46cb",
       "name": "Αίγλη 3D Digital",
       "address": "Λ. Πεντέλης 98-100, Χαλάνδρι",
-      "summer": true
+      "summer": true,
+      "website": "https://cine-aigli.gr",
+      "coordinates": [
+        23.8159661,
+        38.0294174
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/403907679",
+      "coordinatePrecision": "venue",
+      "area": "Χαλάνδρι",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/aigli_3d_digital-1000120/",
+      "phone": "2106841010"
     },
     {
       "id": "b5243356ee6d",
       "name": "Cine Αλεξάνδρα",
       "address": "Ηρ. Πολυτεχνείου 27 (Μετρό Χολαργός), Κάτω Χαλάνδρι",
-      "summer": true
+      "summer": true,
+      "website": "http://www.cinealexandra.gr/",
+      "coordinates": [
+        23.7919101,
+        38.0070148
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/585501560",
+      "coordinatePrecision": "venue",
+      "area": "Κάτω Χαλάνδρι",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/cine_aleksandra-1001557/",
+      "phone": "2106777708"
     },
     {
       "id": "15463cf385a5",
       "name": "Σινέ Παλλήνη",
       "address": "Ελ. Βενιζέλου 3 & Λεωφ. Μαραθώνος",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.8770152,
+        38.0029228
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/65057357",
+      "coordinatePrecision": "address",
+      "area": "Παλλήνη",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sine_pallini-1001454/",
+      "phone": "2106666815"
     },
     {
       "id": "21e97c520610",
       "name": "Διάνα",
       "address": "Περικλέους 14, Μαρούσι (ΗΣΑΠ Μαρούσι)",
-      "summer": false
+      "summer": false,
+      "coordinates": [
+        23.8033857,
+        38.0573111
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/2600156597",
+      "coordinatePrecision": "venue",
+      "area": "Μαρούσι",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/diana-1001131/",
+      "phone": "2108028587"
     },
     {
       "id": "a00feaa92895",
       "name": "Κηφισιά Cinemax",
       "address": "Λ. Κηφισίας 245, Ζηρίνειο, Κηφισιά (ΗΣΑΠ Κηφισιά)",
-      "summer": false
+      "summer": false,
+      "website": "https://cinemax.gr/cinemas/141-kifisia-1-2-cinemax-cyta",
+      "coordinates": [
+        23.810752,
+        38.0686084
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/378588168",
+      "coordinatePrecision": "venue",
+      "area": "Κηφισιά",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/kifisia_cinemax-1000121/",
+      "phone": "2106233567"
     },
     {
       "id": "2cfadcf8e72f",
       "name": "Κηφισιά Cinemax 3",
       "address": "Δροσίνη 16 (απέναντι στο Βάρσο), Κηφισιά",
-      "summer": false
+      "summer": false,
+      "website": "https://cinemax.gr/cinemas/180-kifisia-3-2",
+      "coordinates": [
+        23.8120211,
+        38.0714976
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/5410467850",
+      "coordinatePrecision": "venue",
+      "area": "Κηφισιά",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/kifisia_cinemax_3-1001425/",
+      "phone": "2106231601"
     },
     {
       "id": "8da6985265fb",
       "name": "Village Cinemas Μαρούσι, The mall Athens",
       "address": "Aνδρέα Παπανδρέου (παραπλεύρως Αττικής Οδού) ΗΣΑΠ Νερατζιώτισσα, Μαρούσι",
-      "summer": false
+      "summer": false,
+      "website": "https://www.villagecinemas.gr",
+      "coordinates": [
+        23.7902486,
+        38.0449245
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/956779194",
+      "coordinatePrecision": "venue",
+      "area": "Μαρούσι",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/village_cinemas_marousi_the_mall_athens-1000139/",
+      "phone": "2102704800"
     },
     {
       "id": "55be902d1a26",
       "name": "Άλσος Dolby Digital",
       "address": "Δεκελείας 152, Ν.Φιλαδέλφεια",
-      "summer": true
+      "summer": true,
+      "website": "https://www.cinealsos.gr/",
+      "coordinates": [
+        23.7407822,
+        38.0398299
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/164923144",
+      "coordinatePrecision": "venue",
+      "area": "Νέα Φιλαδέλφεια",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/alsos_dolby_digital-1001330/",
+      "phone": "2102583133"
     },
     {
       "id": "d676a040b45a",
       "name": "Άνοιξις",
       "address": "Αττική & Ευριπίδου 19, Ν. Ηράκλειο",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7588721,
+        38.0497841
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/987055791",
+      "coordinatePrecision": "venue",
+      "area": "Νέα Ηράκλειο",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/anoiksis-1001264/",
+      "phone": "2102814071"
     },
     {
       "id": "4a9541f07b8f",
       "name": "Τρία Αστέρια 3D Digital",
       "address": "Λ. Ηρακλείου 386, Ν. Ηράκλειο",
-      "summer": false
+      "summer": false,
+      "website": "https://www.triaasteria.gr/",
+      "coordinates": [
+        23.7642223,
+        38.049939
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/2431945524",
+      "coordinatePrecision": "venue",
+      "area": "Νέα Ηράκλειο",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/tria_asteria_3d_digital-1000123/",
+      "phone": "2102826873"
     },
     {
       "id": "1681b7c99c72",
       "name": "Αελλώ Cinemax",
       "address": "Πατησίων 140",
-      "summer": true
+      "summer": true,
+      "website": "https://www.cinemax.gr/cinemas/143-aello-cinemax",
+      "coordinates": [
+        23.7335398,
+        37.9994016
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/439818177",
+      "coordinatePrecision": "venue",
+      "area": "Πλατεία Αμερικής",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/aello_cinemax-1000124/",
+      "phone": "2108259974"
     },
     {
       "id": "aca01900551d",
       "name": "Ατενέ",
       "address": "Λευκωσίας 43, πλ. Αγ. Ανδρέα, Πατήσια",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7320356,
+        38.0061758
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/507375508",
+      "coordinatePrecision": "venue",
+      "area": "Πατήσια",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/atene-1001184/",
+      "phone": "2108644906"
     },
     {
       "id": "d97037e59bdf",
       "name": "Ηλέκτρα",
       "address": "Πατησίων 292, Αγ. Λουκάς",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7354226,
+        38.0131625
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/6631644801",
+      "coordinatePrecision": "venue",
+      "area": "Άγιος Λουκάς",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/ilektra-1001185/",
+      "phone": "2102017220"
     },
     {
       "id": "f0f648580330",
       "name": "Στέλλα (Δημ. Κιν/φος)",
       "address": "Τενέδου 34 (Φωκίωνος Νέγρη), Κυψέλη",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7376289,
+        38.0017456
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/489049226",
+      "coordinatePrecision": "venue",
+      "area": "Κυψέλη",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/stella_dim_kin_fos-1001189/",
+      "phone": "2108657200"
     },
     {
       "id": "8fba490b2bc6",
       "name": "Studio new star art cinema",
       "address": "Σπάρτης & Σταυροπούλου 33, Πλ. Αμερικής",
-      "summer": false
+      "summer": false,
+      "website": "https://www.newstarartcinema.gr/",
+      "coordinates": [
+        23.7308827,
+        38.0031403
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/4656312700",
+      "coordinatePrecision": "venue",
+      "area": "Πλατεία Αμερικής",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/studio_new_star_art_cinema-1001034/",
+      "phone": "2108640054"
     },
     {
       "id": "bdf83e169087",
       "name": "Τριανόν",
       "address": "Κοδριγκτώνος 21 (Πατησίων 101) (ΜΕΤΡΟ Βικτώρια)",
-      "summer": false
+      "summer": false,
+      "website": "https://trianon.gr",
+      "coordinates": [
+        23.731314,
+        37.9954995
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/454729712",
+      "coordinatePrecision": "venue",
+      "area": "Άγιος Παντελεήμονας",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/trianon-1001035/",
+      "phone": "2108215469"
     },
     {
       "id": "b697d67947d5",
       "name": "Αλέκα (Δημ. Κιν/φος)",
       "address": "3ης Ορ. Ταξιαρχίας 13, πλ. Αλεξανδρή, Ζωγράφου",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7713027,
+        37.9770503
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/198176404",
+      "coordinatePrecision": "venue",
+      "area": "Ζωγράφου",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/aleka_dim_kin_fos-1001060/",
+      "phone": "2107773608"
     },
     {
       "id": "bc56d4375013",
       "name": "Όασις",
       "address": "Πρατίνου 7, Παγκράτι",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7478301,
+        37.9681984
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/5882954548",
+      "coordinatePrecision": "venue",
+      "area": "Παγκράτι",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/oasis-1001220/",
+      "phone": "2107251277"
     },
     {
       "id": "b522ccd2b368",
       "name": "Village Cinemas Παγκράτι",
       "address": "Υμηττού 110 & Χρεμωνίδου (Εμπ. Κέντρο Athens Millenium), Παγκράτι",
-      "summer": false
+      "summer": false,
+      "website": "https://www.villagecinemas.gr/el/kinimatografoi/village-cinemas-pagkrati/",
+      "coordinates": [
+        23.7485159,
+        37.9668438
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/1247419835",
+      "coordinatePrecision": "venue",
+      "area": "Παγκράτι",
+      "region": "Κέντρο",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/village_cinemas_pagkrati-1000069/",
+      "phone": "2102704800"
     },
     {
       "id": "cffcb3e7be3f",
       "name": "Μελίνα Μερκούρη (Δημ. Κιν/φος)",
       "address": "Λεωφ. Ειρήνης 50, Α. Ηλιούπολη",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7558442,
+        37.9327073
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/505420077",
+      "coordinatePrecision": "venue",
+      "area": "Α. Ηλιούπολη",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/melina_merkouri_dim_kin_fos-1001229/",
+      "phone": "2109937870"
     },
     {
       "id": "0642f772645f",
       "name": "Νανά Cinemax",
       "address": "Λ. Βουλιαγμένης 179 (ΜΕΤΡΟ Αγ.Ιωάννης), Δάφνη",
-      "summer": false
+      "summer": false,
+      "website": "https://cinemax.gr/cinemas/140-cinemaxnana",
+      "coordinates": [
+        23.7368431,
+        37.9543889
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/542370384",
+      "coordinatePrecision": "venue",
+      "area": "Δάφνη",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/nana_cinemax-1000135/",
+      "phone": "2109703158"
     },
     {
       "id": "686108ab5963",
       "name": "Village Cinemas Αγ. Δημήτριος, Athens Metro Mall - Ag. Dimitrios",
       "address": "Λ.Βουλιαγμένης 276, Αγ. Δημήτριος",
-      "summer": false
+      "summer": false,
+      "coordinates": [
+        23.74411,
+        37.9294828
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/2396459262",
+      "coordinatePrecision": "address",
+      "area": "Άγιος Δημήτριος",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/village_cinemas_ag_dimitrios__athens_metro_mall_-_ag_dimitrios-10000399/",
+      "phone": "2102704800"
     },
     {
       "id": "347b546d5fa2",
@@ -250,109 +635,298 @@
       "id": "55df3065dd91",
       "name": "Σινέ Φλερύ",
       "address": "Σκίπη 5-7 & Θησέως, Καλλιθέα",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.6982895,
+        37.9541504
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/364644397",
+      "coordinatePrecision": "venue",
+      "area": "Καλλιθέα",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sine_fleru-1001239/",
+      "phone": "2109585774"
     },
     {
       "id": "1b35e55813dd",
       "name": "Σπόρτιγκ Digital Cinema",
       "address": "Κ. Παλαιολόγου 18, Ν. Σμύρνη",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7110304,
+        37.9466482
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3922931243",
+      "coordinatePrecision": "venue",
+      "area": "Νέα Σμύρνη",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sportigk_digital_cinema-1000140/",
+      "phone": "2109313360"
     },
     {
       "id": "42ec523e1f8d",
       "name": "Φιλίπ",
       "address": "Ελ. Βενιζέλου 40, Ν. Σμύρνη,",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7141349,
+        37.9447898
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/469164498",
+      "coordinatePrecision": "venue",
+      "area": "Νέα Σμύρνη",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/filip-1001244/",
+      "phone": "2109312866"
     },
     {
       "id": "f13da5674ff8",
       "name": "Άνοιξη Art Cinema 2+1",
       "address": "Αγωνιστών Στρατοπέδου 49, Χαϊδάρι",
-      "summer": false
+      "summer": false,
+      "coordinates": [
+        23.6606321,
+        38.0077872
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/6027959717",
+      "coordinatePrecision": "venue",
+      "area": "Χαϊδάρι",
+      "region": "Δυτικά",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/anoiksi_art_cinema_2_syn_1-1000143/",
+      "phone": "2105813470"
     },
     {
       "id": "13d9243fe041",
       "name": "Λάμπρος Κωνσταντάρας - Ρένα Βλαχοπούλου",
       "address": "Κουντουριώτου 40 & Μυριοφύτου 55 (ΜΕΤΡΟ Αιγάλεω)",
-      "summer": false
+      "summer": false,
+      "website": "https://www.lamproskonstantaras.gr/",
+      "coordinates": [
+        23.6854134,
+        37.9948838
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/1109222860",
+      "coordinatePrecision": "venue",
+      "area": "Αιγάλεω",
+      "region": "Δυτικά",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/lampros_konstantaras_-_rena_blaxopoulou-10007556/",
+      "phone": "2105911390"
     },
     {
       "id": "a2723f7ffacd",
       "name": "WestCity Cinemas",
       "address": "Λ. Κωνσταντινουπόλεως 82B, Περιστέρι",
-      "summer": false
+      "summer": false,
+      "website": "https://westcitycinemas.gr/",
+      "coordinates": [
+        23.707198,
+        38.0126946
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/6797573282",
+      "coordinatePrecision": "venue",
+      "area": "Περιστέρι",
+      "region": "Δυτικά",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/westcity_cinemas-1000131/",
+      "phone": "2105756239"
     },
     {
       "id": "2a7795d9601e",
       "name": "Village Cinemas Ίλιον, Escape Center",
       "address": "Λεωφ. Δημοκρατίας 67Α, Ίλιον",
-      "summer": false
+      "summer": false,
+      "website": "https://www.options-cinemas.gr/athina/escape-center",
+      "coordinates": [
+        23.7238113,
+        38.0416919
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/465658718",
+      "coordinatePrecision": "venue",
+      "area": "Ίλιον",
+      "region": "Δυτικά",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/village_cinemas_ilion_escape_center-1000108/",
+      "phone": "2102314397"
     },
     {
       "id": "5421cf46f991",
       "name": "Arian experience",
       "address": "Λεωφ. Αγγέλου Μεταξά 11, Γλυφάδα (αυλή στοάς Αριάν)",
-      "summer": true
+      "summer": true,
+      "website": "http://www.ariancinema.gr/",
+      "coordinates": [
+        23.7505393,
+        37.8638032
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/595318371",
+      "coordinatePrecision": "venue",
+      "area": "Γλυφάδα",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/arian_experience-10009348/",
+      "phone": "2109680090"
     },
     {
       "id": "196ace1d253f",
       "name": "Βάρκιζα",
       "address": "Θάσου 22, Βάρκιζα",
-      "summer": false
+      "summer": false,
+      "coordinates": [
+        23.7985151,
+        37.8225804
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/418276211",
+      "coordinatePrecision": "venue",
+      "area": "Βάρκιζα",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/barkiza-1000133/",
+      "phone": "2108973926"
     },
     {
       "id": "e7b265e7209c",
       "name": "Village Cinemas Γλυφάδα",
       "address": "Ζησιμοπούλου 7 & Α. Μεταξά, Γλυφάδα",
-      "summer": false
+      "summer": false,
+      "website": "https://www.options-cinemas.gr/athina/glyfada",
+      "coordinates": [
+        23.7527387,
+        37.8610194
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3950944747",
+      "coordinatePrecision": "venue",
+      "area": "Γλυφάδα",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/village_cinemas_glufada-10009556/",
+      "phone": "2112164706"
     },
     {
       "id": "e1a23acf10ef",
       "name": "Ορφέας Dolby Digital",
       "address": "Λ. Σαρωνίδας 60, Σαρωνίδα",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.9142289,
+        37.7473431
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/3968485992",
+      "coordinatePrecision": "venue",
+      "area": "Σαρωνίδα",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/orfeas_dolby_digital-1001392/",
+      "phone": "2291060077"
     },
     {
       "id": "e58151345263",
       "name": "Δημ. Κιν. Όνειρο Ρέντη",
       "address": "Νάξου 32, Αγ. Ιωάννης Ρέντης",
-      "summer": true
+      "summer": true,
+      "website": "https://nikaia-rentis.gov.gr/%CE%B8%CE%B5%CF%81%CE%B9%CE%BD%CF%8C%CF%82-%CE%BA%CE%B9%CE%BD%CE%B7%CE%BC%CE%B1%CF%84%CE%BF%CE%B3%CF%81%CE%AC%CF%86%CE%BF%CF%82-%CF%8C%CE%BD%CE%B5%CE%B9%CF%81%CE%BF/",
+      "coordinates": [
+        23.6704409,
+        37.9609768
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/428278133",
+      "coordinatePrecision": "venue",
+      "area": "Άγιος Ιωάννης Ρέντης",
+      "region": "Πειραιάς",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/dim_kin_oneiro_renti-1001377/",
+      "phone": "2104826952"
     },
     {
       "id": "b54098f3a32e",
       "name": "Δημ. Κιν. Σινεάκ",
       "address": "Πλ. Δημαρχείου, Πειραιάς",
-      "summer": false
+      "summer": false,
+      "website": "https://www.cineak.gr/",
+      "coordinates": [
+        23.6471222,
+        37.9418929
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/13364428124",
+      "coordinatePrecision": "venue",
+      "area": "Πειραιάς",
+      "region": "Πειραιάς",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/dim_kin_sineak-1001364/",
+      "phone": "2104225653"
     },
     {
       "id": "e018401716e1",
       "name": "Σινέ Μελίνα (Δημ. Κιν/φος)",
       "address": "Σωκράτους 65, Δραπετσώνα",
-      "summer": true
+      "summer": true,
+      "website": "https://dimotikacinema.gr/cine-melina/",
+      "coordinates": [
+        23.6290748,
+        37.9501344
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/4284623069",
+      "coordinatePrecision": "venue",
+      "area": "Δραπετσώνα",
+      "region": "Πειραιάς",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sine_melina_dim_kin_fos-1001367/"
     },
     {
       "id": "c34567ddaaa7",
       "name": "Σινέ Νίκαια",
       "address": "Θηβών 245, Νίκαια (πολυχώρος \"Μάνος Λοϊζος\")",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.665258,
+        37.9741241
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/310356776",
+      "coordinatePrecision": "address",
+      "area": "Νίκαια",
+      "region": "Πειραιάς",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sine_nikaia-1001542/",
+      "phone": "2104826952"
     },
     {
       "id": "11170287194b",
       "name": "Σινέ Παράδεισος",
       "address": "Αγ. Γεωργίου & Ζάππα 4, Κορυδαλλός",
-      "summer": false
+      "summer": false,
+      "website": "https://cineparadisos.com/",
+      "coordinates": [
+        23.6505888,
+        37.979898
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/431279828",
+      "coordinatePrecision": "venue",
+      "area": "Κορυδαλλός",
+      "region": "Πειραιάς",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sine_paradeisos-10012346/",
+      "phone": "2110015300"
     },
     {
       "id": "b66f2924091c",
       "name": "Σινέ Σελήνη",
       "address": "Αγ. Νικολάου 17 & Πανθέας, Σελήνια Σαλαμίνας",
-      "summer": true
+      "summer": true,
+      "website": "https://cineselini.blogspot.com",
+      "coordinates": [
+        23.532347,
+        37.9318408
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/4905774100",
+      "coordinatePrecision": "venue",
+      "area": "Σελήνια Σαλαμίνας",
+      "region": "Πειραιάς",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sine_selini-1001453/",
+      "phone": "2104670011"
     },
     {
       "id": "3de7d8f573b9",
       "name": "Village Cinemas Ρέντης, Village Shopping And More",
       "address": "Πέτρου Ράλλη & Θηβών, Άγιος Ιωάννης Ρέντη",
-      "summer": false
+      "summer": false,
+      "coordinates": [
+        23.6690092,
+        37.9753381
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/160068612",
+      "coordinatePrecision": "venue",
+      "area": "Άγιος Ιωάννης Ρέντη",
+      "region": "Πειραιάς",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/village_cinemas_rentis_village_shopping_and_more-1000074/",
+      "phone": "2102704800"
     },
     {
       "id": "31dda0855917",
@@ -364,13 +938,51 @@
       "id": "7cf5f8cd1273",
       "name": "Σίσσυ Digital Cinema",
       "address": "Λ. Μαραθώνος 36, Ν. Μάκρη",
-      "summer": true
+      "summer": true,
+      "website": "https://www.sissycinema.gr",
+      "coordinates": [
+        23.9800333,
+        38.081302
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/way/594374797",
+      "coordinatePrecision": "venue",
+      "area": "Νέα Μάκρη",
+      "region": "Νότια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/sissu_digital_cinema-1001357/",
+      "phone": "2294091811"
     },
     {
       "id": "a219c4abb993",
       "name": "Ωρωπός 3D Digital Cinema",
       "address": "Πινδάρου 5, Σκάλα Ωρωπού",
-      "summer": true
+      "summer": true,
+      "coordinates": [
+        23.7901024,
+        38.3206306
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/2408661121",
+      "coordinatePrecision": "venue",
+      "area": "Σκάλα Ωρωπού",
+      "region": "Βόρεια",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/oropos_3d_digital_cinema-1001441/",
+      "phone": "2295038979"
+    },
+    {
+      "id": "1e37f7c18e51",
+      "name": "Φοίβος Digital Cinema",
+      "address": "Εθν. Αντιστάσεως 3, ΜΕΤΡΟ Σταθμός Περιστέρι",
+      "summer": false,
+      "website": "https://foivoscinema.gr/",
+      "coordinates": [
+        23.6957235,
+        38.0122656
+      ],
+      "coordinateSource": "https://www.openstreetmap.org/node/4350322995",
+      "coordinatePrecision": "venue",
+      "area": "Περιστέρι",
+      "region": "Δυτικά",
+      "athinoramaUrl": "https://www.athinorama.gr/cinema/halls/foibos_digital_cinema-10010048/",
+      "phone": "2105711105"
     }
   ],
   "coordinateLicense": "OSM coordinates © OpenStreetMap contributors, ODbL https://www.openstreetmap.org/copyright"

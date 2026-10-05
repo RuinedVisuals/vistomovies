@@ -7,7 +7,7 @@ const ERROR='Δεν ήταν δυνατή η φόρτωση των προβολ�
 export async function getWeek(signal:AbortSignal):Promise<{data:WeekData;mode:'api'|'snapshot'}>{
  try{
   const r=await fetch('/api/showtimes/week',{signal:AbortSignal.any([signal,AbortSignal.timeout(5000)])});
-  if(!r.ok)throw new Error('API unavailable');
+  if(!r.ok||!r.headers.get('content-type')?.includes('json'))throw new Error('API unavailable');
   const d=await r.json();if(!Array.isArray(d.showtimes)||!d.showtimes.length||!d.weekStart)throw new Error('Invalid response');
   return {data:{...d,showtimes:d.showtimes.map(withProgrammeDate)},mode:'api'};
  }catch(e){
@@ -15,9 +15,9 @@ export async function getWeek(signal:AbortSignal):Promise<{data:WeekData;mode:'a
   const r=await fetch('/snapshot.json',{signal});if(!r.ok)throw new Error(ERROR);
   const d=await r.json().catch(()=>{throw new Error(ERROR)});
   const rows:Showtime[]=(d.showtimes||[]).map(withProgrammeDate);
-  const weekStart=rows.map(s=>s.weekStart).filter(Boolean).sort().pop()||rows[0]?.programmeDate;
+  const weekStart=d.weekStart||rows.map(s=>s.weekStart).filter(Boolean).sort().pop()||rows[0]?.programmeDate;
   if(!weekStart)throw new Error(ERROR);
-  const checkedAt=(d.sources||[]).map((s:{checkedAt?:string})=>s.checkedAt).filter(Boolean).sort().pop()||null;
+  const checkedAt=d.checkedAt||(d.sources||[]).map((s:{checkedAt?:string})=>s.checkedAt).filter(Boolean).sort().pop()||null;
   return {data:{weekStart,weekEnd:addDays(weekStart,6),checkedAt,sources:d.sources||[],showtimes:rows.filter(s=>(s.weekStart||weekStart)===weekStart)},mode:'snapshot'};
  }
 }
@@ -36,7 +36,10 @@ export async function getCatalog(signal:AbortSignal):Promise<Catalog>{
 export async function getFilms(signal:AbortSignal,onUpdate:(f:FilmIndex)=>void){
  for(let attempt=0;attempt<30&&!signal.aborted;attempt++){
   try{
-   const r=await fetch('/api/films',{signal});if(!r.ok)return;
+   const r=await fetch('/api/films',{signal});
+   if(!r.ok||!r.headers.get('content-type')?.includes('json')){// static hosting (no API): exported TMDB cache
+    const s=await fetch('/films.json',{signal});if(s.ok)onUpdate((await s.json()).films||{});return;
+   }
    const d=await r.json();onUpdate(d.films||{});
    if(!d.pending)return;
   }catch{return}

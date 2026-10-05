@@ -64,7 +64,7 @@ export function CinemaPage({id}:{id:string}){
   return {title,route,m,poster:tmdbImage(m?.posterPath,'w185')||catalog.movies[rs[0].movieSourceUrl||title]?.poster||null,times:sortTimes(rs.map(r=>r.time)),
    sub:uniq(rs.map(r=>r.screen).filter(Boolean)).join(', ')+(rs[0].screen?' · ':'')+(m===null?'χωρίς στοιχεία TMDB':[m?.badge,uniq(rs.map(r=>VERSION_SHORT[version(r)])).join('/')].filter(Boolean).join(' · '))};
  }).sort((a,b)=>timeKey(a.times[0]).localeCompare(timeKey(b.times[0])));
- const booking=weekRows.find(r=>r.bookingUrl)?.bookingUrl;const sourceUrl=weekRows[0]?.sourceUrl;
+ const booking=weekRows.find(r=>r.bookingUrl)?.bookingUrl;const sourceUrl=weekRows[0]?.sourceUrl||v.athinoramaUrl;
  const actions=[
   {label:'Οδηγίες',Icon:NavigationArrow,href:directionsUrl(v)},
   {label:'Website',Icon:Globe,href:v.website||sourceUrl},
@@ -85,7 +85,9 @@ export function CinemaPage({id}:{id:string}){
    <div data-a className="action-grid">{actions.map(a=><a key={a.label} href={a.href||undefined} target={a.href?.startsWith('http')?'_blank':undefined} rel="noreferrer" aria-disabled={!a.href}
     title={!a.href?'Δεν υπάρχει διαθέσιμο':a.label==='Website'&&!v.website?'Σελίδα του σινεμά στο Αθηνόραμα':undefined}><a.Icon/>{a.label}</a>)}</div>
    {halls.length>0&&<div data-a className="halls">{halls.map(h=><div key={h.label}><span>{h.t==='summer'?<Sun color="var(--color-neutral-400)"/>:<Armchair color="var(--color-neutral-400)"/>}{h.label}</span><span className="note">{h.note}</span></div>)}</div>}
-   <div data-a className="geo-line">{v.verified?<><SealCheck/>Θέση επιβεβαιωμένη · OSM</>:<><MapPinSimpleArea/>{v.lng!=null?'Θέση κατά προσέγγιση · εκκρεμεί επιβεβαίωση OSM':'Χωρίς θέση στον χάρτη · εκκρεμεί γεωκωδικοποίηση'}</>}</div>
+   <div data-a className="geo-line">{v.precision==='venue'?<><SealCheck/>Θέση επιβεβαιωμένη · <a href={v.coordinateSource} target="_blank" rel="noreferrer">© OpenStreetMap</a></>
+    :v.precision==='address'?<><MapPinSimpleArea/>Θέση από τη διεύθυνση · <a href={v.coordinateSource} target="_blank" rel="noreferrer">© OpenStreetMap</a></>
+    :<><MapPinSimpleArea/>{v.lng!=null?'Θέση κατά προσέγγιση · εκκρεμεί επιβεβαίωση OSM':'Χωρίς θέση στον χάρτη · εκκρεμεί γεωκωδικοποίηση'}</>}</div>
    <div data-a className="section-head" style={{margin:'26px 0 10px'}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">{week?'έως '+shortDay(week.weekEnd):''}</span></div>
    <div data-a style={{margin:'0 -20px'}}><DateStrip className="pad" value={day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d})}/></div>
    {programme.length?<div style={{marginTop:6}}>{programme.map(p=>{const to=`/movies/${p.route.id}/${p.route.slug}${day!==todayIso?'?date='+day:''}`;

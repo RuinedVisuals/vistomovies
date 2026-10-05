@@ -84,3 +84,14 @@ def parse(html,week_start):
                         rows.append(dict(movie=h.text(),movieSourceUrl=urljoin(URL,ma.attrs['href']) if ma else None,cinema=cinema,screen=screen,programmeDate=day,date=(date.fromisoformat(day)+timedelta(days=1)).isoformat() if time<'06:00' else day,time=time,afterMidnight=time<'06:00',timezone='Europe/Athens',bookingUrl=None,sourceUrl=urljoin(URL,a.attrs['href']),rawSchedule=raw,version=version(raw),weekStart=week_start,dateBasis='operator-confirmed-programme-week'))
     if not cinemas or not rows:raise ValueError('No cinema schedules parsed; HTML may have changed')
     return rows,issues,cinemas
+
+def cinema_info(html):
+    """Per-cinema details shown on the page: hall URL, address line and phone numbers."""
+    out={}
+    for card in DOM(html).root.find(cls='card-item'):
+        heading=next(card.find('h2'),None);a=next(heading.find('a'),None) if heading else None
+        if not a or '/cinema/halls/' not in a.attrs.get('href',''):continue
+        details=next(card.find(cls='details'),None);tags=next(card.find(cls='tags'),None)
+        phones=re.findall(r'(?<!\d)2\d{9}(?!\d)',tags.text() if tags else '')
+        out[a.text()]={'url':urljoin(URL,a.attrs['href']),'address':details.text() if details else None,'phones':phones}
+    return out

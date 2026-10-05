@@ -6,9 +6,9 @@ export type Source={source:string;checkedAt?:string|null;lastSuccessAt:string|nu
 export type WeekData={weekStart:string;weekEnd:string;checkedAt:string|null;showtimes:Showtime[];sources:Source[]};
 export type Region='Κέντρο'|'Βόρεια'|'Νότια'|'Δυτικά'|'Πειραιάς';
 export type Cinema={id:string;name:string;address:string;summer:boolean;coordinates?:[number,number];coordinateSource?:string;
- area?:string;region?:Region;phone?:string;website?:string};
-/** Cinema joined with derived geo fields. lng/lat may be approximate (verified=false). */
-export type Venue=Cinema&{area:string;region:Region;lng:number|null;lat:number|null;verified:boolean;addrShort:string};
+ coordinatePrecision?:'venue'|'address';area?:string;region?:Region;phone?:string;website?:string;athinoramaUrl?:string};
+/** Cinema joined with derived geo fields. precision: OSM venue, OSM address point, or stopgap approximation. */
+export type Venue=Cinema&{area:string;region:Region;lng:number|null;lat:number|null;verified:boolean;precision:'venue'|'address'|'approximate'|null;addrShort:string};
 export type CastMember={name:string;role:string;profile:string|null};
 export type FilmMeta={tmdbId:number;imdbId:string|null;title:string;originalTitle:string|null;year:number|null;runtime:number|null;
  genres:string[];countryCode:string|null;languageCode:string|null;vote:number|null;voteCount:number;overview:string;overviewLanguage?:string|null;

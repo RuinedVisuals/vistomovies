@@ -156,7 +156,7 @@ export default function MapScreen(){
    <button type="button" className="locate" onClick={locateOrReset} aria-label={zoomed?'Σμίκρυνση στην Αθήνα':'Η τοποθεσία μου'}>{zoomed?<ArrowsIn/>:<Crosshair/>}</button>
    {selected&&info?<div ref={card} className="map-card">
     <div style={{display:'flex',justifyContent:'space-between',gap:8}}><div style={{minWidth:0}}><div className="name">{selected.name}</div>
-     <div className="sub">{[selected.addrShort,selected.area,kmLabel(km(selected,from))].join(' · ')}{!selected.verified&&selected.lng!=null?' · θέση κατά προσέγγιση':''}</div></div>
+     <div className="sub">{[selected.addrShort,selected.area,kmLabel(km(selected,from))].join(' · ')}{selected.precision==='approximate'?' · θέση κατά προσέγγιση':selected.precision==='address'?' · θέση από διεύθυνση':''}</div></div>
      <span className={info.has?'tag tag-accent':'tag tag-outline'} style={{alignSelf:'flex-start'}}>{info.has?'Προβολές σήμερα':'Χωρίς πρόγραμμα'}</span></div>
     <div className="rows">{selRows.slice(0,3).map(r=><div key={r.title} className="r"><span>{r.title}</span><span>{r.times}</span></div>)}
      {!selRows.length&&<div style={{fontSize:13,color:'var(--color-neutral-500)'}}>Δεν υπάρχει διαθέσιμο πρόγραμμα για σήμερα.</div>}</div>

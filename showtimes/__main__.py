@@ -4,7 +4,7 @@ from datetime import datetime,date
 from zoneinfo import ZoneInfo
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlparse,parse_qs
-from . import parsers,storage,athinorama,tmdb,films
+from . import parsers,storage,athinorama,tmdb,films,updater,geocode
 from .network import fetch
 
 def main():
@@ -15,7 +15,10 @@ def main():
     d=sub.add_parser('discover');d.add_argument('--html',type=Path);d.add_argument('--out',default='data/more-discovery.json')
     sub.add_parser('status')
     e=sub.add_parser('export');e.add_argument('--date');e.add_argument('--out',default='data/showtimes.json')
-    a=sub.add_parser('serve');a.add_argument('--port',type=int,default=8787)
+    u=sub.add_parser('update',help='One automatic update attempt (week inferred from today)');u.add_argument('--html',type=Path,help='Use a saved page instead of fetching')
+    sub.add_parser('export-static',help='Write frontend/public/snapshot.json + films.json for hosting without the API')
+    sub.add_parser('geocode',help='Locate cinemas via OpenStreetMap into frontend/public/cinemas.json')
+    a=sub.add_parser('serve');a.add_argument('--port',type=int,default=8787);a.add_argument('--no-auto-update',action='store_true',help='Do not refresh the programme in the background')
     args=p.parse_args();db=storage.connect(args.db)
     if args.cmd=='scrape':
         source='athinorama'
@@ -34,6 +37,14 @@ def main():
         urls=parsers.more_discovery(html)
         out=Path(args.out);out.parent.mkdir(parents=True,exist_ok=True)
         out.write_text(json.dumps({'kind':'event-links-not-showtimes','urls':urls},ensure_ascii=False,indent=2),encoding='utf-8');print(f'{len(urls)} event URLs; no screening times inferred.')
+    elif args.cmd=='update':
+        result=updater.run(db,html=args.html.read_text(encoding='utf-8') if args.html else None)
+        print(json.dumps(result,ensure_ascii=False))
+        if result['status']=='saved':
+            updater.prefetch_films(db);films.wait();print(json.dumps({'static':updater.export_static(db)},ensure_ascii=False))
+        return 0 if result['status'] in ('saved','not-updated') else 1
+    elif args.cmd=='geocode':geocode.run()
+    elif args.cmd=='export-static':print(json.dumps(updater.export_static(db),ensure_ascii=False))
     elif args.cmd=='status':print(json.dumps(storage.status(db),ensure_ascii=False,indent=2))
     elif args.cmd=='export':
         out=Path(args.out);out.parent.mkdir(parents=True,exist_ok=True)
@@ -70,6 +81,9 @@ def main():
                 b=json.dumps(payload,ensure_ascii=False).encode();self.send_response(code)
                 self.send_header('Content-Type','application/json; charset=utf-8');self.send_header('Content-Length',str(len(b)));self.end_headers();self.wfile.write(b)
         print(f'Local API: http://127.0.0.1:{args.port}',flush=True)
+        if not args.no_auto_update:
+            updater.start_background(args.db,log=lambda m:print(m,flush=True))
+            print('Αυτόματη ενημέρωση προγράμματος: ενεργή (καθημερινά 10:00, Πέμπτη έως 3 προσπάθειες).',flush=True)
         ThreadingHTTPServer(('127.0.0.1',args.port),Handler).serve_forever()
     return 0
 

@@ -143,3 +143,9 @@ def films(titles):
 
 def _known(cache, titles):
     return {t: cache[t]['film'] for t in titles if isinstance(cache.get(t), dict) and 'fetchedAt' in cache[t]}
+
+
+def wait(timeout=600):
+    """Block until the background TMDB fill finishes (CLI use)."""
+    if _worker:
+        _worker.join(timeout)

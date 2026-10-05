@@ -1,7 +1,7 @@
 import type {Cinema,Region,Venue} from './types';
 
-// Stopgap [lng, lat, area, region] from the design handoff. These positions are APPROXIMATE and pending
-// proper geocoding into cinemas.json (with coordinateSource). Only cinemas.json coordinates count as verified.
+// Stopgap [lng, lat, area, region] from the design handoff, used ONLY for cinemas that the OSM geocoder
+// (py -m showtimes geocode) could not place. These positions are approximate and labelled as such in the UI.
 const GEO:Record<string,[number,number,string,Region]>={
  b8c22e14f1e3:[23.7310,37.9787,'Κέντρο','Κέντρο'],'6025fbf95fcf':[23.7395,37.9868,'Νεάπολη','Κέντρο'],a016d3f103b0:[23.7455,37.9757,'Κέντρο','Κέντρο'],
  '26a0c32696ee':[23.7337,37.9818,'Κέντρο','Κέντρο'],'1a9616258f41':[23.7128,37.9786,'Κεραμεικός','Κέντρο'],'18898b5f2543':[23.7105,37.9688,'Άνω Πετράλωνα','Κέντρο'],
@@ -26,7 +26,8 @@ const regionOf=(a:string):Region=>/Πειραι|Δραπετσ|Νίκαια|Κο
 export function toVenue(c:Cinema):Venue{
  const g=GEO[c.id];const pos=c.coordinates||(g?[g[0],g[1]]:null);
  const area=c.area||(g?g[2]:areaOf(c));
- return {...c,area,region:c.region||(g?g[3]:regionOf(area)),lng:pos?pos[0]:null,lat:pos?pos[1]:null,verified:!!c.coordinates,
+ const precision=c.coordinates?(c.coordinatePrecision||'venue'):g?'approximate':null;
+ return {...c,area,region:c.region||(g?g[3]:regionOf(area)),lng:pos?pos[0]:null,lat:pos?pos[1]:null,verified:precision==='venue',precision,
   addrShort:c.address.replace(/\s*\([^)]*\)/g,'').split(',')[0]};
 }
 export function km(v:{lng:number|null;lat:number|null},from:[number,number]){
