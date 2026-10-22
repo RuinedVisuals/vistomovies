@@ -55,11 +55,12 @@ export default function ShowtimesApp(){
  const value=useMemo<AppData>(()=>{
   const venues=cinemas.map(toVenue);
   return {week,mode,loading,error,retry:()=>setAttempt(a=>a+1),rows:week?.showtimes||[],venues,venueByName:new Map(venues.map(v=>[v.name,v])),venueById:new Map(venues.map(v=>[v.id,v])),
-   films,catalog,history,session,openAccount,todayIso,userLoc,locate,savedFilms,favCinemas};
- },[week,mode,loading,error,cinemas,films,catalog,history,session,openAccount,todayIso,userLoc,locate,savedFilms,favCinemas]);
+   films,catalog,history,session,openAccount,notify:setNote,todayIso,userLoc,locate,savedFilms,favCinemas};
+ },[week,mode,loading,error,cinemas,films,catalog,history,session,openAccount,setNote,todayIso,userLoc,locate,savedFilms,favCinemas]);
  const {parts}=useRoute();
  const [section,id]=parts;
  useEffect(()=>{if(!section)navigate('/movies'+location.search,{replace:true})},[section]);
+ useEffect(()=>{if(section==='add'&&id)navigate('/saved?tab=friends&add='+encodeURIComponent(id),{replace:true})},[section,id]);
  return <AppContext.Provider value={value}><div className="app">
   <div className="status-fade" aria-hidden="true"/>
   <UpdateToast/>
@@ -73,8 +74,8 @@ export default function ShowtimesApp(){
   {section==='map'&&<Suspense fallback={<div className="map-screen"/>}><MapScreen/></Suspense>}
   {section==='saved'&&<Saved/>}
   {section==='status'&&<Status/>}
-  {section&&!['movies','cinemas','map','saved','status'].includes(section)&&<NotFound/>}
-  {!(section==='cinemas'&&id)&&<BottomNav active={section==='cinemas'?1:section==='map'?2:section==='saved'?3:0}/>}
+  {section&&!['movies','cinemas','map','saved','status','add'].includes(section)&&<NotFound/>}
+  {!(section==='cinemas'&&id)&&<BottomNav active={section==='cinemas'?1:section==='map'?2:section==='saved'||section==='add'?3:0}/>}
  </div></AppContext.Provider>;
 }
 

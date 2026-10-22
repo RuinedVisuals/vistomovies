@@ -11,6 +11,8 @@ import {filmKey,nowTime} from '../lib/types';
 import type {Showtime} from '../lib/types';
 import {Link,Poster,Segmented} from './ui';
 import Account from './Account';
+import FriendsTab,{InviteSheet} from './Friends';
+import {useFriends} from '../lib/friends';
 
 const short=(name:string)=>name.split(',')[0];
 type Status={kind:'tonight'|'over'|'later'|'gone';text:string;sub?:string};
@@ -31,8 +33,11 @@ function statusOf(rs:Showtime[],todayIso:string,now:string,from:[number,number],
 
 /** 07 Η λίστα μου — saved items never disappear when not playing. */
 export default function Saved(){
- const {rows,films,catalog,history,week,todayIso,userLoc,savedFilms,favCinemas,venueById,venueByName}=useApp();
- const {query}=useRoute();const tab=query.get('tab')==='cinemas'?1:0;
+ const {rows,films,catalog,history,week,todayIso,userLoc,savedFilms,favCinemas,venueById,venueByName,session,openAccount,notify}=useApp();
+ const {query}=useRoute();const tabKey=query.get('tab');const tab=tabKey==='friends'?2:tabKey==='cinemas'?1:0;
+ const fr=useFriends(session?.user.id);const addUser=query.get('add');
+ // Opened from an invite link while signed out: sign in first, then the invite shows.
+ useEffect(()=>{if(addUser&&session===null)openAccount()},[addUser,session]);// eslint-disable-line react-hooks/exhaustive-deps
  const ref=useRef<HTMLElement>(null),list=useRef<HTMLDivElement>(null),first=useRef(true);
  const now=nowTime();const from=userLoc||SYNTAGMA;
  const todayRows=useMemo(()=>rows.filter(r=>r.programmeDate===todayIso),[rows,todayIso]);
@@ -58,10 +63,10 @@ export default function Saved(){
  return <main className="screen" ref={ref}>
   <div data-a className="page-head"><div className="over">Αποθηκεύεται σε αυτή τη συσκευή</div><h1>Η λίστα μου</h1></div>
   <div className="pad" style={{paddingTop:14}}><Account/></div>
-  <div data-a style={{padding:'14px 20px 0'}}><Segmented label="Λίστα" options={['Ταινίες · '+filmItems.length,'Σινεμά · '+cinemaItems.length]} value={tab} onChange={i=>setQuery({tab:i?'cinemas':null})}/></div>
+  <div data-a style={{padding:'14px 20px 0'}}><Segmented label="Λίστα" options={['Ταινίες · '+filmItems.length,'Σινεμά · '+cinemaItems.length,'Φίλοι'+(fr.incoming.length?' · '+fr.incoming.length:'')]} value={tab} onChange={i=>setQuery({tab:i===2?'friends':i?'cinemas':null,add:null})}/></div>
   {tab===0&&filmItems.length>0&&<div data-a className="pad" style={{paddingTop:12,fontSize:13,color:'var(--color-neutral-300)'}}>{tonightN?`${tonightN} από τις ${filmItems.length} παίζ${tonightN===1?'ει':'ουν'} απόψε.`:'Καμία από τις αποθηκευμένες δεν παίζει άλλο απόψε.'}</div>}
   <div ref={list} data-a style={{display:'flex',flexDirection:'column',gap:10,padding:'16px 20px 0'}}>
-   {tab===0?filmItems.map(f=><Link key={f.key} to={f.to} className="saved-item">
+   {tab===2?<FriendsTab fr={fr}/>:<>{tab===0?filmItems.map(f=><Link key={f.key} to={f.to} className="saved-item">
     <Poster src={f.poster} title={f.title} striped={f.m===null}/>
     <div className="body"><div className="t">{f.title}</div><div className="s">{f.sub}</div>{lit(f.on,f.st.text)}
      {f.st.sub&&<div className="s st-sub">{f.st.sub}</div>}
@@ -69,8 +74,9 @@ export default function Saved(){
    :cinemaItems.map(({v,on,status})=><Link key={v.id} to={cinemaRoute(v)} className="saved-item">
     <div className="tile" style={{'--hue':venueHue(v.id)} as CSSProperties}><ProjectorScreen/></div>
     <div className="body"><div className="t">{v.name}</div><div className="s">{v.area} · {v.addrShort}</div>{lit(on,status)}</div><CaretRight/></Link>)}
-   {(tab===0?!filmItems.length:!cinemaItems.length)&&<div className="empty-card">{tab===0?'Πάτησε την καρδιά σε μια ταινία για να την κρατήσεις εδώ.':'Πάτησε το αστέρι σε ένα σινεμά για να το κρατήσεις εδώ.'}</div>}
+   {(tab===0?!filmItems.length:!cinemaItems.length)&&<div className="empty-card">{tab===0?'Πάτησε την καρδιά σε μια ταινία για να την κρατήσεις εδώ.':'Πάτησε το αστέρι σε ένα σινεμά για να το κρατήσεις εδώ.'}</div>}</>}
   </div>
-  <div data-a className="info-card"><BellRinging/><span>Ειδοποίηση όταν μια αποθηκευμένη ταινία μπει σε πρόγραμμα κοντά σου — αργότερα, στο native app.</span></div>
+  {addUser&&session&&<InviteSheet username={addUser} fr={fr} onClose={()=>setQuery({add:null})} onDone={notify}/>}
+  {tab!==2&&<div data-a className="info-card"><BellRinging/><span>Ειδοποίηση όταν μια αποθηκευμένη ταινία μπει σε πρόγραμμα κοντά σου — αργότερα, στο native app.</span></div>}
  </main>;
 }
