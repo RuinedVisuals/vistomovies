@@ -1,12 +1,15 @@
 import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
-import {MapPin,CaretDown,MagnifyingGlass,SlidersHorizontal,ClockCounterClockwise,X,Info,CalendarDots} from '@phosphor-icons/react';
+import {UserCircle,MapPin,CaretDown,MagnifyingGlass,SlidersHorizontal,ClockCounterClockwise,X,Info,CalendarDots} from '@phosphor-icons/react';
 import type {Catalog,Cinema,FilmIndex,History,Region,Showtime,WeekData} from './lib/types';
 import {today} from './lib/types';
 import {getCatalog,getCinemas,getFilms,getHistory,getWeek,tmdbImage} from './lib/data';
 import {toVenue,SYNTAGMA,km,kmLabel} from './lib/geo';
 import {AppContext,useApp,type AppData} from './lib/context';
 import {usePersistedSet} from './lib/store';
-import {useSession} from './lib/supabase';
+import {supabase,useSession} from './lib/supabase';
+import {initialOf} from './lib/auth';
+import AuthSheet from './components/AuthSheet';
+import ProfileSheet from './components/ProfileSheet';
 import {navigate,setQuery,useRoute} from './lib/router';
 import {useEntrance,pop} from './lib/motion';
 import {activeGroups,EMPTY_FILTERS,filmFlags,filmRoute,filmSub,groupBy,longDate,matchRow,scopeDays,shortDay,dayScope,summarize,timeKey,updatedLabel,cinemaRoute,type Filters,type FilmSummary,type HallType,type TimeFilter} from './lib/derive';
@@ -33,6 +36,10 @@ export default function ShowtimesApp(){
  const [cinemas,setCinemas]=useState<Cinema[]>([]),[catalog,setCatalog]=useState<Catalog>({movies:{}}),[films,setFilms]=useState<FilmIndex>({}),[history,setHistory]=useState<History>({});
  const [userLoc,setUserLoc]=useState<[number,number]|null>(null);
  const session=useSession();const uid=session?.user.id;
+ const [sheet,setSheet]=useState<null|'auth'|'reset'|'profile'>(null),[note,setNote]=useState('');
+ const openAccount=useCallback(()=>setSheet(session?'profile':'auth'),[session]);
+ useEffect(()=>{if(!supabase)return;const {data}=supabase.auth.onAuthStateChange(e=>{if(e==='PASSWORD_RECOVERY')setSheet('reset')});return()=>data.subscription.unsubscribe()},[]);
+ useEffect(()=>{if(!note)return;const t=setTimeout(()=>setNote(''),2600);return()=>clearTimeout(t)},[note]);
  const savedFilms=usePersistedSet('savedFilms',uid),favCinemas=usePersistedSet('favCinemas',uid);
  const todayIso=today();
  useEffect(()=>{const c=new AbortController();setLoading(true);setError('');
@@ -48,14 +55,18 @@ export default function ShowtimesApp(){
  const value=useMemo<AppData>(()=>{
   const venues=cinemas.map(toVenue);
   return {week,mode,loading,error,retry:()=>setAttempt(a=>a+1),rows:week?.showtimes||[],venues,venueByName:new Map(venues.map(v=>[v.name,v])),venueById:new Map(venues.map(v=>[v.id,v])),
-   films,catalog,history,session,todayIso,userLoc,locate,savedFilms,favCinemas};
- },[week,mode,loading,error,cinemas,films,catalog,history,session,todayIso,userLoc,locate,savedFilms,favCinemas]);
+   films,catalog,history,session,openAccount,todayIso,userLoc,locate,savedFilms,favCinemas};
+ },[week,mode,loading,error,cinemas,films,catalog,history,session,openAccount,todayIso,userLoc,locate,savedFilms,favCinemas]);
  const {parts}=useRoute();
  const [section,id]=parts;
  useEffect(()=>{if(!section)navigate('/movies'+location.search,{replace:true})},[section]);
  return <AppContext.Provider value={value}><div className="app">
   <div className="status-fade" aria-hidden="true"/>
   <UpdateToast/>
+  {note&&<div className="toast note" role="status">{note}</div>}
+  {sheet==='auth'&&<AuthSheet onClose={()=>setSheet(null)} onDone={setNote}/>}
+  {sheet==='reset'&&<AuthSheet initial="reset" onClose={()=>setSheet(null)} onDone={setNote}/>}
+  {sheet==='profile'&&<ProfileSheet onClose={()=>setSheet(null)} onDone={setNote}/>}
   {(section==='movies'||!section)&&<Feed/>}
   {section==='movies'&&id&&<Details key={id} id={id}/>}
   {section==='cinemas'&&(id?<CinemaPage key={id} id={id}/>:<Cinemas/>)}
@@ -113,7 +124,8 @@ function Feed(){
  useEffect(()=>{carousel.current?.scrollTo({left:0})},[featKey]);
  return <main className="screen" ref={ref}>
   <div data-a className="brand-row"><Link to="/movies" className="brand" aria-label="Visto αρχική">visto<span>.</span></Link>
-   <button type="button" className="loc-pill" onClick={()=>app.locate()} title="Χρήση της τοποθεσίας σου για αποστάσεις"><MapPin className="pin" weight={userLoc?'fill':'regular'}/>Αθήνα<CaretDown size={11} color="var(--color-neutral-500)"/></button></div>
+   <div style={{display:'flex',gap:8,alignItems:'center'}}><button type="button" className="loc-pill" onClick={()=>app.locate()} title="Χρήση της τοποθεσίας σου για αποστάσεις"><MapPin className="pin" weight={userLoc?'fill':'regular'}/>Αθήνα<CaretDown size={11} color="var(--color-neutral-500)"/></button>
+    {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?initialOf(app.session):<UserCircle size={20}/>}</button>}</div></div>
   <div data-a style={{padding:'18px 20px 0'}}><div style={{fontSize:13,color:'var(--color-neutral-400)'}}>{longDate(day)}</div><h1 style={{fontSize:34,marginTop:2}}>Τι παίζει</h1></div>
   <div data-a style={{paddingTop:16}}><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>
   <div data-a style={{display:'flex',gap:8,padding:'14px 20px 0'}}>
