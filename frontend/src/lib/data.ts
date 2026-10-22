@@ -53,4 +53,4 @@ export async function getFilms(signal:AbortSignal,onUpdate:(f:FilmIndex)=>void){
   await new Promise(res=>setTimeout(res,attempt<5?2500:6000));
  }
 }
-export const tmdbImage=(path:string|null|undefined,size:'w185'|'w342'|'w780'|'w1280'='w342')=>path?`https://image.tmdb.org/t/p/${size}${path}`:null;
+export const tmdbImage=(path:string|null|undefined,size:'w185'|'w342'|'w500'|'w780'|'w1280'='w342')=>path?`https://image.tmdb.org/t/p/${size}${path}`:null;

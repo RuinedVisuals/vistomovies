@@ -1,7 +1,7 @@
-import {useState,type AnchorHTMLAttributes,type CSSProperties,type ReactNode} from 'react';
+import {useCallback,useState,type AnchorHTMLAttributes,type CSSProperties,type ReactNode} from 'react';
 import {FilmStrip,ProjectorScreen,MapTrifold,Heart,Star} from '@phosphor-icons/react';
 import {navigate} from '../lib/router';
-import {pop} from '../lib/motion';
+import {pop,reducedMotion} from '../lib/motion';
 import {addDays} from '../lib/types';
 import type {Showtime} from '../lib/types';
 import {isPast,wd} from '../lib/derive';
@@ -30,14 +30,18 @@ export function DateStrip({value,onPick,todayIso,weekStart,weekEnd,className=''}
 export const hueOf=(s:string)=>{let h=0;for(const c of s)h=(h*33+c.charCodeAt(0))%360;return h};
 /** Poster with TMDB/catalog image, hue placeholder, or striped "no TMDB" placeholder. */
 export function Poster({src,title,striped,label,className='',style}:{src:string|null;title:string;striped?:boolean;label?:string;className?:string;style?:CSSProperties}){
- const [failed,setFailed]=useState(false);const show=src&&!failed;
+ const [failed,setFailed]=useState(false),[ready,setReady]=useState(false);const show=src&&!failed;
+ // Cached images are already complete before onLoad can fire, so check on mount too.
+ const imgRef=useCallback((el:HTMLImageElement|null)=>{if(el?.complete&&el.naturalWidth)setReady(true)},[]);
  return <div className={'poster '+(striped&&!show?'striped ':'')+className} style={{'--hue':hueOf(title),...style} as CSSProperties}>
-  {show?<img src={src} alt="" loading="lazy" onError={()=>setFailed(true)}/>:label&&<span className="plabel">{label}</span>}</div>;
+  {show?<img ref={imgRef} className={ready?'in':''} src={src} alt="" loading="lazy" onLoad={()=>setReady(true)} onError={()=>setFailed(true)}/>:label&&<span className="plabel">{label}</span>}</div>;
 }
 
 export function HeartButton({on,onToggle,title,className='heart'}:{on:boolean;onToggle:()=>void;title:string;className?:string}){
  return <button type="button" className={className} aria-pressed={on} aria-label={(on?'Αφαίρεση από τη λίστα: ':'Αποθήκευση: ')+title}
-  onClick={e=>{e.stopPropagation();onToggle();pop(e.currentTarget.firstElementChild)}}><Heart weight={on?'fill':'regular'}/></button>;
+  onClick={e=>{e.stopPropagation();const b=e.currentTarget;
+  if(!on&&!reducedMotion()){b.classList.remove('burst');void b.offsetWidth;b.classList.add('burst')}// ring burst only when saving
+  onToggle();pop(b.firstElementChild)}}><Heart weight={on?'fill':'regular'}/></button>;
 }
 export function StarButton({on,onToggle,title,className='star'}:{on:boolean;onToggle:()=>void;title:string;className?:string}){
  return <button type="button" className={className} aria-pressed={on} aria-label={(on?'Αφαίρεση από αγαπημένα: ':'Αγαπημένο σινεμά: ')+title}

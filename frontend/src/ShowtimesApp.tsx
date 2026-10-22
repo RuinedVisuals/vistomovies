@@ -9,6 +9,7 @@ import {usePersistedSet} from './lib/store';
 import {supabase,useSession} from './lib/supabase';
 import {usePlans} from './lib/plans';
 import Plans from './components/Plans';
+import Onboarding,{onboardingSeen} from './components/Onboarding';
 import {Privacy,Terms} from './components/Legal';
 import Avatar from './components/Avatar';
 import AuthSheet from './components/AuthSheet';
@@ -63,12 +64,16 @@ export default function ShowtimesApp(){
  },[week,mode,loading,error,cinemas,films,catalog,history,session,openAccount,plans,setNote,todayIso,userLoc,locate,savedFilms,favCinemas]);
  const {parts}=useRoute();
  const [section,id]=parts;
+ const [onboard,setOnboard]=useState(()=>!onboardingSeen());
+ // A shared film/plan link or a legal page goes straight to its content.
+ const showOnboarding=onboard&&!id&&section!=='privacy'&&section!=='terms'&&section!=='add'&&!loading;
  useEffect(()=>{if(!section)navigate('/movies'+location.search,{replace:true})},[section]);
  useEffect(()=>{if(section==='add'&&id)navigate('/saved?tab=friends&add='+encodeURIComponent(id),{replace:true})},[section,id]);
  return <AppContext.Provider value={value}><div className="app">
   <div className="status-fade" aria-hidden="true"/>
   <UpdateToast/>
   {note&&<div className="toast note" role="status">{note}</div>}
+  {showOnboarding&&<Onboarding onDone={()=>setOnboard(false)}/>}
   {sheet==='auth'&&<AuthSheet onClose={()=>setSheet(null)} onDone={setNote}/>}
   {sheet==='reset'&&<AuthSheet initial="reset" onClose={()=>setSheet(null)} onDone={setNote}/>}
   {sheet==='profile'&&<ProfileSheet onClose={()=>setSheet(null)} onDone={setNote}/>}
@@ -150,7 +155,7 @@ function Feed(){
    {featured.length>0&&!q&&!view&&<>
     <div data-a className="section-head pad" style={{padding:'24px 20px 10px'}}><h2>Στο επίκεντρο</h2><span className="aside">περισσότερα σινεμά</span></div>
     <div ref={carousel} className="hscroll featured">{featured.map(m=><div data-a key={m.key} className="feat-card">
-     <Poster src={tmdbImage(m.meta?.posterPath,'w342')||m.poster} title={m.title}/>
+     <Poster src={tmdbImage(m.meta?.posterPath,'w500')||m.poster} title={m.title}/>
      <Link className="open" to={filmTo(m)} aria-label={m.title}/>
      <div className="shade"/>
      <HeartButton on={app.savedFilms.has(m.key)} onToggle={()=>app.savedFilms.toggle(m.key)} title={m.title}/>
@@ -187,7 +192,7 @@ const Flags=({flags}:{flags:{kind:string;label:string}[]})=><>{flags.map(f=><spa
 function FilmRow({m,to,flags,now}:{m:FilmSummary;to:string;flags:{kind:string;label:string}[];now:string}){
  const app=useApp();const noTmdb=m.meta===null;const kicker=noTmdb?'Χωρίς στοιχεία TMDB':m.meta?.badge;
  return <div data-a className="film-row">
-  <Link to={to} tabIndex={-1} aria-hidden="true" style={{flex:'none'}}><Poster className="" style={{width:82,height:122,borderRadius:10}} src={tmdbImage(m.meta?.posterPath,'w185')||m.poster} title={m.title} striped={noTmdb} label={noTmdb?'χωρίς TMDB':undefined}/></Link>
+  <Link to={to} tabIndex={-1} aria-hidden="true" style={{flex:'none'}}><Poster className="" style={{width:82,height:122,borderRadius:10}} src={tmdbImage(m.meta?.posterPath,'w342')||m.poster} title={m.title} striped={noTmdb} label={noTmdb?'χωρίς TMDB':undefined}/></Link>
   <div className="body">
    <div style={{display:'flex',gap:8,alignItems:'flex-start'}}>
     <Link to={to} className="title-btn" style={{flex:1,minWidth:0,color:'inherit',textDecoration:'none'}}>

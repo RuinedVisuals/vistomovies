@@ -88,7 +88,7 @@ export default function Details({id}:{id:string}){
      {key&&<HeartButton className="glass-round" on={savedFilms.has(key)} onToggle={()=>savedFilms.toggle(key)} title={title}/>}</div>
    </div></div>
    <div className="backdrop" style={{'--hue':hueOf(title)} as CSSProperties}>
-    {meta?.backdropPath?<img ref={bg} src={tmdbImage(meta.backdropPath,'w780')!} alt=""/>:(meta?.posterPath||catalog.movies[key]?.poster)&&<img ref={bg} src={tmdbImage(meta?.posterPath,'w780')||catalog.movies[key]!.poster!} alt="" style={{filter:'blur(18px) brightness(.7)',scale:'1.2'}}/>}
+    {meta?.backdropPath?<img ref={bg} src={tmdbImage(meta.backdropPath,'w1280')!} alt=""/>:(meta?.posterPath||catalog.movies[key]?.poster)&&<img ref={bg} src={tmdbImage(meta?.posterPath,'w780')||catalog.movies[key]!.poster!} alt="" style={{filter:'blur(18px) brightness(.7)',scale:'1.2'}}/>}
     {trailer&&<a className="play" href={'https://www.youtube.com/watch?v='+trailer} target="_blank" rel="noreferrer" aria-label="Δες το trailer"><Play weight="fill"/></a>}
     <div className="shade"/>
    </div>

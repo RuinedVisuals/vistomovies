@@ -6,6 +6,7 @@ import {useApp} from '../lib/context';
 import {useEntrance} from '../lib/motion';
 import {answerPlan,cancelPlan,createPlan,type NewPlan,type Plan,type PlanPerson,type PlanStatus} from '../lib/plans';
 import {useFriends} from '../lib/friends';
+import {tmdbImage} from '../lib/data';
 import {shortDay} from '../lib/derive';
 import {Link} from './ui';
 import {Face} from './Friends';
@@ -41,12 +42,14 @@ export function PlanSheet({plan,onLink,onClose,onDone}:{plan:NewPlan;onLink:()=>
 }
 
 function PlanCard({p,uid,busy,act}:{p:Plan;uid:string;busy:string;act:(key:string,fn:()=>Promise<string>)=>void}){
+ const {films}=useApp();const meta=films[p.film_title];const hero=tmdbImage(meta?.backdropPath,'w780')||tmdbImage(meta?.posterPath,'w500');
  const mine=p.owner===uid;const href=`/movies/${p.film_route}?date=${p.show_date}&cinema=${p.cinema_id}&time=${p.show_time}`;
  const answers=['going','maybe','declined'] as const;
  // The host counts as going; everyone invited (including me) is shown with their answer.
  const faces:(PlanPerson&{host?:boolean})[]=[{user_id:p.owner,name:p.owner_name,username:null,avatar_url:p.owner_avatar,status:'going',host:true},...p.people];
  const going=faces.filter(x=>x.status==='going').length;
  return <article className="plan-card" data-a>
+  {hero&&<div className="plan-hero"><img src={hero} alt="" loading="lazy" onLoad={e=>e.currentTarget.classList.add('in')}/><div className="shade"/></div>}
   <div className="who">{mine?<span>Εσύ καλείς</span>:<><Face url={p.owner_avatar} name={p.owner_name} size={26}/><span><b>{p.owner_name}</b> σε καλεί</span></>}</div>
   <Link className="film" to={href}>{p.film_title}</Link>
   <div className="when">{shortDay(p.show_date)} · {p.show_time} · {short(p.cinema_name)}</div>
