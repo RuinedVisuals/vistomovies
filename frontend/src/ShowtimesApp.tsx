@@ -1,5 +1,5 @@
 import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
-import {UserCircle,MapPin,CaretDown,MagnifyingGlass,SlidersHorizontal,ClockCounterClockwise,X,Info,CalendarDots} from '@phosphor-icons/react';
+import {BellSimple,UserCircle,MapPin,CaretDown,MagnifyingGlass,SlidersHorizontal,ClockCounterClockwise,X,Info,CalendarDots} from '@phosphor-icons/react';
 import type {Catalog,Cinema,FilmIndex,History,Region,Showtime,WeekData} from './lib/types';
 import {today} from './lib/types';
 import {getCatalog,getCinemas,getFilms,getHistory,getWeek,tmdbImage} from './lib/data';
@@ -7,6 +7,8 @@ import {toVenue,SYNTAGMA,km,kmLabel} from './lib/geo';
 import {AppContext,useApp,type AppData} from './lib/context';
 import {usePersistedSet} from './lib/store';
 import {supabase,useSession} from './lib/supabase';
+import {usePlans} from './lib/plans';
+import Plans from './components/Plans';
 import Avatar from './components/Avatar';
 import AuthSheet from './components/AuthSheet';
 import ProfileSheet from './components/ProfileSheet';
@@ -42,6 +44,7 @@ export default function ShowtimesApp(){
  useEffect(()=>{if(!note)return;const t=setTimeout(()=>setNote(''),2600);return()=>clearTimeout(t)},[note]);
  const savedFilms=usePersistedSet('savedFilms',uid),favCinemas=usePersistedSet('favCinemas',uid);
  const todayIso=today();
+ const plans=usePlans(uid,todayIso);
  useEffect(()=>{const c=new AbortController();setLoading(true);setError('');
   getWeek(c.signal).then(r=>{setWeek(r.data);setMode(r.mode)}).catch(e=>{if(!c.signal.aborted)setError(e.message)}).finally(()=>{if(!c.signal.aborted)setLoading(false)});
   return()=>c.abort()},[attempt]);
@@ -55,8 +58,8 @@ export default function ShowtimesApp(){
  const value=useMemo<AppData>(()=>{
   const venues=cinemas.map(toVenue);
   return {week,mode,loading,error,retry:()=>setAttempt(a=>a+1),rows:week?.showtimes||[],venues,venueByName:new Map(venues.map(v=>[v.name,v])),venueById:new Map(venues.map(v=>[v.id,v])),
-   films,catalog,history,session,openAccount,notify:setNote,todayIso,userLoc,locate,savedFilms,favCinemas};
- },[week,mode,loading,error,cinemas,films,catalog,history,session,openAccount,setNote,todayIso,userLoc,locate,savedFilms,favCinemas]);
+   films,catalog,history,session,openAccount,plans,notify:setNote,todayIso,userLoc,locate,savedFilms,favCinemas};
+ },[week,mode,loading,error,cinemas,films,catalog,history,session,openAccount,plans,setNote,todayIso,userLoc,locate,savedFilms,favCinemas]);
  const {parts}=useRoute();
  const [section,id]=parts;
  useEffect(()=>{if(!section)navigate('/movies'+location.search,{replace:true})},[section]);
@@ -74,8 +77,9 @@ export default function ShowtimesApp(){
   {section==='map'&&<Suspense fallback={<div className="map-screen"/>}><MapScreen/></Suspense>}
   {section==='saved'&&<Saved/>}
   {section==='status'&&<Status/>}
-  {section&&!['movies','cinemas','map','saved','status','add'].includes(section)&&<NotFound/>}
-  {!(section==='cinemas'&&id)&&<BottomNav active={section==='cinemas'?1:section==='map'?2:section==='saved'||section==='add'?3:0}/>}
+  {section==='plans'&&<Plans/>}
+  {section&&!['movies','cinemas','map','saved','status','add','plans'].includes(section)&&<NotFound/>}
+  {!(section==='cinemas'&&id)&&<BottomNav active={section==='cinemas'?1:section==='map'?2:section==='saved'||section==='add'||section==='plans'?3:0}/>}
  </div></AppContext.Provider>;
 }
 
@@ -126,6 +130,7 @@ function Feed(){
  return <main className="screen" ref={ref}>
   <div data-a className="brand-row"><Link to="/movies" className="brand" aria-label="Visto αρχική">visto<span>.</span></Link>
    <div style={{display:'flex',gap:8,alignItems:'center'}}><button type="button" className="loc-pill" onClick={()=>app.locate()} title="Χρήση της τοποθεσίας σου για αποστάσεις"><MapPin className="pin" weight={userLoc?'fill':'regular'}/>Αθήνα<CaretDown size={11} color="var(--color-neutral-500)"/></button>
+    {app.session&&<Link to="/plans" className="bell-btn" aria-label={`Σχέδια${app.plans.pending.length?` (${app.plans.pending.length} νέες προσκλήσεις)`:''}`}><BellSimple weight={app.plans.pending.length?'fill':'regular'}/>{app.plans.pending.length>0&&<span className="badge">{app.plans.pending.length}</span>}</Link>}
     {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?<Avatar session={app.session} size={34}/>:<UserCircle size={20}/>}</button>}</div></div>
   <div data-a style={{padding:'18px 20px 0'}}><div style={{fontSize:13,color:'var(--color-neutral-400)'}}>{longDate(day)}</div><h1 style={{fontSize:34,marginTop:2}}>Τι παίζει</h1></div>
   <div data-a style={{paddingTop:16}}><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>

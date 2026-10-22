@@ -9,6 +9,8 @@ import {VERSION_SHORT,HALL_LABEL,clock,filmFlags,isPast,dayScope,filmRoute,group
 import {filmKey,nowTime} from '../lib/types';
 import type {Showtime} from '../lib/types';
 import {DateStrip,HeartButton,Link,Segmented,hueOf} from './ui';
+import {PlanSheet} from './Plans';
+import type {NewPlan} from '../lib/plans';
 
 const regionName=new Intl.DisplayNames(['el'],{type:'region'}),langName=new Intl.DisplayNames(['el'],{type:'language'});
 const safe=(f:()=>string|undefined)=>{try{return f()}catch{return undefined}};
@@ -18,7 +20,7 @@ const cap=(s?:string)=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
 /** 02 Ταινία — opens as a bottom sheet over the feed. */
 export default function Details({id}:{id:string}){
  const app=useApp();const {query}=useRoute();
- const {rows,films,catalog,history,todayIso,week,venueByName,userLoc,savedFilms}=app;
+ const {rows,films,catalog,history,todayIso,week,venueByName,userLoc,savedFilms,session,notify}=app;
  const [tab,setTab]=useState(0);const now=nowTime();
  const programmeRef=useRef<HTMLDivElement>(null),page=useRef<HTMLDivElement>(null),body=useRef<HTMLDivElement>(null),bg=useRef<HTMLImageElement>(null);
  const day=query.get('date')||todayIso;
@@ -61,13 +63,19 @@ export default function Details({id}:{id:string}){
  // "Πάμε μαζί": a screening (cinema + day + time) travels in the link itself, so no account or server is needed.
  const pickCinema=query.get('cinema'),pickTime=query.get('time');
  const [copied,setCopied]=useState('');
- const sharePlan=async(p:{name:string;v?:{id:string}|null;times:Showtime[]})=>{
-  const t=(pickCinema&&p.v?.id===pickCinema&&pickTime)||(p.times.find(r=>!isPast(r,todayIso,now))||p.times[0]).time;
+ type Prog={name:string;v?:{id:string}|null;times:Showtime[]};
+ const timeFor=(p:Prog)=>(pickCinema&&p.v?.id===pickCinema&&pickTime)||(p.times.find(r=>!isPast(r,todayIso,now))||p.times[0]).time;
+ const [planFor,setPlanFor]=useState<{plan:NewPlan;p:Prog}|null>(null);
+ const sharePlan=async(p:Prog)=>{
+  const t=timeFor(p);
   const url=new URL(location.pathname,location.origin);url.searchParams.set('date',day);if(p.v)url.searchParams.set('cinema',p.v.id);url.searchParams.set('time',t);
   const text=`Πάμε στο «${title}»; ${shortDay(day)} ${t} · ${p.name.split(',')[0]}`;
   try{if(navigator.share)await navigator.share({title,text,url:url.href});else{await navigator.clipboard.writeText(text+'\n'+url.href);setCopied(p.name);setTimeout(()=>setCopied(''),2500)}}catch{/* cancelled */}
  };
  const filmId=id;
+ // Signed in: invite friends; otherwise just share the link.
+ const openPlan=(p:Prog)=>{if(!session)return sharePlan(p);const r=filmRoute(filmRows[0]);
+  setPlanFor({p,plan:{film_title:title,film_route:`${r.id}/${r.slug}`,cinema_id:p.v?.id||p.name,cinema_name:p.name,show_date:day,show_time:timeFor(p)}})};
  const invitedOnce=useRef(false);
  useEffect(()=>{if(invitedOnce.current||!pickCinema)return;const el=document.querySelector('.prog-card.invited');if(el){invitedOnce.current=true;el.scrollIntoView({block:'center',behavior:reducedMotion()?'auto':'smooth'})}});
  const flags=filmFlags(title,filmRows,week,todayIso,history,meta);
@@ -133,11 +141,12 @@ export default function Details({id}:{id:string}){
       <small className={r.afterMidnight?'late':''}>{r.afterMidnight?shortDay(r.date):VERSION_SHORT[version(r)]}</small></button>)}</div>
      <div className="actions">
       <a className="btn btn-primary" href={ticketsUrl(p.name,title,p.booking)} target="_blank" rel="noreferrer" title={p.booking?undefined:'Η πηγή δεν δίνει σύνδεσμο κράτησης — αναζήτηση της σελίδας εισιτηρίων του σινεμά'}><Ticket/>Εισιτήρια</a>
-      <button type="button" className="btn btn-secondary" onClick={()=>sharePlan(p)}><PaperPlaneTilt/>{copied===p.name?'Αντιγράφηκε':'Πάμε μαζί'}</button>
+      <button type="button" className="btn btn-secondary" onClick={()=>openPlan(p)}><PaperPlaneTilt/>{copied===p.name?'Αντιγράφηκε':'Πάμε μαζί'}</button>
       {p.v&&<Link className="btn btn-secondary" to={`/map?mode=film&film=${filmId}&cinema=${p.v.id}`} aria-label="Στον χάρτη"><MapTrifold/></Link>}
      </div>
     </div>)}</div>
     </>}
+    {planFor&&<PlanSheet plan={planFor.plan} onLink={()=>sharePlan(planFor.p)} onClose={()=>setPlanFor(null)} onDone={notify}/>}
     {tab===0&&late&&<div className="footnote"><MoonStars/><span>Η προβολή {late.time} ({late.cinema}) ανήκει στο πρόγραμμα {wdGen(late.programmeDate)}, ξεκινά {shortDay(late.date)}.</span></div>}
    </div>
   </div>
