@@ -29,7 +29,10 @@ export default function ProfileSheet({onClose,onDone}:{onClose:()=>void;onDone:(
    if(up)throw up;
    const url=supabase!.storage.from('avatars').getPublicUrl(path).data.publicUrl+'?v='+Date.now();
    const {error:ue}=await supabase!.auth.updateUser({data:{avatar_url:url}});if(ue)throw ue;
-  }catch(e){setError(String((e as {message?:string}).message||'').includes('Bucket')?'Λείπει ο χώρος αποθήκευσης φωτογραφιών. Τρέξε το SQL των avatars στο Supabase.':'Η φωτογραφία δεν ανέβηκε. Δοκίμασε άλλη εικόνα.')}
+  }catch(e){const m=String((e as {message?:string}).message||e);
+   setError(/bucket not found/i.test(m)?'Λείπει ο χώρος αποθήκευσης φωτογραφιών. Τρέξε το SQL των avatars στο Supabase.'
+    :/row-level security|policy|unauthorized/i.test(m)?'Δεν επιτρέπεται η ανάρτηση: λείπει ένας κανόνας στο Supabase (SQL avatars_select).'
+    :`Η φωτογραφία δεν ανέβηκε (${m.slice(0,90)}). Δοκίμασε άλλη εικόνα.`)}
   setPhotoBusy(false);if(file.current)file.current.value='';
  };
  const removePhoto=async()=>{setPhotoBusy(true);setError('');
