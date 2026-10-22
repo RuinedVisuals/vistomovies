@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState,type CSSProperties} from 'react';
-import {CaretLeft,ShareNetwork,Play,ArrowUpRight,Translate,NavigationArrow,Sun,Armchair,Ticket,MapTrifold,ArrowsOutSimple,MoonStars,CalendarDots,Clock,CalendarBlank,FilmSlate} from '@phosphor-icons/react';
+import {CaretLeft,ShareNetwork,PaperPlaneTilt,Play,ArrowUpRight,Translate,NavigationArrow,Sun,Armchair,Ticket,MapTrifold,ArrowsOutSimple,MoonStars,CalendarDots,Clock,CalendarBlank,FilmSlate} from '@phosphor-icons/react';
 import {useApp} from '../lib/context';
 import {back,setQuery,useRoute} from '../lib/router';
 import {gsap,useEntrance,reducedMotion} from '../lib/motion';
@@ -7,6 +7,7 @@ import {tmdbImage} from '../lib/data';
 import {SYNTAGMA,km,kmLabel,ticketsUrl} from '../lib/geo';
 import {VERSION_SHORT,HALL_LABEL,clock,filmFlags,isPast,dayScope,filmRoute,groupBy,hallType,runtimeLabel,shortDay,uniq,version,wdGen,cinemaRoute} from '../lib/derive';
 import {filmKey,nowTime} from '../lib/types';
+import type {Showtime} from '../lib/types';
 import {DateStrip,HeartButton,Link,Segmented,hueOf} from './ui';
 
 const regionName=new Intl.DisplayNames(['el'],{type:'region'}),langName=new Intl.DisplayNames(['el'],{type:'language'});
@@ -57,7 +58,18 @@ export default function Details({id}:{id:string}){
  const subtitle=meta?[meta.originalTitle,meta.year,runtimeLabel(meta.runtime),meta.countryCode&&safe(()=>regionName.of(meta.countryCode!)),meta.languageCode&&cap(safe(()=>langName.of(meta.languageCode!)))].filter(Boolean).join(' · ')
   :meta===null?'τίτλος από το πρόγραμμα · χωρίς αντιστοίχιση':catalog.movies[key]?.genre||'';
  const share=async()=>{const url=location.href;try{if(navigator.share)await navigator.share({title,url});else{await navigator.clipboard.writeText(url)}}catch{/* cancelled */}};
+ // "Πάμε μαζί": a screening (cinema + day + time) travels in the link itself, so no account or server is needed.
+ const pickCinema=query.get('cinema'),pickTime=query.get('time');
+ const [copied,setCopied]=useState('');
+ const sharePlan=async(p:{name:string;v?:{id:string}|null;times:Showtime[]})=>{
+  const t=(pickCinema&&p.v?.id===pickCinema&&pickTime)||(p.times.find(r=>!isPast(r,todayIso,now))||p.times[0]).time;
+  const url=new URL(location.pathname,location.origin);url.searchParams.set('date',day);if(p.v)url.searchParams.set('cinema',p.v.id);url.searchParams.set('time',t);
+  const text=`Πάμε στο «${title}»; ${shortDay(day)} ${t} · ${p.name.split(',')[0]}`;
+  try{if(navigator.share)await navigator.share({title,text,url:url.href});else{await navigator.clipboard.writeText(text+'\n'+url.href);setCopied(p.name);setTimeout(()=>setCopied(''),2500)}}catch{/* cancelled */}
+ };
  const filmId=id;
+ const invitedOnce=useRef(false);
+ useEffect(()=>{if(invitedOnce.current||!pickCinema)return;const el=document.querySelector('.prog-card.invited');if(el){invitedOnce.current=true;el.scrollIntoView({block:'center',behavior:reducedMotion()?'auto':'smooth'})}});
  const flags=filmFlags(title,filmRows,week,todayIso,history,meta);
 
  return <div ref={page} className="sheet-page" role="dialog" aria-modal="true" aria-label={title||'Ταινία'} tabIndex={-1}>
@@ -107,17 +119,22 @@ export default function Details({id}:{id:string}){
     {programme.length>0&&<MiniMap pins={pins} label={`${programme.length} σινεμά · ${shortDay(day)}`} to={`/map?mode=film&film=${filmId}`}/>}
     {!programme.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={22} color="var(--color-neutral-500)"/>
      <div style={{marginTop:6}}>{outside||!filmRows.length?'Δεν υπάρχει διαθέσιμο πρόγραμμα για αυτή την ημερομηνία ακόμη. Το πρόγραμμα της νέας εβδομάδας δημοσιεύεται την Πέμπτη.':'Η ταινία δεν έχει προβολές αυτή την ημέρα. Δοκίμασε άλλη ημερομηνία.'}</div></div>}
-    <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:12}}>{programme.map(p=><div data-a key={p.name} className="prog-card">
+    {pickCinema&&pickTime&&programme.some(p=>p.v?.id===pickCinema)&&<div data-a className="invite" role="status"><PaperPlaneTilt/>
+     <span>Πρόταση: <b>{shortDay(day)} {pickTime}</b> · {programme.find(p=>p.v?.id===pickCinema)!.name.split(',')[0]}</span>
+     <button type="button" onClick={()=>setQuery({cinema:null,time:null})} aria-label="Κλείσιμο πρότασης">×</button></div>}
+    <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:12}}>{programme.map(p=><div data-a key={p.name} data-cinema={p.v?.id} className={'prog-card'+(pickCinema&&p.v?.id===pickCinema?' invited':'')}>
      <div className="top"><div style={{minWidth:0}}>{p.v?<Link className="name" to={cinemaRoute(p.v)}>{p.name}</Link>:<span className="name">{p.name}</span>}
       <div className="addr">{p.v?`${p.v.addrShort} · ${p.v.area}`:''}</div></div>
       <span className="dist" title={userLoc?'Από την τοποθεσία σου':'Από Σύνταγμα'}><NavigationArrow/>{kmLabel(p.k)}</span></div>
      <div className="hall">{p.types[0]==='summer'?<Sun/>:<Armchair/>}{(p.screens.join(', ')||'Αίθουσα')+' · '+p.types.map(t=>HALL_LABEL[t].toLowerCase()).join('/')}</div>
-     <div className="times">{p.times.map(r=><span key={r.id||r.date+r.time} className={'time-chip stack'+(isPast(r,todayIso,now)?' past':'')}
+     <div className="times">{p.times.map(r=><button type="button" key={r.id||r.date+r.time} aria-pressed={!!p.v&&pickCinema===p.v.id&&pickTime===r.time} onClick={()=>setQuery({cinema:p.v?.id||null,time:r.time})}
+      className={'time-chip stack'+(isPast(r,todayIso,now)?' past':'')}
       title={meta?.runtime?'Τέλος περίπου '+endClock(r.time,r.afterMidnight,meta.runtime):undefined}><span>{r.time}</span>
-      <small className={r.afterMidnight?'late':''}>{r.afterMidnight?shortDay(r.date):VERSION_SHORT[version(r)]}</small></span>)}</div>
+      <small className={r.afterMidnight?'late':''}>{r.afterMidnight?shortDay(r.date):VERSION_SHORT[version(r)]}</small></button>)}</div>
      <div className="actions">
       <a className="btn btn-primary" href={ticketsUrl(p.name,title,p.booking)} target="_blank" rel="noreferrer" title={p.booking?undefined:'Η πηγή δεν δίνει σύνδεσμο κράτησης — αναζήτηση της σελίδας εισιτηρίων του σινεμά'}><Ticket/>Εισιτήρια</a>
-      {p.v&&<Link className="btn btn-secondary" to={`/map?mode=film&film=${filmId}&cinema=${p.v.id}`}><MapTrifold/>Στον χάρτη</Link>}
+      <button type="button" className="btn btn-secondary" onClick={()=>sharePlan(p)}><PaperPlaneTilt/>{copied===p.name?'Αντιγράφηκε':'Πάμε μαζί'}</button>
+      {p.v&&<Link className="btn btn-secondary" to={`/map?mode=film&film=${filmId}&cinema=${p.v.id}`} aria-label="Στον χάρτη"><MapTrifold/></Link>}
      </div>
     </div>)}</div>
     </>}
