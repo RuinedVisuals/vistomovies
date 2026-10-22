@@ -450,3 +450,5 @@ button.account-card:active{transform:scale(.99)}
 .ans.on.going{background:color-mix(in srgb,#3fbf6a 22%,transparent);border-color:#3fbf6a}
 .ans.on.maybe{background:color-mix(in srgb,#f5a524 20%,transparent);border-color:#f5a524}
 .ans.on.declined{background:color-mix(in srgb,#e5484d 20%,transparent);border-color:#e5484d}
+.back-pill{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 14px 0 8px;border-radius:999px;border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:color-mix(in srgb,var(--color-surface) 70%,transparent);color:var(--color-neutral-200);font-size:14px;transition:transform .15s,background .2s}
+.back-pill:active{transform:scale(.96)}.back-pill:hover{background:color-mix(in srgb,var(--color-surface) 92%,transparent)}

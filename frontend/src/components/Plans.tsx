@@ -1,5 +1,6 @@
 import {useRef,useState} from 'react';
-import {Check,Clock,PaperPlaneTilt,Question,Trash,X,Users} from '@phosphor-icons/react';
+import {CaretLeft,Check,Clock,PaperPlaneTilt,Question,Trash,X,Users} from '@phosphor-icons/react';
+import {back} from '../lib/router';
 import {useApp} from '../lib/context';
 import {useEntrance} from '../lib/motion';
 import {answerPlan,cancelPlan,createPlan,type NewPlan,type Plan,type PlanPerson,type PlanStatus} from '../lib/plans';
@@ -67,7 +68,8 @@ export default function Plans(){
  const all=(plans.items||[]).filter(p=>p.show_date>=todayIso);
  const invited=all.filter(p=>p.my_status==='invited'),rest=all.filter(p=>p.my_status!=='invited');
  return <main className="screen" ref={ref}>
-  <div data-a className="page-head"><div className="over">Με φίλους</div><h1>Σχέδια</h1></div>
+  <div data-a className="page-head"><button type="button" className="back-pill" onClick={()=>back('/movies')} aria-label="Πίσω"><CaretLeft weight="bold"/>Πίσω</button>
+   <div className="over" style={{marginTop:14}}>Με φίλους</div><h1>Σχέδια</h1></div>
   <div className="pad" style={{paddingTop:16,display:'flex',flexDirection:'column',gap:10}}>
    {!session?<div className="empty-card" style={{textAlign:'center'}}><Users size={26} color="var(--color-neutral-500)"/><strong>Συνδέσου για να δεις τα σχέδιά σου</strong>
     <button type="button" className="btn btn-primary" style={{marginTop:12}} onClick={openAccount}>Σύνδεση ή εγγραφή</button></div>
