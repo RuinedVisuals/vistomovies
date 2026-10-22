@@ -394,3 +394,21 @@ button.account-card{width:100%;text-align:left;color:inherit;font:inherit;cursor
 button.account-card:active{transform:scale(.99)}
 @media (prefers-reduced-motion:reduce){.spin{animation-duration:2s}.toast.note{animation:none}}
 .oauth-btn{padding:0 72px}
+
+/* Profile photo, password strength, security details */
+.avatar{overflow:hidden;position:relative}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-edit{position:relative;flex:none}
+.avatar-edit .cam{position:absolute;right:-4px;bottom:-4px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--color-surface);background:var(--color-accent);color:#14131f;font-size:15px;padding:0;transition:transform .15s}
+.avatar-edit .cam:active{transform:scale(.9)}
+.acct-btn{overflow:hidden;padding:0}.acct-btn.in{background:transparent;border:0}
+.strength{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:12px;color:var(--color-neutral-400)}
+.strength .bars{display:flex;gap:4px;flex:1}
+.strength .bars i{flex:1;height:4px;border-radius:2px;background:var(--color-neutral-800);transition:background .25s}
+.strength.s1 .bars i.on{background:#e5484d}.strength.s2 .bars i.on{background:#f5a524}.strength.s3 .bars i.on{background:#7bd17d}.strength.s4 .bars i.on{background:#3fbf6a}
+.auth-links{display:flex;flex-direction:column;align-items:center;gap:0}
+.auth-ok{margin-top:10px;font-size:13px;color:var(--color-accent-200);padding:9px 12px;border-radius:10px;background:var(--color-accent-900);border:1px solid var(--color-accent-700)}
+.auth-details{margin-top:14px;border-top:var(--hair);padding-top:4px}
+.auth-details summary{cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;font-size:14px;color:var(--color-accent-300)}
+.auth-details summary::-webkit-details-marker{display:none}
+.auth-details[open] summary{margin-bottom:2px}

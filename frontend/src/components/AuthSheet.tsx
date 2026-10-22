@@ -2,7 +2,7 @@ import {useEffect,useRef,useState,type FormEvent,type ReactNode} from 'react';
 import {AppleLogo,ArrowLeft,Eye,EyeSlash,EnvelopeSimple,Key} from '@phosphor-icons/react';
 import {supabase} from '../lib/supabase';
 import {useApp} from '../lib/context';
-import {authError,useProviders,validEmail} from '../lib/auth';
+import {authError,passwordStrength,useProviders,validEmail} from '../lib/auth';
 import {gsap,reducedMotion} from '../lib/motion';
 import SheetShell from './SheetShell';
 
@@ -26,7 +26,7 @@ const shake=(el:Element|null)=>{if(el&&!reducedMotion())gsap.fromTo(el,{x:0},{ke
 export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'welcome'|'reset';onClose:()=>void;onDone:(msg:string)=>void}){
  const providers=useProviders();const {session}=useApp();
  const [step,setStep]=useState<Step>(initial),dir=useRef(1);
- const [email,setEmail]=useState(''),[code,setCode]=useState(''),[password,setPassword]=useState(''),[signup,setSignup]=useState(false),[show,setShow]=useState(false);
+ const [email,setEmail]=useState(''),[code,setCode]=useState(''),[password,setPassword]=useState(''),[signup,setSignup]=useState(false),[name,setName]=useState(''),[show,setShow]=useState(false);
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[cooldown,setCooldown]=useState(0),[notice,setNotice]=useState({title:'',text:''});
  const closeRef=useRef<(()=>void)|null>(null),card=useRef<HTMLDivElement>(null),tick=useRef<SVGSVGElement>(null);
  const go=(s:Step,d=1)=>{dir.current=d;setError('');setStep(s)};
@@ -46,7 +46,7 @@ export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'
  const pass=async(e:FormEvent)=>{e.preventDefault();if(!validEmail(email)){setError('Γράψε ένα έγκυρο email.');shake(card.current);return}
   if(password.length<8){setError('Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες.');shake(card.current);return}
   setBusy(true);setError('');
-  if(signup){const {data,error:er}=await supabase!.auth.signUp({email:email.trim(),password,options:{emailRedirectTo:REDIRECT()}});
+  if(signup){const {data,error:er}=await supabase!.auth.signUp({email:email.trim(),password,options:{emailRedirectTo:REDIRECT(),data:name.trim()?{full_name:name.trim()}:undefined}});
    setBusy(false);if(er)return fail(er.message);
    if(data.session)return finish('Ο λογαριασμός δημιουργήθηκε');
    setNotice({title:'Έλεγξε το email σου',text:`Στείλαμε σύνδεσμο επιβεβαίωσης στο ${email.trim()}. Άνοιξέ τον και μετά συνδέσου.`});return go('notice')}
@@ -90,15 +90,14 @@ export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'
      <button type="button" className="oauth-btn apple" disabled={busy||!providers?.apple} onClick={()=>oauth('apple')}><AppleLogo weight="fill" size={19}/>Συνέχεια με Apple{providers&&!providers.apple&&<em>σύντομα</em>}</button>
     </div>
     <div className="auth-or"><span>ή</span></div>
-    <button type="button" className="oauth-btn mail" onClick={()=>go('email')}><EnvelopeSimple size={19}/>Συνέχεια με email</button>
+    <button type="button" className="oauth-btn mail" onClick={()=>go('password')}><EnvelopeSimple size={19}/>Συνέχεια με email</button>
     {err}
    </StepView>}
 
    {step==='email'&&<StepView dir={dir.current}>
-    {back('welcome')}<h2 className="auth-title">Ποιο είναι το email σου;</h2>
+    {back('password')}<h2 className="auth-title">Σύνδεση με σύνδεσμο</h2>
     <p className="auth-sub">{EMAIL_CODE?'Θα σου στείλουμε έναν κωδικό 6 ψηφίων.':'Θα σου στείλουμε σύνδεσμο σύνδεσης.'} Χωρίς κωδικό πρόσβασης.</p>
     <form onSubmit={sendCode} noValidate>{emailField}{err}{submit(EMAIL_CODE?'Στείλε κωδικό':'Στείλε σύνδεσμο')}</form>
-    <button type="button" className="auth-link" onClick={()=>go('password')}><Key/> Προτιμώ κωδικό πρόσβασης</button>
    </StepView>}
 
    {step==='code'&&<StepView dir={dir.current}>
@@ -113,12 +112,16 @@ export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'
    </StepView>}
 
    {step==='password'&&<StepView dir={dir.current}>
-    {back('email')}<h2 className="auth-title">{signup?'Δημιουργία λογαριασμού':'Σύνδεση με κωδικό'}</h2>
+    {back('welcome')}<h2 className="auth-title">{signup?'Δημιουργία λογαριασμού':'Καλώς ήρθες ξανά'}</h2>
     <div className="seg" role="group" aria-label="Τρόπος" style={{margin:'12px 0 4px'}}>
      <button type="button" aria-pressed={!signup} onClick={()=>{setSignup(false);setError('')}}>Έχω λογαριασμό</button>
      <button type="button" aria-pressed={signup} onClick={()=>{setSignup(true);setError('')}}>Νέος λογαριασμός</button></div>
-    <form onSubmit={pass} noValidate>{emailField}{passField('Κωδικός',signup?'new-password':'current-password')}{err}{submit(signup?'Δημιουργία':'Σύνδεση')}</form>
-    {!signup&&<button type="button" className="auth-link" onClick={()=>go('forgot')}>Ξέχασα τον κωδικό μου</button>}
+    <form onSubmit={pass} noValidate>
+     {signup&&<label className="auth-field"><span>Όνομα</span><input autoComplete="name" maxLength={40} placeholder="Πώς να σε λέμε;" value={name} onChange={e=>setName(e.target.value)}/></label>}
+     {emailField}{passField('Κωδικός',signup?'new-password':'current-password')}
+     {signup&&<Strength value={password}/>}{err}{submit(signup?'Δημιουργία λογαριασμού':'Σύνδεση')}</form>
+    <div className="auth-links">{!signup&&<button type="button" className="auth-link" onClick={()=>go('forgot')}>Ξέχασα τον κωδικό μου</button>}
+     <button type="button" className="auth-link" onClick={()=>go('email')}><Key/> Σύνδεση με σύνδεσμο στο email</button></div>
    </StepView>}
 
    {step==='forgot'&&<StepView dir={dir.current}>
@@ -159,4 +162,10 @@ function OtpInput({value,onChange,disabled}:{value:string;onChange:(v:string)=>v
    value={value[i]||''} aria-label={`Ψηφίο ${i+1}`}
    onChange={e=>set(i,e.target.value)} onPaste={e=>{e.preventDefault();onChange(e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6))}}
    onKeyDown={e=>{if(e.key==='Backspace'){e.preventDefault();onChange(value.slice(0,value[i]?i:Math.max(0,i-1)))}}} onFocus={e=>e.target.select()}/>)}</div>;
+}
+
+/** Four bars + a word; colour follows the score. */
+function Strength({value}:{value:string}){
+ const {score,label}=passwordStrength(value);if(!value)return null;
+ return <div className={'strength s'+score} aria-live="polite"><div className="bars">{[1,2,3,4].map(i=><i key={i} className={i<=score?'on':''}/>)}</div><span>{label}</span></div>;
 }

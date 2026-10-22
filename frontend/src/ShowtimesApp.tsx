@@ -7,7 +7,7 @@ import {toVenue,SYNTAGMA,km,kmLabel} from './lib/geo';
 import {AppContext,useApp,type AppData} from './lib/context';
 import {usePersistedSet} from './lib/store';
 import {supabase,useSession} from './lib/supabase';
-import {initialOf} from './lib/auth';
+import Avatar from './components/Avatar';
 import AuthSheet from './components/AuthSheet';
 import ProfileSheet from './components/ProfileSheet';
 import {navigate,setQuery,useRoute} from './lib/router';
@@ -125,7 +125,7 @@ function Feed(){
  return <main className="screen" ref={ref}>
   <div data-a className="brand-row"><Link to="/movies" className="brand" aria-label="Visto αρχική">visto<span>.</span></Link>
    <div style={{display:'flex',gap:8,alignItems:'center'}}><button type="button" className="loc-pill" onClick={()=>app.locate()} title="Χρήση της τοποθεσίας σου για αποστάσεις"><MapPin className="pin" weight={userLoc?'fill':'regular'}/>Αθήνα<CaretDown size={11} color="var(--color-neutral-500)"/></button>
-    {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?initialOf(app.session):<UserCircle size={20}/>}</button>}</div></div>
+    {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?<Avatar session={app.session} size={34}/>:<UserCircle size={20}/>}</button>}</div></div>
   <div data-a style={{padding:'18px 20px 0'}}><div style={{fontSize:13,color:'var(--color-neutral-400)'}}>{longDate(day)}</div><h1 style={{fontSize:34,marginTop:2}}>Τι παίζει</h1></div>
   <div data-a style={{paddingTop:16}}><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>
   <div data-a style={{display:'flex',gap:8,padding:'14px 20px 0'}}>
