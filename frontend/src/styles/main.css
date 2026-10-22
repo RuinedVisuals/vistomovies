@@ -62,7 +62,7 @@ img{display:block;max-width:100%}
 .source-line{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--color-neutral-600)}
 
 /* Bottom nav */
-.bottom-nav{position:fixed;left:max(14px,calc(50% - 226px));right:max(14px,calc(50% - 226px));bottom:calc(22px + var(--safe-bottom));height:64px;border-radius:22px;display:flex;align-items:stretch;padding:0 6px;background:color-mix(in srgb,var(--color-surface) 72%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-border);box-shadow:var(--float-shadow);z-index:30}
+.bottom-nav{position:fixed;left:max(14px,calc(50% - 226px));right:max(14px,calc(50% - 226px));bottom:calc(22px + var(--safe-bottom));height:64px;border-radius:22px;display:flex;align-items:stretch;padding:0 6px;background:color-mix(in srgb,var(--color-surface) 72%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-border);box-shadow:var(--float-shadow);z-index:45}
 .bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--color-neutral-500);text-decoration:none}
 .bottom-nav a .pill{width:46px;height:26px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;transition:background .25s}
 .bottom-nav a[aria-current=page]{color:var(--color-accent-200)}
@@ -149,7 +149,7 @@ img{display:block;max-width:100%}
 
 /* 02 Film detail */
 .sheet-page{position:fixed;inset:0;z-index:40;overflow-y:auto;background:var(--color-bg);overscroll-behavior:contain}
-.sheet-inner{max-width:480px;margin:0 auto;position:relative;padding-bottom:calc(60px + var(--safe-bottom))}
+.sheet-inner{max-width:480px;margin:0 auto;position:relative;padding-bottom:calc(120px + var(--safe-bottom))}
 .float-bar{position:sticky;top:0;height:0;z-index:5}
 .float-bar>div{position:absolute;top:calc(var(--safe-top) + 14px);left:16px;right:16px;display:flex;justify-content:space-between}
 .float-bar .group{display:flex;gap:8px}
