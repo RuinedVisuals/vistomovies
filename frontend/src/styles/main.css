@@ -526,3 +526,6 @@ button.time-chip:active{transform:scale(.94)}
 .btn-cta{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:10px;height:56px;border-radius:28px;background:var(--color-accent);color:#0a0a0f;font-weight:700;font-size:16px;text-decoration:none;box-shadow:0 10px 30px color-mix(in srgb,var(--color-accent) 30%,transparent);transition:transform .15s}
 .btn-cta:hover{color:#0a0a0f}.btn-cta:active{transform:scale(.98)}
 .date-chip{width:52px;border-radius:16px}.date-chip[aria-pressed=true]{background:var(--color-accent);border-color:var(--color-accent);color:#0a0a0f}.date-chip[aria-pressed=true] .wd{opacity:.85}.date-chip[aria-pressed=true] .n{font-weight:700}
+.btn-cta{padding:0 22px}.btn-cta svg{flex:none}
+.btn-cta .cta-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-cta .cta-time{flex:none;font-variant-numeric:tabular-nums}
