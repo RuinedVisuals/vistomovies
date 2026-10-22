@@ -51,7 +51,9 @@ export default function FilterSheet({filters:f,day,onClose}:{filters:Filters;day
     </Group>
     <Group label="Περιοχή">{REGIONS.map(r=><Opt key={r} on={f.area.includes(r)} onPick={()=>multi('area',r)}>{r}</Opt>)}</Group>
     <Group label="Ώρα">{([['all','Όλες'],['now','Από τώρα'],['20','Μετά 20:00'],['22','Μετά 22:00']] as const).map(([k,l])=><Opt key={k} on={f.time===k} onPick={()=>write({time:k})}>{l}</Opt>)}</Group>
+    <Group label="Τελειώνει πριν">{([[null,'Όποτε'],[22,'22:00'],[23,'23:00'],[24,'00:00']] as const).map(([k,l])=><Opt key={String(k)} on={f.end===k} onPick={()=>write({end:k})}>{l}</Opt>)}</Group>
     <Group label="Τύπος αίθουσας">{([['summer','Θερινή',Sun],['indoor','Κλειστή',Armchair]] as const).map(([k,l,I])=><Opt key={k} on={f.type.includes(k as HallType)} icon={<I/>} onPick={()=>multi('type',k)}>{l}</Opt>)}</Group>
+    {f.end!=null&&<div className="fnote">Ώρα έναρξης + διάρκεια TMDB, χωρίς διαφημίσεις. Ταινίες χωρίς γνωστή διάρκεια δεν αποκλείονται.</div>}
     <Group label="Έκδοση">{(['subtitled','dubbed','3d'] as const).map(k=><Opt key={k} on={f.ver.includes(k)} onPick={()=>multi('ver',k)}>{VERSION_LABEL[k]}</Opt>)}</Group>
     <Group label="Είδος">{genres.length?genres.map(g=><Opt key={g} on={f.genre.includes(g)} onPick={()=>multi('genre',g)}>{g}</Opt>)
      :<span style={{fontSize:13,color:'var(--color-neutral-500)'}}>Τα είδη εμφανίζονται όταν φορτώσουν τα στοιχεία TMDB.</span>}</Group>

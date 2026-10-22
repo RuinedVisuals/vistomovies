@@ -5,18 +5,20 @@ import {back,setQuery,useRoute} from '../lib/router';
 import {gsap,useEntrance,reducedMotion} from '../lib/motion';
 import {tmdbImage} from '../lib/data';
 import {SYNTAGMA,km,kmLabel,ticketsUrl} from '../lib/geo';
-import {VERSION_SHORT,HALL_LABEL,clock,dayScope,filmRoute,groupBy,hallType,runtimeLabel,shortDay,uniq,version,wdGen,cinemaRoute} from '../lib/derive';
-import {filmKey} from '../lib/types';
-import {DateStrip,HeartButton,Link,hueOf} from './ui';
+import {VERSION_SHORT,HALL_LABEL,clock,filmFlags,isPast,dayScope,filmRoute,groupBy,hallType,runtimeLabel,shortDay,uniq,version,wdGen,cinemaRoute} from '../lib/derive';
+import {filmKey,nowTime} from '../lib/types';
+import {DateStrip,HeartButton,Link,Segmented,hueOf} from './ui';
 
 const regionName=new Intl.DisplayNames(['el'],{type:'region'}),langName=new Intl.DisplayNames(['el'],{type:'language'});
 const safe=(f:()=>string|undefined)=>{try{return f()}catch{return undefined}};
+const endClock=(t:string,late:boolean|undefined,rt:number)=>{const [h,m]=t.split(':').map(Number);const x=(h*60+m+rt)%1440;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')};
 const cap=(s?:string)=>s?s.charAt(0).toUpperCase()+s.slice(1):s;
 
 /** 02 Ταινία — opens as a bottom sheet over the feed. */
 export default function Details({id}:{id:string}){
  const app=useApp();const {query}=useRoute();
- const {rows,films,catalog,todayIso,week,venueByName,userLoc,savedFilms}=app;
+ const {rows,films,catalog,history,todayIso,week,venueByName,userLoc,savedFilms}=app;
+ const [tab,setTab]=useState(0);const now=nowTime();
  const programmeRef=useRef<HTMLDivElement>(null),page=useRef<HTMLDivElement>(null),body=useRef<HTMLDivElement>(null),bg=useRef<HTMLImageElement>(null);
  const day=query.get('date')||todayIso;
  const filmRows=useMemo(()=>rows.filter(r=>filmRoute(r).id===id),[rows,id]);
@@ -56,6 +58,7 @@ export default function Details({id}:{id:string}){
   :meta===null?'τίτλος από το πρόγραμμα · χωρίς αντιστοίχιση':catalog.movies[key]?.genre||'';
  const share=async()=>{const url=location.href;try{if(navigator.share)await navigator.share({title,url});else{await navigator.clipboard.writeText(url)}}catch{/* cancelled */}};
  const filmId=id;
+ const flags=filmFlags(title,filmRows,week,todayIso,history,meta);
 
  return <div ref={page} className="sheet-page" role="dialog" aria-modal="true" aria-label={title||'Ταινία'} tabIndex={-1}>
   <div className="sheet-inner">
@@ -70,7 +73,7 @@ export default function Details({id}:{id:string}){
     <div className="shade"/>
    </div>
    <div ref={body} className="detail-body">
-    <div data-a className="kicker">{programme.length?`Στις αίθουσες · ${programme.length} σινεμά ${scope}`:`Χωρίς προβολές ${scope}`}</div>
+    <div data-a className="kicker">{flags.map(f=><span key={f.kind} className={'flag '+f.kind}>{f.label}</span>)}{programme.length?`Στις αίθουσες · ${programme.length} σινεμά ${scope}`:`Χωρίς προβολές ${scope}`}</div>
     {meta===null&&<div data-a className="kicker" style={{marginTop:4,color:'var(--color-neutral-500)'}}>Χωρίς στοιχεία TMDB</div>}
     <h1 data-a>{title||'Η ταινία δεν βρέθηκε'}</h1>
     <div data-a className="detail-sub">{subtitle}</div>
@@ -83,14 +86,13 @@ export default function Details({id}:{id:string}){
      <a className="stat" href={meta?'https://letterboxd.com/tmdb/'+meta.tmdbId:'https://letterboxd.com/search/films/'+encodeURIComponent(title)+'/'} target="_blank" rel="noreferrer">
       <div className="v link">Letterboxd<ArrowUpRight size={13}/></div><div className="l">{meta?'/tmdb/'+meta.tmdbId:'αναζήτηση'}</div></a>
     </div>
-    <button data-a type="button" className="btn btn-primary btn-block" style={{marginTop:12,height:48,fontSize:15}} disabled={!programme.length}
-     onClick={()=>programmeRef.current?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth',block:'start'})}>
-     <Ticket/>{programme.length?`Εισιτήρια · ${programme.length} σινεμά ${scope}`:`Χωρίς προβολές ${scope}`}</button>
     <div data-a className="facts">
      <span><Clock/>{meta?.runtime?runtimeLabel(meta.runtime):'Διάρκεια —'}</span>
      {meta?.year&&<span><CalendarBlank/>{meta.year}</span>}
      {(meta?.genres[0]||catalog.movies[key]?.genre)&&<span><FilmSlate/>{meta?.genres[0]||catalog.movies[key]?.genre}</span>}
     </div>
+    <div data-a style={{marginTop:18}}><Segmented label="Ενότητα" options={['Πρόγραμμα','Πληροφορίες']} value={tab} onChange={setTab}/></div>
+    {tab===1&&<>
     <h3 data-a className="sub-h">Περιγραφή</h3>
     <p data-a className="overview" style={{marginTop:6}}>{meta?.overview||(meta===undefined?'Η περιγραφή θα εμφανιστεί μόλις φορτώσουν τα στοιχεία από το TMDB.':'Δεν υπάρχει διαθέσιμη περιγραφή για αυτή την ταινία.')}</p>
     {meta?.overview&&<div data-a className="source-line"><Translate/>{meta.overviewLanguage==='en'?'Περίληψη στα αγγλικά · δεν υπάρχει ελληνική στο TMDB':'Ελληνική περίληψη · TMDB'}</div>}
@@ -98,7 +100,9 @@ export default function Details({id}:{id:string}){
      <div className="av" style={{background:`oklch(.34 .03 ${[270,30,200,120,330][i%5]})`}}>{c.profile?<img src={tmdbImage(c.profile,'w185')!} alt="" loading="lazy"/>:c.name.split(/[\s.]+/).filter(Boolean).map(w=>w[0]).join('').slice(0,3).toUpperCase()}</div>
      <div className="n">{c.name}</div><div className="r">{c.role}</div></div>)}</div>}
 
-    <div data-a ref={programmeRef} className="section-head" style={{margin:'28px 0 10px',scrollMarginTop:70}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">ενημ. {clock(week?.checkedAt)} · Αθηνόραμα</span></div>
+    </>}
+    {tab===0&&<>
+    <div data-a ref={programmeRef} className="section-head" style={{margin:'22px 0 10px',scrollMarginTop:70}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">ενημ. {clock(week?.checkedAt)} · Αθηνόραμα</span></div>
     <div data-a style={{margin:'0 -20px'}}><DateStrip className="pad" value={day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d})}/></div>
     {programme.length>0&&<MiniMap pins={pins} label={`${programme.length} σινεμά · ${shortDay(day)}`} to={`/map?mode=film&film=${filmId}`}/>}
     {!programme.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={22} color="var(--color-neutral-500)"/>
@@ -108,14 +112,16 @@ export default function Details({id}:{id:string}){
       <div className="addr">{p.v?`${p.v.addrShort} · ${p.v.area}`:''}</div></div>
       <span className="dist" title={userLoc?'Από την τοποθεσία σου':'Από Σύνταγμα'}><NavigationArrow/>{kmLabel(p.k)}</span></div>
      <div className="hall">{p.types[0]==='summer'?<Sun/>:<Armchair/>}{(p.screens.join(', ')||'Αίθουσα')+' · '+p.types.map(t=>HALL_LABEL[t].toLowerCase()).join('/')}</div>
-     <div className="times">{p.times.map(r=><span key={r.id||r.date+r.time} className="time-chip stack"><span>{r.time}</span>
+     <div className="times">{p.times.map(r=><span key={r.id||r.date+r.time} className={'time-chip stack'+(isPast(r,todayIso,now)?' past':'')}
+      title={meta?.runtime?'Τέλος περίπου '+endClock(r.time,r.afterMidnight,meta.runtime):undefined}><span>{r.time}</span>
       <small className={r.afterMidnight?'late':''}>{r.afterMidnight?shortDay(r.date):VERSION_SHORT[version(r)]}</small></span>)}</div>
      <div className="actions">
       <a className="btn btn-primary" href={ticketsUrl(p.name,title,p.booking)} target="_blank" rel="noreferrer" title={p.booking?undefined:'Η πηγή δεν δίνει σύνδεσμο κράτησης — αναζήτηση της σελίδας εισιτηρίων του σινεμά'}><Ticket/>Εισιτήρια</a>
       {p.v&&<Link className="btn btn-secondary" to={`/map?mode=film&film=${filmId}&cinema=${p.v.id}`}><MapTrifold/>Στον χάρτη</Link>}
      </div>
     </div>)}</div>
-    {late&&<div className="footnote"><MoonStars/><span>Η προβολή {late.time} ({late.cinema}) ανήκει στο πρόγραμμα {wdGen(late.programmeDate)}, ξεκινά {shortDay(late.date)}.</span></div>}
+    </>}
+    {tab===0&&late&&<div className="footnote"><MoonStars/><span>Η προβολή {late.time} ({late.cinema}) ανήκει στο πρόγραμμα {wdGen(late.programmeDate)}, ξεκινά {shortDay(late.date)}.</span></div>}
    </div>
   </div>
  </div>;

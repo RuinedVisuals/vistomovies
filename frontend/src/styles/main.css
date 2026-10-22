@@ -306,3 +306,25 @@ img{display:block;max-width:100%}
 .info-card svg{font-size:18px;flex:none}
 
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.skel{animation:none}}
+
+/* Phase 1: greyed past times, flags, cinema view, tabs, status */
+.time-chip.past{opacity:.35;background:transparent;border-style:dashed}
+.over-note{align-self:center;font-size:11px;color:var(--color-neutral-500);white-space:nowrap}
+.flag{display:inline-block;margin-right:6px;padding:1px 6px;border-radius:4px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
+.flag.new,.flag.premiere{background:var(--color-accent-800);color:var(--color-accent-100)}
+.flag.last{border:1px solid var(--color-neutral-600);color:var(--color-neutral-200)}
+.kicker .flag{margin-right:8px}
+.cinema-block{cursor:default}
+.cinema-block .cf{margin-top:12px;padding-top:10px;border-top:var(--hair)}
+.cinema-block .ft{font-size:14px;font-weight:500;color:var(--color-text);text-decoration:none;position:relative;z-index:1}
+.cinema-block .cf .times{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.fnote{font-size:12px;color:var(--color-neutral-500);margin:-6px 0 0}
+.q-block{padding:14px;border-radius:14px;background:color-mix(in srgb,var(--color-surface) 78%,transparent);border:var(--hair)}
+.q-block h2{font-size:15px;display:flex;gap:6px;align-items:center}
+.q-block p{font-size:13px;color:var(--color-neutral-400);margin-top:4px;display:flex;gap:6px;align-items:center}
+.q-block ul{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.q-block li{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.q-block code{display:block;width:100%;font-size:11px;color:var(--color-neutral-500);word-break:break-word}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + var(--safe-bottom));z-index:60;display:flex;gap:14px;align-items:center;padding:10px 12px 10px 16px;border-radius:14px;font-size:13px;background:var(--color-neutral-900);border:var(--glass-border);box-shadow:var(--float-shadow)}
+.toast button{border:1px solid var(--color-accent);color:var(--color-accent);background:transparent;border-radius:8px;padding:6px 12px;font-weight:500}
+.st-sub{margin-top:1px}.st-flags{margin-top:6px}

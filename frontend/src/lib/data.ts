@@ -1,4 +1,4 @@
-import type {Catalog,Cinema,FilmIndex,Showtime,WeekData} from './types';
+import type {Catalog,Cinema,FilmIndex,History,Quality,Showtime,WeekData} from './types';
 import {addDays} from './types';
 
 const ERROR='Δεν ήταν δυνατή η φόρτωση των προβολών. Δοκίμασε ξανά.';
@@ -26,6 +26,13 @@ const withProgrammeDate=(s:Showtime):Showtime=>({...s,programmeDate:s.programmeD
 export async function getCinemas(signal:AbortSignal):Promise<Cinema[]>{
  const r=await fetch('/cinemas.json',{signal});if(!r.ok)throw new Error('Δεν φορτώθηκε ο κατάλογος κινηματογράφων.');
  return (await r.json()).cinemas;
+}
+/** Per-week {title: cinemaCount} kept by the backend; used to flag new films. Missing → no flags. */
+export async function getHistory(signal:AbortSignal):Promise<History>{
+ try{const r=await fetch('/history.json',{signal});if(!r.ok||!r.headers.get('content-type')?.includes('json'))return {};return (await r.json()).weeks||{}}catch{return {}}
+}
+export async function getQuality(signal:AbortSignal):Promise<Quality|null>{
+ try{const r=await fetch('/quality.json',{signal});if(!r.ok||!r.headers.get('content-type')?.includes('json'))return null;return await r.json()}catch{return null}
 }
 export async function getCatalog(signal:AbortSignal):Promise<Catalog>{
  const r=await fetch('/catalog.json',{signal});if(!r.ok)return {movies:{}};return r.json();

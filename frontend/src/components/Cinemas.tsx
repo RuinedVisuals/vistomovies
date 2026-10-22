@@ -6,9 +6,9 @@ import {back,setQuery,useRoute} from '../lib/router';
 import {useEntrance} from '../lib/motion';
 import {tmdbImage} from '../lib/data';
 import {directionsUrl,ticketsUrl,venueHue} from '../lib/geo';
-import {normalize} from '../lib/types';
+import {normalize,nowTime} from '../lib/types';
 import {HALL_LABEL,VERSION_SHORT,cinemaInfo,cinemaRoute,dayScope,filmRoute,groupBy,hallType,shortDay,sortTimes,timeKey,uniq,updatedLabel,version} from '../lib/derive';
-import {DateStrip,Link,Poster,Segmented,StarButton} from './ui';
+import {DateStrip,Link,Poster,Segmented,StarButton,TimeChips} from './ui';
 
 const TABS=['all','programme','fav'] as const;
 
@@ -61,7 +61,7 @@ export function CinemaPage({id}:{id:string}){
   return {label:sc||'Κύρια αίθουσα',t,note:HALL_LABEL[t]+' · '+(n?`${n} ${n===1?'ταινία':'ταινίες'} ${scope}`:'χωρίς προβολές '+scope)};
  });
  const programme=[...groupBy(dayRows,r=>r.movie)].map(([title,rs])=>{const m=films[title];const route=filmRoute(rs[0]);
-  return {title,route,m,poster:tmdbImage(m?.posterPath,'w185')||catalog.movies[rs[0].movieSourceUrl||title]?.poster||null,times:sortTimes(rs.map(r=>r.time)),
+  return {title,route,m,poster:tmdbImage(m?.posterPath,'w185')||catalog.movies[rs[0].movieSourceUrl||title]?.poster||null,times:sortTimes(rs.map(r=>r.time)),rows:rs,
    sub:uniq(rs.map(r=>r.screen).filter(Boolean)).join(', ')+(rs[0].screen?' · ':'')+(m===null?'χωρίς στοιχεία TMDB':[m?.badge,uniq(rs.map(r=>VERSION_SHORT[version(r)])).join('/')].filter(Boolean).join(' · '))};
  }).sort((a,b)=>timeKey(a.times[0]).localeCompare(timeKey(b.times[0])));
  const booking=weekRows.find(r=>r.bookingUrl)?.bookingUrl;const sourceUrl=weekRows[0]?.sourceUrl||v.athinoramaUrl;
@@ -94,7 +94,7 @@ export function CinemaPage({id}:{id:string}){
     return <div data-a key={p.title} className="cine-film">
      <Link to={to} tabIndex={-1} aria-hidden="true"><Poster src={p.poster} title={p.title} striped={p.m===null} style={{width:56,height:82,borderRadius:8}}/></Link>
      <div style={{flex:1,minWidth:0}}><Link className="t" to={to}>{p.title}</Link><div className="s">{p.sub}</div>
-      <div className="times">{p.times.map(t=><span key={t} className="time-chip">{t}</span>)}</div></div>
+      <div className="times"><TimeChips rows={p.rows} todayIso={todayIso} now={nowTime()}/></div></div>
     </div>})}</div>
    :<div data-a className="empty-card" style={{marginTop:14,padding:'22px 18px'}}><CalendarDots size={24} color="var(--color-neutral-500)"/>
      <strong>Δεν υπάρχει διαθέσιμο πρόγραμμα για αυτή την ημερομηνία.</strong>

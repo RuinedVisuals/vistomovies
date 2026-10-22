@@ -10,7 +10,10 @@ export type Cinema={id:string;name:string;address:string;summer:boolean;coordina
 /** Cinema joined with derived geo fields. precision: OSM venue, OSM address point, or stopgap approximation. */
 export type Venue=Cinema&{area:string;region:Region;lng:number|null;lat:number|null;verified:boolean;precision:'venue'|'address'|'approximate'|null;addrShort:string};
 export type CastMember={name:string;role:string;profile:string|null};
-export type FilmMeta={tmdbId:number;imdbId:string|null;title:string;originalTitle:string|null;year:number|null;runtime:number|null;
+export type History=Record<string,Record<string,number>>;
+export type Quality={weekStart:string;reportWeek:string|null;rows:number;films:number;cinemasWithProgramme:string[];listedWithoutProgramme:string[];knownWithoutProgramme:string[];
+ skipped:{cinema:string;movie:string;screen:string|null;rawSchedule:string;reason:string}[];unmatchedTmdb:string[]};
+export type FilmMeta={tmdbId:number;imdbId:string|null;title:string;originalTitle:string|null;year:number|null;releaseDate?:string|null;runtime:number|null;
  genres:string[];countryCode:string|null;languageCode:string|null;vote:number|null;voteCount:number;overview:string;overviewLanguage?:string|null;
  posterPath:string|null;backdropPath:string|null;cast:CastMember[];badge?:string};
 /** title → metadata; null = looked up, no TMDB match; missing = not looked up yet. */

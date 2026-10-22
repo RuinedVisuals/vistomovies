@@ -1,4 +1,4 @@
-import type {Catalog,FilmIndex,FilmMeta,Region,Showtime,Venue,Version} from './types';
+import type {Catalog,FilmIndex,FilmMeta,History,Region,Showtime,Venue,Version} from './types';
 import {addDays,filmKey,normalize,nowTime} from './types';
 import {km} from './geo';
 
@@ -12,6 +12,10 @@ export const hallType=(r:Pick<Showtime,'screen'>,v?:{summer:boolean}|null):HallT
 export const HALL_LABEL:Record<HallType,string>={summer:'Θερινή',indoor:'Κλειστή'};
 /** After-midnight times (<06:00) belong to the end of the programme day. */
 export const timeKey=(t:string)=>t<'06:00'?'3'+t:t;
+/** Already started (by real clock time, so after-midnight shows are judged on their own date). */
+export const isPast=(r:Pick<Showtime,'date'|'time'>,todayIso:string,now:string)=>r.date<todayIso||(r.date===todayIso&&r.time<now);
+/** Minutes since the programme day's midnight; after-midnight shows count past 24:00. */
+export const startMin=(r:Pick<Showtime,'time'|'afterMidnight'>)=>{const [h,m]=r.time.split(':').map(Number);return h*60+m+(r.afterMidnight||r.time<'06:00'?1440:0)};
 export const sortTimes=(ts:string[])=>[...new Set(ts)].sort((a,b)=>timeKey(a).localeCompare(timeKey(b)));
 export const uniq=<T,>(a:T[])=>[...new Set(a)];
 export function groupBy<T>(list:T[],f:(x:T)=>string){const m=new Map<string,T[]>();for(const x of list){const k=f(x);const a=m.get(k);if(a)a.push(x);else m.set(k,[x])}return m}
@@ -43,9 +47,10 @@ export function filmRoute(r:Pick<Showtime,'movie'|'movieSourceUrl'>){
 
 // ---------- filters ----------
 export type TimeFilter='all'|'now'|'20'|'22';
-export type Filters={range:boolean;area:Region[];time:TimeFilter;type:HallType[];ver:Version[];genre:string[];maxKm:number|null};
-export const EMPTY_FILTERS:Filters={range:false,area:[],time:'all',type:[],ver:[],genre:[],maxKm:null};
-export const activeGroups=(f:Filters,day:string,todayIso:string)=>[f.range||day!==todayIso,f.area.length,f.time!=='all',f.type.length,f.ver.length,f.genre.length,f.maxKm!=null].filter(Boolean).length;
+/** end: latest hour (22, 23, 24 = midnight) by which the film must be over; null = no limit. */
+export type Filters={range:boolean;area:Region[];time:TimeFilter;type:HallType[];ver:Version[];genre:string[];maxKm:number|null;end:number|null};
+export const EMPTY_FILTERS:Filters={range:false,area:[],time:'all',type:[],ver:[],genre:[],maxKm:null,end:null};
+export const activeGroups=(f:Filters,day:string,todayIso:string)=>[f.range||day!==todayIso,f.area.length,f.time!=='all',f.type.length,f.ver.length,f.genre.length,f.maxKm!=null,f.end!=null].filter(Boolean).length;
 export type Ctx={venues:Map<string,Venue>;films:FilmIndex;todayIso:string;userLoc:[number,number]|null};
 /** Days covered by the date part of the filters. */
 export const scopeDays=(f:Filters,day:string,todayIso:string,weekEnd:string)=>{
@@ -58,6 +63,7 @@ export function matchRow(r:Showtime,f:Filters,ctx:Ctx,q=''){
  if((f.time==='20'||f.time==='22')&&!r.afterMidnight&&r.time<(f.time==='20'?'20:00':'22:00'))return false;
  if(f.type.length&&!f.type.includes(hallType(r,v)))return false;
  if(f.ver.length&&!f.ver.includes(version(r)))return false;
+ if(f.end!=null){const rt=ctx.films[r.movie]?.runtime;if(rt&&startMin(r)+rt>f.end*60)return false}// unknown runtime: can't tell, keep
  if(f.genre.length){const g=ctx.films[r.movie]?.genres||[];if(!f.genre.some(x=>g.includes(x)))return false}
  if(f.maxKm!=null&&ctx.userLoc){const k=v?km(v,ctx.userLoc):null;if(k==null||k>f.maxKm)return false}
  if(q){const n=normalize(q);if(!normalize(r.movie+' '+(ctx.films[r.movie]?.originalTitle||'')+' '+r.cinema+' '+(v?.area||'')+' '+(v?.address||'')).includes(n))return false}
@@ -87,3 +93,18 @@ export function cinemaInfo(v:Venue,dayRows:Showtime[]):CinemaInfo{
   today:has?`${films} ${films===1?'ταινία':'ταινίες'} · ${dayRows.length} ${dayRows.length===1?'προβολή':'προβολές'} σήμερα`:'Δεν έχουμε πρόγραμμα από αυτή την πηγή για σήμερα'};
 }
 export const cinemaRoute=(v:Venue)=>`/cinemas/${v.id}/${slugify(v.name)}`;
+
+// ---------- flags: new / premiere / leaving ----------
+export type Flag={kind:'new'|'premiere'|'last';label:string};
+/** `rows` = every row of the film this week. New-ness needs the previous week in history, otherwise no flag is claimed. */
+export function filmFlags(title:string,rows:Showtime[],week:{weekStart:string;weekEnd:string}|null,todayIso:string,history:History,meta:FilmMeta|null|undefined):Flag[]{
+ if(!week||!rows.length)return [];const out:Flag[]=[];
+ const prev=history[addDays(week.weekStart,-7)];
+ if(prev&&!(title in prev)){
+  const rel=meta?.releaseDate;
+  out.push(rel&&rel>=addDays(week.weekStart,-45)?{kind:'premiere',label:'Πρεμιέρα'}:{kind:'new',label:'Νέο'});
+ }
+ const last=rows.reduce((m,r)=>r.programmeDate>m?r.programmeDate:m,'');
+ if(last<=addDays(week.weekEnd,-2)&&last>=todayIso)out.push({kind:'last',label:'Έως '+shortDay(last)});
+ return out;
+}
