@@ -529,3 +529,13 @@ button.time-chip:active{transform:scale(.94)}
 .btn-cta{padding:0 22px}.btn-cta svg{flex:none}
 .btn-cta .cta-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn-cta .cta-time{flex:none;font-variant-numeric:tabular-nums}
+
+/* ---- Popular rail: framed band, ~2.5 cards per view ---- */
+.pop-band{margin-top:26px;padding:18px 0 20px;background:linear-gradient(180deg,color-mix(in srgb,var(--color-accent) 9%,var(--color-surface)),var(--color-bg));border-top:1px solid color-mix(in srgb,var(--color-accent) 22%,transparent)}
+.pop-band .featured{gap:10px}
+.feat-card{width:calc(100%/2.5 - 8px);min-width:128px;height:auto;aspect-ratio:2/3;border-radius:14px}
+.feat-card .t{font-size:13px;font-weight:600;margin:0 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.feat-card .info{left:10px;right:10px;bottom:10px}
+.feat-card .m{font-size:11px;gap:6px}
+.feat-card .heart{top:6px;right:6px;width:34px;height:34px;font-size:15px}
+.feat-card .rank{position:absolute;left:8px;top:4px;z-index:2;font-family:var(--font-display);font-weight:800;font-size:30px;line-height:1;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.7);pointer-events:none}

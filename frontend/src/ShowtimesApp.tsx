@@ -159,18 +159,18 @@ function Feed(){
     <div className="shade"/><div className="info"><span className="when-pill">{untilLabel(nextUp.t,now)}</span>
      <div className="t">{nextUp.m.title}</div><div className="m">{nextUp.t} · {nextUp.m.cinemas} σινεμά{nextUp.m.meta?.vote!=null&&` · ★ ${nextUp.m.meta.vote.toFixed(1)}`}</div></div></Link></div>}
    {featured.length>0&&!q&&!view&&<>
-    <div data-a className="section-head pad" style={{padding:'24px 20px 10px'}}><h2>Δημοφιλείς</h2><span className="aside">κορυφαίες {scopeLabel}</span></div>
-    <div ref={carousel} className="hscroll featured">{featured.map(m=><div data-a key={m.key} className="feat-card">
+    <div className="pop-band"><div data-a className="section-head pad" style={{padding:'0 20px 12px'}}><h2>Δημοφιλείς</h2><span className="aside">κορυφαίες {scopeLabel}</span></div>
+    <div ref={carousel} className="hscroll featured">{featured.map((m,i)=><div data-a key={m.key} className="feat-card"><span className="rank" aria-hidden="true">{i+1}</span>
      <Poster src={tmdbImage(m.meta?.posterPath,'w500')||m.poster} title={m.title}/>
      <Link className="open" to={filmTo(m)} aria-label={m.title}/>
      <div className="shade"/>
      <HeartButton on={app.savedFilms.has(m.key)} onToggle={()=>app.savedFilms.toggle(m.key)} title={m.title}/>
-     <div className="info"><div className="t">{m.title}</div><div className="m">{m.meta?.vote!=null&&<span className="vote-badge">TMDB {m.meta.vote.toFixed(1)}</span>}<span>{m.cinemas} σινεμά · επόμενη {nextTime(m.times,day,todayIso,now)}</span></div></div>
-    </div>)}</div></>}
+     <div className="info"><div className="t">{m.title}</div><div className="m">{m.meta?.vote!=null&&<span className="vote-badge">★ {m.meta.vote.toFixed(1)}</span>}<span>{nextTime(m.times,day,todayIso,now)}</span></div></div>
+    </div>)}</div></div></>}
    <div data-a className="list-head"><h2>{view?`${new Set(scoped.map(r=>r.cinema)).size} σινεμά`:`${list.length} ${list.length===1?'ταινία':'ταινίες'}`} <span>· {scopeLabel}</span></h2>
     <button type="button" className="sort-btn" onClick={()=>{const i=SORTS.findIndex(s=>s[0]===sort);setQuery({sort:i===SORTS.length-1?null:SORTS[i+1][0]})}} aria-label="Αλλαγή ταξινόμησης">{SORTS.find(s=>s[0]===sort)?.[1]}<CaretDown/></button></div>
    <div className="pad">
-    {view&&!scoped.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/><strong>Κανένα σινεμά με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p></div>}
+    {!!view&&!scoped.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/><strong>Κανένα σινεμά με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p></div>}
     {view?<CinemaList rows={scoped} now={now}/>:<div className="film-grid">{list.map(m=><FilmCard key={m.key} m={m} to={filmTo(m)} flags={flagsFor(m)} now={now}/>)}</div>}
     {!list.length&&!view&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/>
      {outside?<><strong>Δεν υπάρχει διαθέσιμο πρόγραμμα για αυτή την ημερομηνία ακόμη.</strong><p>Το πρόγραμμα της νέας εβδομάδας δημοσιεύεται την Πέμπτη.</p></>
