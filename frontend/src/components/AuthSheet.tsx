@@ -1,12 +1,15 @@
 import {useEffect,useRef,useState,type FormEvent,type ReactNode} from 'react';
 import {AppleLogo,ArrowLeft,Eye,EyeSlash,EnvelopeSimple,Key} from '@phosphor-icons/react';
 import {supabase} from '../lib/supabase';
+import {useApp} from '../lib/context';
 import {authError,useProviders,validEmail} from '../lib/auth';
 import {gsap,reducedMotion} from '../lib/motion';
 import SheetShell from './SheetShell';
 
 type Step='welcome'|'email'|'code'|'password'|'forgot'|'reset'|'notice'|'done';
 const REDIRECT=()=>location.origin+'/saved';
+// Supabase's built-in email only carries a link. Set VITE_AUTH_EMAIL_CODE=true once a custom SMTP template includes {{ .Token }}.
+const EMAIL_CODE=import.meta.env.VITE_AUTH_EMAIL_CODE==='true';
 
 const GoogleG=()=><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.3441 0-4.3282-1.5832-5.036-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.2823-1.1168-.2823-1.71s.1023-1.17.2823-1.71V4.9582H.9573C.3477 6.1732 0 7.5477 0 9s.3477 2.8268.9573 4.0418L3.964 10.71z"/><path fill="#EA4335" d="M9 3.5795c1.3214 0 2.5077.4545 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1627 6.6559 3.5795 9 3.5795z"/></svg>;
 
@@ -21,7 +24,7 @@ const shake=(el:Element|null)=>{if(el&&!reducedMotion())gsap.fromTo(el,{x:0},{ke
 
 /** Sign-in / sign-up: Google, Apple, email code (default), password (with reset), then a success tick. */
 export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'welcome'|'reset';onClose:()=>void;onDone:(msg:string)=>void}){
- const providers=useProviders();
+ const providers=useProviders();const {session}=useApp();
  const [step,setStep]=useState<Step>(initial),dir=useRef(1);
  const [email,setEmail]=useState(''),[code,setCode]=useState(''),[password,setPassword]=useState(''),[signup,setSignup]=useState(false),[show,setShow]=useState(false);
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[cooldown,setCooldown]=useState(0),[notice,setNotice]=useState({title:'',text:''});
@@ -58,6 +61,8 @@ export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'
   setBusy(true);setError('');const {error:er}=await supabase!.auth.updateUser({password});setBusy(false);
   if(er)return fail(er.message);finish('Ο κωδικός άλλαξε')};
  function finish(msg:string){go('done');setTimeout(()=>{onDone(msg);closeRef.current?.()},1500)}
+ // The emailed link was opened in another tab of this browser: the session appears here too.
+ useEffect(()=>{if(session&&(step==='code'||step==='email'||step==='welcome'))finish('Συνδέθηκες')},[session]);// eslint-disable-line react-hooks/exhaustive-deps
 
  // Success tick: the circle and check are drawn.
  useEffect(()=>{if(step!=='done'||!tick.current)return;
@@ -91,18 +96,20 @@ export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'
 
    {step==='email'&&<StepView dir={dir.current}>
     {back('welcome')}<h2 className="auth-title">Ποιο είναι το email σου;</h2>
-    <p className="auth-sub">Θα σου στείλουμε έναν κωδικό 6 ψηφίων. Χωρίς κωδικό πρόσβασης.</p>
-    <form onSubmit={sendCode} noValidate>{emailField}{err}{submit('Στείλε κωδικό')}</form>
+    <p className="auth-sub">{EMAIL_CODE?'Θα σου στείλουμε έναν κωδικό 6 ψηφίων.':'Θα σου στείλουμε σύνδεσμο σύνδεσης.'} Χωρίς κωδικό πρόσβασης.</p>
+    <form onSubmit={sendCode} noValidate>{emailField}{err}{submit(EMAIL_CODE?'Στείλε κωδικό':'Στείλε σύνδεσμο')}</form>
     <button type="button" className="auth-link" onClick={()=>go('password')}><Key/> Προτιμώ κωδικό πρόσβασης</button>
    </StepView>}
 
    {step==='code'&&<StepView dir={dir.current}>
     {back('email')}<h2 className="auth-title">Έλεγξε το email σου</h2>
-    <p className="auth-sub">Στείλαμε κωδικό στο <b>{email.trim()}</b>. Γράψε τον εδώ.</p>
-    <OtpInput value={code} onChange={v=>{setCode(v);if(v.length===6)verify(v)}} disabled={busy}/>
+    {EMAIL_CODE?<><p className="auth-sub">Στείλαμε κωδικό στο <b>{email.trim()}</b>. Γράψε τον εδώ.</p>
+     <OtpInput value={code} onChange={v=>{setCode(v);if(v.length===6)verify(v)}} disabled={busy}/></>
+    :<><p className="auth-sub">Στείλαμε σύνδεσμο στο <b>{email.trim()}</b>. Άνοιξέ τον σε αυτή τη συσκευή και θα συνδεθείς αυτόματα.</p>
+     <div className="auth-icon" aria-hidden="true"><EnvelopeSimple size={30}/></div></>}
     {err}
     <div className="auth-resend">{busy?<span className="spin" aria-label="Έλεγχος"/>:cooldown>0?`Νέος κωδικός σε ${cooldown}″`:<button type="button" className="auth-link" onClick={()=>sendCode()}>Στείλε ξανά</button>}</div>
-    <p className="auth-hint">Δεν έφτασε; Δες και στα ανεπιθύμητα. Μπορείς επίσης να ανοίξεις τον σύνδεσμο που περιέχει το email.</p>
+    <p className="auth-hint">Δεν έφτασε; Δες και στα ανεπιθύμητα.</p>
    </StepView>}
 
    {step==='password'&&<StepView dir={dir.current}>
