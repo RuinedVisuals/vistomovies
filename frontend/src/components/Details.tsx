@@ -146,6 +146,7 @@ export default function Details({id}:{id:string}){
      </div>
     </div>)}</div>
     </>}
+    {tab===0&&programme.length>0&&(()=>{const p=programme[0];return <div className="detail-cta"><a className="btn-cta" href={ticketsUrl(p.name,title,p.booking)} target="_blank" rel="noreferrer"><Ticket weight="bold"/>Εισιτήρια · {p.name.split(',')[0]} · {timeFor(p)}</a></div>})()}
     {planFor&&<PlanSheet plan={planFor.plan} onLink={()=>sharePlan(planFor.p)} onClose={()=>setPlanFor(null)} onDone={notify}/>}
     {tab===0&&late&&<div className="footnote"><MoonStars/><span>Η προβολή {late.time} ({late.cinema}) ανήκει στο πρόγραμμα {wdGen(late.programmeDate)}, ξεκινά {shortDay(late.date)}.</span></div>}
    </div>

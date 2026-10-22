@@ -128,6 +128,8 @@ function Feed(){
  const flagsFor=(m:FilmSummary)=>filmFlags(m.title,weekByMovie.get(m.title)||[],week,todayIso,history,m.meta);
  const anyMeta=Object.values(films).some(Boolean);
  const featured=(anyMeta?[...list].sort((a,b)=>b.cinemas-a.cinemas).filter(m=>m.meta):[...list].sort((a,b)=>b.cinemas-a.cinemas).filter(m=>m.poster)).slice(0,4);
+ const nextUp=useMemo(()=>{if(day!==todayIso)return null;let best:{m:FilmSummary;t:string}|null=null;
+  for(const m of list)for(const t of m.times)if(timeKey(t)>=timeKey(now)&&(!best||timeKey(t)<timeKey(best.t)))best={m,t};return best},[list,day,todayIso,now]);
  const outside=day>weekEnd||(!!week&&day<week.weekStart);
  const scopeLabel=f.range?'έως '+shortDay(weekEnd):dayScope(day,todayIso);
  const badge=activeGroups(f,day,todayIso);
@@ -140,7 +142,7 @@ function Feed(){
    <div style={{display:'flex',gap:8,alignItems:'center'}}><button type="button" className="loc-pill" onClick={()=>app.locate()} title="Χρήση της τοποθεσίας σου για αποστάσεις"><MapPin className="pin" weight={userLoc?'fill':'regular'}/>Αθήνα<CaretDown size={11} color="var(--color-neutral-500)"/></button>
     {app.session&&<Link to="/plans" className="bell-btn" aria-label={`Σχέδια${app.plans.pending.length?` (${app.plans.pending.length} νέες προσκλήσεις)`:''}`}><BellSimple weight={app.plans.pending.length?'fill':'regular'}/>{app.plans.pending.length>0&&<span className="badge">{app.plans.pending.length}</span>}</Link>}
     {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?<Avatar session={app.session} size={34}/>:<UserCircle size={20}/>}</button>}</div></div>
-  <div data-a style={{padding:'18px 20px 0'}}><div style={{fontSize:13,color:'var(--color-neutral-400)'}}>{longDate(day)}</div><h1 style={{fontSize:34,marginTop:2}}>Τι παίζει</h1></div>
+  <div data-a style={{padding:'18px 20px 0'}}><div style={{fontSize:13,color:'var(--color-neutral-400)'}}>{longDate(day)}</div><h1 style={{fontSize:34,marginTop:2}}>{day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>
   <div data-a style={{paddingTop:16}}><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>
   <div data-a style={{display:'flex',gap:8,padding:'14px 20px 0'}}>
    <label className="search"><MagnifyingGlass size={17}/><span className="sr-only">Αναζήτηση</span><input type="search" value={q} placeholder="Ταινία, σινεμά ή γειτονιά" onChange={e=>setQuery({q:e.target.value})}/>
@@ -152,6 +154,10 @@ function Feed(){
   <div data-a className="pad" style={{paddingTop:12}}><Segmented label="Προβολή" options={['Ταινίες','Σινεμά']} value={view} onChange={i=>setQuery({view:i?'cinemas':null})}/></div>
   {!loading&&<SourceNotice/>}
   {loading?<div className="pad" style={{paddingTop:20}}><SkeletonRows/></div>:error?<div className="pad" style={{paddingTop:24}}><div className="empty-card" role="alert"><strong style={{marginTop:0}}>{error}</strong><button className="btn btn-primary" style={{marginTop:12}} onClick={app.retry}>Δοκίμασε ξανά</button></div></div>:<>
+   {nextUp&&!q&&!view&&<div data-a className="pad" style={{paddingTop:18}}><Link to={filmTo(nextUp.m)} className="hero-card">
+    <Poster className="hero-img" src={tmdbImage(nextUp.m.meta?.backdropPath,'w780')||tmdbImage(nextUp.m.meta?.posterPath,'w500')||nextUp.m.poster} title={nextUp.m.title}/>
+    <div className="shade"/><div className="info"><span className="when-pill">{untilLabel(nextUp.t,now)}</span>
+     <div className="t">{nextUp.m.title}</div><div className="m">{nextUp.t} · {nextUp.m.cinemas} σινεμά{nextUp.m.meta?.vote!=null&&` · ★ ${nextUp.m.meta.vote.toFixed(1)}`}</div></div></Link></div>}
    {featured.length>0&&!q&&!view&&<>
     <div data-a className="section-head pad" style={{padding:'24px 20px 10px'}}><h2>Στο επίκεντρο</h2><span className="aside">περισσότερα σινεμά</span></div>
     <div ref={carousel} className="hscroll featured">{featured.map(m=><div data-a key={m.key} className="feat-card">
@@ -165,7 +171,7 @@ function Feed(){
     <button type="button" className="sort-btn" onClick={()=>{const i=SORTS.findIndex(s=>s[0]===sort);setQuery({sort:i===SORTS.length-1?null:SORTS[i+1][0]})}} aria-label="Αλλαγή ταξινόμησης">{SORTS.find(s=>s[0]===sort)?.[1]}<CaretDown/></button></div>
    <div className="pad">
     {view&&!scoped.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/><strong>Κανένα σινεμά με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p></div>}
-    {view?<CinemaList rows={scoped} now={now}/>:list.map(m=><FilmRow key={m.key} m={m} to={filmTo(m)} flags={flagsFor(m)} now={now}/>)}
+    {view?<CinemaList rows={scoped} now={now}/>:<div className="film-grid">{list.map(m=><FilmCard key={m.key} m={m} to={filmTo(m)} flags={flagsFor(m)} now={now}/>)}</div>}
     {!list.length&&!view&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/>
      {outside?<><strong>Δεν υπάρχει διαθέσιμο πρόγραμμα για αυτή την ημερομηνία ακόμη.</strong><p>Το πρόγραμμα της νέας εβδομάδας δημοσιεύεται την Πέμπτη.</p></>
       :<><strong>Καμία ταινία με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p><button className="btn btn-secondary" style={{marginTop:12}} onClick={()=>navigate('/movies',{replace:true})}>Καθαρισμός φίλτρων</button></>}</div>}
@@ -189,19 +195,24 @@ function SourceNotice(){
 
 const Flags=({flags}:{flags:{kind:string;label:string}[]})=><>{flags.map(f=><span key={f.kind} className={'flag '+f.kind}>{f.label}</span>)}</>;
 
-function FilmRow({m,to,flags,now}:{m:FilmSummary;to:string;flags:{kind:string;label:string}[];now:string}){
- const app=useApp();const noTmdb=m.meta===null;const kicker=noTmdb?'Χωρίς στοιχεία TMDB':m.meta?.badge;
- return <div data-a className="film-row">
-  <Link to={to} tabIndex={-1} aria-hidden="true" style={{flex:'none'}}><Poster className="" style={{width:82,height:122,borderRadius:10}} src={tmdbImage(m.meta?.posterPath,'w342')||m.poster} title={m.title} striped={noTmdb} label={noTmdb?'χωρίς TMDB':undefined}/></Link>
-  <div className="body">
-   <div style={{display:'flex',gap:8,alignItems:'flex-start'}}>
-    <Link to={to} className="title-btn" style={{flex:1,minWidth:0,color:'inherit',textDecoration:'none'}}>
-     {(kicker||flags.length>0)&&<div className="badge-k"><Flags flags={flags}/>{kicker}</div>}<div className="t">{m.title}</div><div className="s">{filmSub(m)}</div></Link>
-    <HeartButton on={app.savedFilms.has(m.key)} onToggle={()=>app.savedFilms.toggle(m.key)} title={m.title} className="heart" />
-   </div>
-   <div className="meta">{m.meta?.vote!=null&&<><b>TMDB {m.meta.vote.toFixed(1)}</b><span style={{color:'var(--color-neutral-700)'}}>•</span></>}<span>{m.cinemas} σινεμά στα φίλτρα σου</span></div>
-   <div className="times"><TimeChips rows={m.rows} todayIso={app.todayIso} now={now} limit={3}/></div>
-  </div>
+/** "Επόμενη σε 25 λεπτά" while it is close, else the clock time. */
+function untilLabel(t:string,now:string){
+ const [a,b]=t.split(':').map(Number),[c,d]=now.split(':').map(Number);const mins=a*60+b-(c*60+d);
+ return mins>=0&&mins<=90?(mins<2?'Ξεκινά τώρα':`Επόμενη σε ${mins} λεπτά`):`Επόμενη στις ${t}`;
+}
+
+function FilmCard({m,to,flags,now}:{m:FilmSummary;to:string;flags:{kind:string;label:string}[];now:string}){
+ const app=useApp();const noTmdb=m.meta===null;
+ return <div data-a className="film-card">
+  <Link to={to} className="fc-poster" aria-label={m.title}>
+   <Poster src={tmdbImage(m.meta?.posterPath,'w342')||m.poster} title={m.title} striped={noTmdb} label={noTmdb?'χωρίς TMDB':undefined}/>
+   {m.meta?.vote!=null&&<span className="fc-vote">★ {m.meta.vote.toFixed(1)}</span>}
+   {flags[0]&&<span className={'flag fc-flag '+flags[0].kind}>{flags[0].label}</span>}
+  </Link>
+  <HeartButton on={app.savedFilms.has(m.key)} onToggle={()=>app.savedFilms.toggle(m.key)} title={m.title} className="heart"/>
+  <Link to={to} className="fc-t">{m.title}</Link>
+  <div className="fc-s">{m.cinemas} σινεμά{m.meta?.year?` · ${m.meta.year}`:''}</div>
+  <div className="times"><TimeChips rows={m.rows} todayIso={app.todayIso} now={now} limit={2}/></div>
  </div>;
 }
 

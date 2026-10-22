@@ -9,7 +9,7 @@ export default defineConfig({
   registerType:'prompt',
   includeAssets:['favicon.svg','apple-touch-icon.png','tmdb-logo.svg'],
   manifest:{name:'Visto — Τι παίζει στην Αθήνα',short_name:'Visto',description:'Το προσωπικό σου πρόγραμμα σινεμά στην Αθήνα.',lang:'el',
-   start_url:'/movies',scope:'/',display:'standalone',orientation:'portrait',theme_color:'#161826',background_color:'#161826',
+   start_url:'/movies',scope:'/',display:'standalone',orientation:'portrait',theme_color:'#0a0a0f',background_color:'#0a0a0f',
    icons:[{src:'icon-192.png',sizes:'192x192',type:'image/png'},{src:'icon-512.png',sizes:'512x512',type:'image/png'},{src:'icon-maskable-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]},
   workbox:{
    globPatterns:['**/*.{js,css,html,svg,png,jpg,webmanifest}'],maximumFileSizeToCacheInBytes:4*1024*1024,
