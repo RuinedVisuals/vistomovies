@@ -522,7 +522,7 @@ button.time-chip:active{transform:scale(.94)}
 .bottom-nav{border-radius:32px;height:68px;background:color-mix(in srgb,var(--color-surface) 88%,transparent)}
 .bottom-nav a[aria-current=page]{color:var(--color-text);font-weight:600}
 .bottom-nav a[aria-current=page] .pill{background:var(--color-accent);color:#0a0a0f}
-.detail-cta{position:sticky;bottom:0;margin:18px -20px 0;padding:28px 20px calc(18px + var(--safe-bottom));background:linear-gradient(transparent,var(--color-bg) 55%);z-index:5;pointer-events:none}
+.detail-cta{position:sticky;bottom:calc(96px + var(--safe-bottom));margin:18px -20px 0;padding:24px 20px 6px;background:linear-gradient(transparent,var(--color-bg) 55%);z-index:5;pointer-events:none}
 .btn-cta{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:10px;height:56px;border-radius:28px;background:var(--color-accent);color:#0a0a0f;font-weight:700;font-size:16px;text-decoration:none;box-shadow:0 10px 30px color-mix(in srgb,var(--color-accent) 30%,transparent);transition:transform .15s}
 .btn-cta:hover{color:#0a0a0f}.btn-cta:active{transform:scale(.98)}
 .date-chip{width:52px;border-radius:16px}.date-chip[aria-pressed=true]{background:var(--color-accent);border-color:var(--color-accent);color:#0a0a0f}.date-chip[aria-pressed=true] .wd{opacity:.85}.date-chip[aria-pressed=true] .n{font-weight:700}

@@ -127,7 +127,7 @@ function Feed(){
  const weekByMovie=useMemo(()=>groupBy(rows,r=>r.movie),[rows]);
  const flagsFor=(m:FilmSummary)=>filmFlags(m.title,weekByMovie.get(m.title)||[],week,todayIso,history,m.meta);
  const anyMeta=Object.values(films).some(Boolean);
- const featured=(anyMeta?[...list].sort((a,b)=>b.cinemas-a.cinemas).filter(m=>m.meta):[...list].sort((a,b)=>b.cinemas-a.cinemas).filter(m=>m.poster)).slice(0,4);
+ const featured=(anyMeta?[...list].filter(m=>m.meta).sort((a,b)=>(b.meta!.voteCount-a.meta!.voteCount)||b.cinemas-a.cinemas):[...list].sort((a,b)=>b.cinemas-a.cinemas).filter(m=>m.poster)).slice(0,8);
  const nextUp=useMemo(()=>{if(day!==todayIso)return null;let best:{m:FilmSummary;t:string}|null=null;
   for(const m of list)for(const t of m.times)if(timeKey(t)>=timeKey(now)&&(!best||timeKey(t)<timeKey(best.t)))best={m,t};return best},[list,day,todayIso,now]);
  const outside=day>weekEnd||(!!week&&day<week.weekStart);
@@ -159,7 +159,7 @@ function Feed(){
     <div className="shade"/><div className="info"><span className="when-pill">{untilLabel(nextUp.t,now)}</span>
      <div className="t">{nextUp.m.title}</div><div className="m">{nextUp.t} · {nextUp.m.cinemas} σινεμά{nextUp.m.meta?.vote!=null&&` · ★ ${nextUp.m.meta.vote.toFixed(1)}`}</div></div></Link></div>}
    {featured.length>0&&!q&&!view&&<>
-    <div data-a className="section-head pad" style={{padding:'24px 20px 10px'}}><h2>Στο επίκεντρο</h2><span className="aside">περισσότερα σινεμά</span></div>
+    <div data-a className="section-head pad" style={{padding:'24px 20px 10px'}}><h2>Δημοφιλείς</h2><span className="aside">κορυφαίες {scopeLabel}</span></div>
     <div ref={carousel} className="hscroll featured">{featured.map(m=><div data-a key={m.key} className="feat-card">
      <Poster src={tmdbImage(m.meta?.posterPath,'w500')||m.poster} title={m.title}/>
      <Link className="open" to={filmTo(m)} aria-label={m.title}/>
