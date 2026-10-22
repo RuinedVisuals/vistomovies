@@ -1,6 +1,7 @@
 import {useRef,useState} from 'react';
-import {CaretLeft,Check,Clock,PaperPlaneTilt,Question,Trash,X,Users} from '@phosphor-icons/react';
+import {CalendarPlus,CaretLeft,Check,Clock,PaperPlaneTilt,Question,Trash,X,Users} from '@phosphor-icons/react';
 import {back} from '../lib/router';
+import {downloadIcs} from '../lib/ics';
 import {useApp} from '../lib/context';
 import {useEntrance} from '../lib/motion';
 import {answerPlan,cancelPlan,createPlan,type NewPlan,type Plan,type PlanPerson,type PlanStatus} from '../lib/plans';
@@ -55,6 +56,7 @@ function PlanCard({p,uid,busy,act}:{p:Plan;uid:string;busy:string;act:(key:strin
    <span className="sum">{going} {going===1?'έρχεται':'έρχονται'}</span></div>
   {!mine&&<div className="answers" role="group" aria-label="Απάντηση">{answers.map(s=><button type="button" key={s} className={'ans '+s+(p.my_status===s?' on':'')} aria-pressed={p.my_status===s} disabled={busy===p.id+s}
    onClick={()=>act(p.id+s,()=>answerPlan(p.id,uid,s))}>{s==='going'?'Έρχομαι':s==='maybe'?'Ίσως':'Δεν μπορώ'}</button>)}</div>}
+  <button type="button" className="auth-link" style={{margin:'6px 12px 0 0'}} onClick={()=>downloadIcs(p)}><CalendarPlus/> Στο ημερολόγιο</button>
   {mine&&<button type="button" className="auth-link danger-link" style={{margin:'6px 0 0'}} disabled={busy===p.id+'x'} onClick={()=>{if(confirm('Ακύρωση της πρόσκλησης;'))act(p.id+'x',()=>cancelPlan(p.id))}}><Trash/> Ακύρωση πρόσκλησης</button>}
  </article>;
 }

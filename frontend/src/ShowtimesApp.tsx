@@ -9,6 +9,7 @@ import {usePersistedSet} from './lib/store';
 import {supabase,useSession} from './lib/supabase';
 import {usePlans} from './lib/plans';
 import Plans from './components/Plans';
+import {Privacy,Terms} from './components/Legal';
 import Avatar from './components/Avatar';
 import AuthSheet from './components/AuthSheet';
 import ProfileSheet from './components/ProfileSheet';
@@ -78,8 +79,10 @@ export default function ShowtimesApp(){
   {section==='saved'&&<Saved/>}
   {section==='status'&&<Status/>}
   {section==='plans'&&<Plans/>}
-  {section&&!['movies','cinemas','map','saved','status','add','plans'].includes(section)&&<NotFound/>}
-  {!(section==='cinemas'&&id)&&<BottomNav active={section==='cinemas'?1:section==='map'?2:section==='saved'||section==='add'||section==='plans'?3:0}/>}
+  {section==='privacy'&&<Privacy/>}
+  {section==='terms'&&<Terms/>}
+  {section&&!['movies','cinemas','map','saved','status','add','plans','privacy','terms'].includes(section)&&<NotFound/>}
+  {!(section==='cinemas'&&id)&&section!=='privacy'&&section!=='terms'&&<BottomNav active={section==='cinemas'?1:section==='map'?2:section==='saved'||section==='add'||section==='plans'?3:0}/>}
  </div></AppContext.Provider>;
 }
 
@@ -163,7 +166,7 @@ function Feed(){
       :<><strong>Καμία ταινία με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p><button className="btn btn-secondary" style={{marginTop:12}} onClick={()=>navigate('/movies',{replace:true})}>Καθαρισμός φίλτρων</button></>}</div>}
    </div>
   </>}
-  <div className="source-line pad" style={{paddingTop:16}}><ClockCounterClockwise/>Πρόγραμμα: Αθηνόραμα · ενημ. {updatedLabel(week?.checkedAt,todayIso)} · Metadata: TMDB · <Link to="/status">Ποιότητα δεδομένων</Link></div>
+  <div className="source-line pad" style={{paddingTop:16}}><ClockCounterClockwise/>Πρόγραμμα: Αθηνόραμα · ενημ. {updatedLabel(week?.checkedAt,todayIso)} · Metadata: TMDB · <Link to="/status">Ποιότητα δεδομένων</Link> · <Link to="/privacy">Απόρρητο</Link> · <Link to="/terms">Όροι</Link></div>
   {sheet&&<FilterSheet filters={f} day={day} onClose={()=>setSheet(false)}/>}
  </main>;
 }

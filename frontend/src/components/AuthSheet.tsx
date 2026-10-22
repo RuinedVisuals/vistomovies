@@ -2,6 +2,7 @@ import {useEffect,useRef,useState,type FormEvent,type ReactNode} from 'react';
 import {AppleLogo,ArrowLeft,Eye,EyeSlash,EnvelopeSimple,Key} from '@phosphor-icons/react';
 import {supabase} from '../lib/supabase';
 import {useApp} from '../lib/context';
+import {navigate} from '../lib/router';
 import {authError,passwordStrength,useProviders,validEmail} from '../lib/auth';
 import {gsap,reducedMotion} from '../lib/motion';
 import SheetShell from './SheetShell';
@@ -92,6 +93,7 @@ export default function AuthSheet({initial='welcome',onClose,onDone}:{initial?:'
     <div className="auth-or"><span>ή</span></div>
     <button type="button" className="oauth-btn mail" onClick={()=>go('password')}><EnvelopeSimple size={19}/>Συνέχεια με email</button>
     {err}
+    <p className="auth-hint">Συνεχίζοντας αποδέχεσαι τους <a href="/terms" onClick={e=>{e.preventDefault();closeRef.current?.();navigate('/terms')}}>Όρους χρήσης</a> και την <a href="/privacy" onClick={e=>{e.preventDefault();closeRef.current?.();navigate('/privacy')}}>Πολιτική απορρήτου</a>.</p>
    </StepView>}
 
    {step==='email'&&<StepView dir={dir.current}>
