@@ -2,7 +2,7 @@ import {useRef,useState} from 'react';
 import {Check,Clock,PaperPlaneTilt,Question,Trash,X,Users} from '@phosphor-icons/react';
 import {useApp} from '../lib/context';
 import {useEntrance} from '../lib/motion';
-import {answerPlan,cancelPlan,createPlan,type NewPlan,type Plan,type PlanStatus} from '../lib/plans';
+import {answerPlan,cancelPlan,createPlan,type NewPlan,type Plan,type PlanPerson,type PlanStatus} from '../lib/plans';
 import {useFriends} from '../lib/friends';
 import {shortDay} from '../lib/derive';
 import {Link} from './ui';
@@ -41,14 +41,17 @@ export function PlanSheet({plan,onLink,onClose,onDone}:{plan:NewPlan;onLink:()=>
 function PlanCard({p,uid,busy,act}:{p:Plan;uid:string;busy:string;act:(key:string,fn:()=>Promise<string>)=>void}){
  const mine=p.owner===uid;const href=`/movies/${p.film_route}?date=${p.show_date}&cinema=${p.cinema_id}&time=${p.show_time}`;
  const answers=['going','maybe','declined'] as const;
+ // The host counts as going; everyone invited (including me) is shown with their answer.
+ const faces:(PlanPerson&{host?:boolean})[]=[{user_id:p.owner,name:p.owner_name,username:null,avatar_url:p.owner_avatar,status:'going',host:true},...p.people];
+ const going=faces.filter(x=>x.status==='going').length;
  return <article className="plan-card" data-a>
   <div className="who">{mine?<span>Εσύ καλείς</span>:<><Face url={p.owner_avatar} name={p.owner_name} size={26}/><span><b>{p.owner_name}</b> σε καλεί</span></>}</div>
   <Link className="film" to={href}>{p.film_title}</Link>
   <div className="when">{shortDay(p.show_date)} · {p.show_time} · {short(p.cinema_name)}</div>
   {p.note&&<div className="note">«{p.note}»</div>}
-  {p.people.length>0&&<div className="people">{p.people.filter(x=>x.user_id!==uid||mine).map(x=>{const {label,Icon}={label:STATUS[x.status].label,Icon:STATUS[x.status].Icon};
-   return <span key={x.user_id} className={'person '+x.status} title={`${x.name}: ${label}`}><Face url={x.avatar_url} name={x.name} size={28}/><i><Icon weight="bold"/></i></span>})}
-   <span className="sum">{p.people.filter(x=>x.status==='going').length} έρχονται</span></div>}
+  <div className="people">{faces.map(x=>{const {label,Icon}=STATUS[x.status];const me=x.user_id===uid;
+   return <span key={x.user_id} className={'person '+x.status} title={`${me?'Εσύ':x.name}: ${x.host?'Διοργανωτής':label}`}><Face url={x.avatar_url} name={x.name} size={30}/><i><Icon weight="bold"/></i></span>})}
+   <span className="sum">{going} {going===1?'έρχεται':'έρχονται'}</span></div>
   {!mine&&<div className="answers" role="group" aria-label="Απάντηση">{answers.map(s=><button type="button" key={s} className={'ans '+s+(p.my_status===s?' on':'')} aria-pressed={p.my_status===s} disabled={busy===p.id+s}
    onClick={()=>act(p.id+s,()=>answerPlan(p.id,uid,s))}>{s==='going'?'Έρχομαι':s==='maybe'?'Ίσως':'Δεν μπορώ'}</button>)}</div>}
   {mine&&<button type="button" className="auth-link danger-link" style={{margin:'6px 0 0'}} disabled={busy===p.id+'x'} onClick={()=>{if(confirm('Ακύρωση της πρόσκλησης;'))act(p.id+'x',()=>cancelPlan(p.id))}}><Trash/> Ακύρωση πρόσκλησης</button>}
