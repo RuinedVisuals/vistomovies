@@ -25,7 +25,8 @@ class DOM(HTMLParser):
 
 DAYS={'Πέμ':0,'Παρ':1,'Σάβ':2,'Κυρ':3,'Δευτ':4,'Δευ':4,'Τρ':5,'Τρί':5,'Τετ':6}
 DAY=r'(?:Δευτ|Πέμ|Παρ|Σάβ|Κυρ|Δευ|Τρί|Τρ|Τετ)\.?'
-EXPR=rf'{DAY}(?:\s*[-–]\s*{DAY})?(?:\s*,\s*{DAY}(?:\s*[-–]\s*{DAY})?)*'
+ITEM=rf'{DAY}(?:\s*[-–]\s*{DAY})?'
+EXPR=rf'{ITEM}(?:(?:\s*,\s*|\s+){ITEM})*'
 CLAUSE=re.compile(rf'({EXPR})\s*:?\s*((?:\d{{1,2}}[.:]\d{{2}})(?:\s*[/,]\s*\d{{1,2}}[.:]\d{{2}})*)')
 def expand(schedule,start):
     schedule=re.sub(r'\((?:με εισ\.|Εισ\.|special previews|\d+€ όλα τα εισιτήρια)[^)]*\)', '', schedule, flags=re.I)
@@ -35,7 +36,7 @@ def expand(schedule,start):
     for m in matches:
         if schedule[last:m.start()].strip(' ,;'):raise ValueError('Unparsed schedule text: '+schedule)
         last=m.end();indices=set()
-        for part in m[1].split(','):
+        for part in re.findall(ITEM,m[1]):
             ds=re.findall(DAY,part);nums=[DAYS[d.rstrip('.')] for d in ds]
             if len(nums)==1:indices.add(nums[0])
             else:

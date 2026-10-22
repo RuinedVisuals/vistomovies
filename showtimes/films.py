@@ -46,6 +46,8 @@ def save(cache):
 def fresh(entry, now):
     if not isinstance(entry, dict) or 'fetchedAt' not in entry:
         return False
+    if isinstance(entry.get('film'), dict) and 'releaseDate' not in entry['film']:
+        return False  # cached before releaseDate was stored
     return now - entry['fetchedAt'] < (HIT_TTL if entry.get('film') else MISS_TTL)
 
 
@@ -76,6 +78,7 @@ def describe(title, movie):
         'title': movie.get('title') or title,
         'originalTitle': movie.get('original_title'),
         'year': year,
+        'releaseDate': movie.get('release_date') or None,
         'runtime': movie.get('runtime') or None,
         'genres': [g['name'] for g in movie.get('genres', [])],
         'countryCode': countries[0]['iso_3166_1'] if countries else None,

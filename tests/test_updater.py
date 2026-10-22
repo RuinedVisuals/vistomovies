@@ -44,7 +44,7 @@ class UpdaterTest(unittest.TestCase):
         self.assertIn('Edit 1',{x['movie'] for x in storage.week(self.db)['showtimes']})
     def test_failure_keeps_data(self):
         self.attempt(date(2026,10,6),OLD)
-        self.assertEqual(self.attempt(date(2026,10,6),OLD,issues=[{}]*6)['status'],'failed')
+        self.assertEqual(self.attempt(date(2026,10,6),OLD,issues=[{}]*16)['status'],'failed')
         self.assertEqual(len(storage.week(self.db)['showtimes']),60)
     def test_due(self):
         tz=updater.TZ

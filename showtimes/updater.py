@@ -21,7 +21,7 @@ SOURCE = 'athinorama'
 TZ = ZoneInfo('Europe/Athens')
 SAME_WEEK = 0.97       # ≥ this similarity to the stored week on Thursday = page not updated yet
 SUSPICIOUS_DRIFT = 0.75  # < this mid-week = the page probably already shows next week
-MAX_ISSUES = 5         # unknown schedule lines skipped (and reported) before the import fails
+MAX_ISSUES = 15        # unknown schedule lines skipped (and reported) before the import fails
 DAILY_HOUR = 10
 RETRY_HOURS = 3
 NOT_UPDATED = 'Η πηγή δεν έχει δημοσιεύσει ακόμη το πρόγραμμα της νέας εβδομάδας.'
@@ -93,6 +93,8 @@ def export_static(db, out=STATIC):
     if not wk['showtimes']:
         return None
     sources = storage.status(db)
+    export_history(wk, out)
+    export_quality(wk, out)
     checked = max((x['checkedAt'] for x in sources if x.get('checkedAt')), default=None)
     (out / 'snapshot.json').write_text(json.dumps({**wk, 'checkedAt': checked, 'sources': sources}, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     titles = sorted({r['movie'] for r in wk['showtimes']})
@@ -100,6 +102,53 @@ def export_static(db, out=STATIC):
     known = {t: cache[t]['film'] for t in titles if isinstance(cache.get(t), dict) and 'fetchedAt' in cache[t]}
     (out / 'films.json').write_text(json.dumps({'source': 'TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.', 'films': known}, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     return {'rows': len(wk['showtimes']), 'films': sum(1 for v in known.values() if v)}
+
+
+HISTORY = Path('data/history.json')
+
+
+def export_history(wk, out=STATIC):
+    """Keeps {weekStart: {movie: cinemaCount}} for recent weeks (the DB only stores the current one),
+    so the UI can flag films that are new this week. Published as history.json."""
+    try:
+        weeks = json.loads(HISTORY.read_text(encoding='utf-8')).get('weeks', {})
+    except (OSError, ValueError):
+        weeks = {}
+    counts = {}
+    for r in wk['showtimes']:
+        counts.setdefault(r['movie'], set()).add(r['cinema'])
+    weeks[wk['weekStart']] = {m: len(c) for m, c in sorted(counts.items())}
+    weeks = dict(sorted(weeks.items())[-8:])
+    HISTORY.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps({'weeks': weeks}, ensure_ascii=False, separators=(',', ':'))
+    HISTORY.write_text(payload, encoding='utf-8')
+    (out / 'history.json').write_text(payload, encoding='utf-8')
+
+
+def export_quality(wk, out=STATIC, report=Path('data/parse-report.json'), cinemas=Path('frontend/public/cinemas.json')):
+    """Data-quality summary for the /status page: which cinemas have no programme, which rows were skipped."""
+    try:
+        rep = json.loads(report.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        rep = {}
+    try:
+        known = [c['name'] for c in json.loads(cinemas.read_text(encoding='utf-8'))['cinemas']]
+    except (OSError, ValueError, KeyError):
+        known = []
+    have = {r['cinema'] for r in wk['showtimes']}
+    listed = rep.get('cinemasListed', [])
+    cache = films.load()
+    titles = sorted({r['movie'] for r in wk['showtimes']})
+    unmatched = [t for t in titles if isinstance(cache.get(t), dict) and 'fetchedAt' in cache[t] and not cache[t].get('film')]
+    payload = {
+        'weekStart': wk['weekStart'], 'reportWeek': rep.get('weekStart'),
+        'rows': len(wk['showtimes']), 'films': len(titles), 'cinemasWithProgramme': sorted(have),
+        'listedWithoutProgramme': sorted(set(listed) - have),
+        'knownWithoutProgramme': sorted(set(known) - have),
+        'skipped': [{k: i.get(k) for k in ('cinema', 'movie', 'screen', 'rawSchedule', 'reason')} for i in rep.get('issues', [])],
+        'unmatchedTmdb': unmatched,
+    }
+    (out / 'quality.json').write_text(json.dumps(payload, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
 
 
 def prefetch_films(db):
