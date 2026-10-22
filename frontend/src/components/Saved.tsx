@@ -10,6 +10,7 @@ import {cinemaInfo,cinemaRoute,filmFlags,filmRoute,groupBy,isPast,shortDay,uniq}
 import {filmKey,nowTime} from '../lib/types';
 import type {Showtime} from '../lib/types';
 import {Link,Poster,Segmented} from './ui';
+import Account from './Account';
 
 const short=(name:string)=>name.split(',')[0];
 type Status={kind:'tonight'|'over'|'later'|'gone';text:string;sub?:string};
@@ -56,6 +57,7 @@ export default function Saved(){
  const lit=(on:boolean,text:string)=><div className={'st'+(on?' on':'')}><i/>{text}</div>;
  return <main className="screen" ref={ref}>
   <div data-a className="page-head"><div className="over">Αποθηκεύεται σε αυτή τη συσκευή</div><h1>Η λίστα μου</h1></div>
+  <div className="pad" style={{paddingTop:14}}><Account/></div>
   <div data-a style={{padding:'14px 20px 0'}}><Segmented label="Λίστα" options={['Ταινίες · '+filmItems.length,'Σινεμά · '+cinemaItems.length]} value={tab} onChange={i=>setQuery({tab:i?'cinemas':null})}/></div>
   {tab===0&&filmItems.length>0&&<div data-a className="pad" style={{paddingTop:12,fontSize:13,color:'var(--color-neutral-300)'}}>{tonightN?`${tonightN} από τις ${filmItems.length} παίζ${tonightN===1?'ει':'ουν'} απόψε.`:'Καμία από τις αποθηκευμένες δεν παίζει άλλο απόψε.'}</div>}
   <div ref={list} data-a style={{display:'flex',flexDirection:'column',gap:10,padding:'16px 20px 0'}}>

@@ -6,6 +6,7 @@ import {getCatalog,getCinemas,getFilms,getHistory,getWeek,tmdbImage} from './lib
 import {toVenue,SYNTAGMA,km,kmLabel} from './lib/geo';
 import {AppContext,useApp,type AppData} from './lib/context';
 import {usePersistedSet} from './lib/store';
+import {useSession} from './lib/supabase';
 import {navigate,setQuery,useRoute} from './lib/router';
 import {useEntrance,pop} from './lib/motion';
 import {activeGroups,EMPTY_FILTERS,filmFlags,filmRoute,filmSub,groupBy,longDate,matchRow,scopeDays,shortDay,dayScope,summarize,timeKey,updatedLabel,cinemaRoute,type Filters,type FilmSummary,type HallType,type TimeFilter} from './lib/derive';
@@ -31,7 +32,8 @@ export default function ShowtimesApp(){
  const [week,setWeek]=useState<WeekData|null>(null),[mode,setMode]=useState<'api'|'snapshot'>('api'),[loading,setLoading]=useState(true),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
  const [cinemas,setCinemas]=useState<Cinema[]>([]),[catalog,setCatalog]=useState<Catalog>({movies:{}}),[films,setFilms]=useState<FilmIndex>({}),[history,setHistory]=useState<History>({});
  const [userLoc,setUserLoc]=useState<[number,number]|null>(null);
- const savedFilms=usePersistedSet('savedFilms'),favCinemas=usePersistedSet('favCinemas');
+ const session=useSession();const uid=session?.user.id;
+ const savedFilms=usePersistedSet('savedFilms',uid),favCinemas=usePersistedSet('favCinemas',uid);
  const todayIso=today();
  useEffect(()=>{const c=new AbortController();setLoading(true);setError('');
   getWeek(c.signal).then(r=>{setWeek(r.data);setMode(r.mode)}).catch(e=>{if(!c.signal.aborted)setError(e.message)}).finally(()=>{if(!c.signal.aborted)setLoading(false)});
@@ -46,8 +48,8 @@ export default function ShowtimesApp(){
  const value=useMemo<AppData>(()=>{
   const venues=cinemas.map(toVenue);
   return {week,mode,loading,error,retry:()=>setAttempt(a=>a+1),rows:week?.showtimes||[],venues,venueByName:new Map(venues.map(v=>[v.name,v])),venueById:new Map(venues.map(v=>[v.id,v])),
-   films,catalog,history,todayIso,userLoc,locate,savedFilms,favCinemas};
- },[week,mode,loading,error,cinemas,films,catalog,history,todayIso,userLoc,locate,savedFilms,favCinemas]);
+   films,catalog,history,session,todayIso,userLoc,locate,savedFilms,favCinemas};
+ },[week,mode,loading,error,cinemas,films,catalog,history,session,todayIso,userLoc,locate,savedFilms,favCinemas]);
  const {parts}=useRoute();
  const [section,id]=parts;
  useEffect(()=>{if(!section)navigate('/movies'+location.search,{replace:true})},[section]);
