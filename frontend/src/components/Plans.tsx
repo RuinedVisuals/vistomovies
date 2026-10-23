@@ -72,7 +72,7 @@ export default function Plans(){
  const act=async(key:string,fn:()=>Promise<string>)=>{setBusy(key);setMsg('');const e=await fn();if(e)setMsg(e);else notify('Αποθηκεύτηκε');await plans.refresh();setBusy('')};
  const all=(plans.items||[]).filter(p=>p.show_date>=todayIso);
  const invited=all.filter(p=>p.my_status==='invited'),rest=all.filter(p=>p.my_status!=='invited');
- return <main className="screen" ref={ref}>
+ return <main className="screen narrow" ref={ref}>
   <div data-a className="page-head"><button type="button" className="back-pill" onClick={()=>back('/movies')} aria-label="Πίσω"><CaretLeft weight="bold"/>Πίσω</button>
    <div className="over" style={{marginTop:14}}>Με φίλους</div><h1>Σχέδια</h1></div>
   <div className="pad" style={{paddingTop:16,display:'flex',flexDirection:'column',gap:10}}>

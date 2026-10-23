@@ -63,9 +63,9 @@ export default function Saved(){
  return <main className="screen" ref={ref}>
   <div data-a className="page-head"><div className="over">Αποθηκεύεται σε αυτή τη συσκευή</div><h1>Η λίστα μου</h1></div>
   <div className="pad" style={{paddingTop:14}}><Account/></div>
-  <div data-a style={{padding:'14px 20px 0'}}><Segmented label="Λίστα" options={['Ταινίες · '+filmItems.length,'Σινεμά · '+cinemaItems.length,'Φίλοι'+(fr.incoming.length?' · '+fr.incoming.length:'')]} value={tab} onChange={i=>setQuery({tab:i===2?'friends':i?'cinemas':null,add:null})}/></div>
+  <div data-a className="toolbar seg-bar"><Segmented label="Λίστα" options={['Ταινίες · '+filmItems.length,'Σινεμά · '+cinemaItems.length,'Φίλοι'+(fr.incoming.length?' · '+fr.incoming.length:'')]} value={tab} onChange={i=>setQuery({tab:i===2?'friends':i?'cinemas':null,add:null})}/></div>
   {tab===0&&filmItems.length>0&&<div data-a className="pad" style={{paddingTop:12,fontSize:13,color:'var(--color-neutral-300)'}}>{tonightN?`${tonightN} από τις ${filmItems.length} παίζ${tonightN===1?'ει':'ουν'} απόψε.`:'Καμία από τις αποθηκευμένες δεν παίζει άλλο απόψε.'}</div>}
-  <div ref={list} data-a style={{display:'flex',flexDirection:'column',gap:10,padding:'16px 20px 0'}}>
+  <div ref={list} data-a className={'pad '+(tab===2?'stack-col':'stack-list')} style={{paddingTop:16}}>
    {tab===2?<FriendsTab fr={fr}/>:<>{tab===0?filmItems.map(f=><Link key={f.key} to={f.to} className="saved-item">
     <Poster src={f.poster} title={f.title} striped={f.m===null}/>
     <div className="body"><div className="t">{f.title}</div><div className="s">{f.sub}</div>{lit(f.on,f.st.text)}

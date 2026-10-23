@@ -122,15 +122,15 @@ export default function Details({id}:{id:string}){
 
     </>}
     {tab===0&&<>
-    <div data-a ref={programmeRef} className="section-head" style={{margin:'22px 0 10px',scrollMarginTop:70}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">ενημ. {clock(week?.checkedAt)} · Αθηνόραμα</span></div>
-    <div data-a style={{margin:'0 -20px'}}><DateStrip className="pad" value={day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d})}/></div>
+    <div data-a ref={programmeRef} className="section-head" style={{margin:'22px 0 10px',scrollMarginTop:70}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">ενημ. {clock(week?.checkedAt)}</span></div>
+    <div data-a className="bleed"><DateStrip className="pad" value={day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d})}/></div>
     {programme.length>0&&<MiniMap pins={pins} label={`${programme.length} σινεμά · ${shortDay(day)}`} to={`/map?mode=film&film=${filmId}`}/>}
     {!programme.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={22} color="var(--color-neutral-500)"/>
      <div style={{marginTop:6}}>{outside||!filmRows.length?'Δεν υπάρχει διαθέσιμο πρόγραμμα για αυτή την ημερομηνία ακόμη. Το πρόγραμμα της νέας εβδομάδας δημοσιεύεται την Πέμπτη.':'Η ταινία δεν έχει προβολές αυτή την ημέρα. Δοκίμασε άλλη ημερομηνία.'}</div></div>}
     {pickCinema&&pickTime&&programme.some(p=>p.v?.id===pickCinema)&&<div data-a className="invite" role="status"><PaperPlaneTilt/>
      <span>Πρόταση: <b>{shortDay(day)} {pickTime}</b> · {programme.find(p=>p.v?.id===pickCinema)!.name.split(',')[0]}</span>
      <button type="button" onClick={()=>setQuery({cinema:null,time:null})} aria-label="Κλείσιμο πρότασης">×</button></div>}
-    <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:12}}>{programme.map(p=><div data-a key={p.name} data-cinema={p.v?.id} className={'prog-card'+(pickCinema&&p.v?.id===pickCinema?' invited':'')}>
+    <div className="stack-list prog-list" style={{marginTop:12}}>{programme.map(p=><div data-a key={p.name} data-cinema={p.v?.id} className={'prog-card'+(pickCinema&&p.v?.id===pickCinema?' invited':'')}>
      <div className="top"><div style={{minWidth:0}}>{p.v?<Link className="name" to={cinemaRoute(p.v)}>{p.name}</Link>:<span className="name">{p.name}</span>}
       <div className="addr">{p.v?`${p.v.addrShort} · ${p.v.area}`:''}</div></div>
       <span className="dist" title={userLoc?'Από την τοποθεσία σου':'Από Σύνταγμα'}><NavigationArrow/>{kmLabel(p.k)}</span></div>

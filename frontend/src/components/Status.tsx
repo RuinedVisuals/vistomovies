@@ -13,7 +13,7 @@ export default function Status(){
  const [q,setQ]=useState<Quality|null|undefined>(undefined);
  useEffect(()=>{const c=new AbortController();getQuality(c.signal).then(setQ);return()=>c.abort()},[]);
  const site=(name:string)=>venues.find(v=>v.name===name)?.website;
- return <main className="screen no-nav">
+ return <main className="screen no-nav narrow">
   <div className="page-head"><button type="button" className="text-btn" onClick={()=>back('/movies')} style={{display:'inline-flex',alignItems:'center',gap:4,padding:0}}><CaretLeft/>Πίσω</button>
    <h1 style={{marginTop:10}}>Ποιότητα δεδομένων</h1>
    <div className="over" style={{marginTop:4}}>{week?`Εβδομάδα ${shortDay(week.weekStart)} – ${shortDay(week.weekEnd)} · ενημ. ${updatedLabel(week.checkedAt,todayIso)}`:''}</div></div>
@@ -27,7 +27,7 @@ export default function Status(){
      <div className="stat"><div className="v">{q.cinemasWithProgramme.length}</div><div className="l">σινεμά με πρόγραμμα</div></div>
     </div>
     <section className="q-block"><h2><WarningCircle/>Σινεμά χωρίς πρόγραμμα ({q.knownWithoutProgramme.length})</h2>
-     <p>Η πηγή (Αθηνόραμα) δεν δίνει ωράριο γι' αυτά αυτή την εβδομάδα. Δεν σημαίνει ότι είναι κλειστά.</p>
+     <p>Η πηγή δεν δίνει ωράριο γι' αυτά αυτή την εβδομάδα. Δεν σημαίνει ότι είναι κλειστά.</p>
      {q.knownWithoutProgramme.length?<ul>{q.knownWithoutProgramme.map(n=><li key={n}>{n}{site(n)&&<> · <a href={site(n)} target="_blank" rel="noreferrer">επίσημη σελίδα</a></>}{q.listedWithoutProgramme.includes(n)&&<span className="tag tag-neutral">χωρίς ωράριο στην πηγή</span>}</li>)}</ul>
       :<p><CheckCircle/> Όλα τα σινεμά του καταλόγου έχουν πρόγραμμα.</p>}</section>
     <section className="q-block"><h2><WarningCircle/>Γραμμές που δεν διαβάστηκαν ({q.skipped.length})</h2>

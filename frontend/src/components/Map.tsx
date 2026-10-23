@@ -6,18 +6,18 @@ import {useApp} from '../lib/context';
 import {setQuery,useRoute} from '../lib/router';
 import {gsap,pop,reducedMotion} from '../lib/motion';
 import {SYNTAGMA,directionsUrl,km,kmLabel} from '../lib/geo';
-import {normalize} from '../lib/types';
+import {normalize,filmKey} from '../lib/types';
 import type {Venue} from '../lib/types';
 import {cinemaInfo,cinemaRoute,filmRoute,groupBy,sortTimes,summarize} from '../lib/derive';
 import {Link} from './ui';
 
 const MODES=['all','today','film','fav'] as const;type Mode=typeof MODES[number];
-const HOME={center:[23.735,37.99] as [number,number],zoom:11.2};
+const HOME={center:[23.735,37.99] as [number,number],zoom:innerWidth>=960?12:11.2};
 const FILM_SVG='<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 256 256" fill="currentColor"><path d="M216 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h176a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16ZM56 200H40v-16h16Zm0-32H40v-16h16Zm0-32H40v-16h16Zm0-32H40V88h16Zm0-32H40V56h16Zm144 128H72V56h128Zm16 0h-16v-16h16Zm0-32h-16v-16h16Zm0-32h-16v-16h16Zm0-32h-16V88h16Zm0-32h-16V56h16Z"/></svg>';
 
 /** 06 Χάρτης — one Mapbox instance, clustered GeoJSON source; modes filter the source itself. */
 export default function MapScreen(){
- const {venues,rows,films,catalog,todayIso,favCinemas,userLoc,locate}=useApp();
+ const {venues,rows,films,catalog,todayIso,favCinemas,savedFilms,userLoc,locate}=useApp();
  const {query}=useRoute();
  const token=import.meta.env.VITE_MAPBOX_TOKEN||'';
  const mode=(MODES.includes(query.get('mode') as Mode)?query.get('mode'):'today') as Mode;
@@ -28,7 +28,7 @@ export default function MapScreen(){
   return r?{id:id!,title:r.movie}:(()=>{const top=summarize(todayRows,films,catalog)[0];return top?{id:top.id,title:top.title}:null})()},[query.get('film'),rows,todayRows]);
  const from=userLoc||SYNTAGMA;
  const matches=(v:Venue)=>{const rs=todayBy.get(v.name)||[];
-  return mode==='all'||(mode==='today'&&rs.length>0)||(mode==='film'&&!!film&&rs.some(r=>r.movie===film.title))||(mode==='fav'&&favCinemas.has(v.id))};
+  return mode==='all'||(mode==='today'&&rs.length>0)||(mode==='film'&&!!film&&rs.some(r=>r.movie===film.title))||(mode==='fav'&&(favCinemas.has(v.id)||rs.some(r=>savedFilms.has(filmKey(r)))))};
  const points=venues.filter(v=>v.lng!=null&&v.lat!=null&&matches(v));
  const pointKey=points.map(p=>p.id).join();
  const selId=query.get('cinema');

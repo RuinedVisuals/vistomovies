@@ -7,7 +7,7 @@ const UPDATED='23 Οκτωβρίου 2026';
 const contact=CONTACT?<a href={`mailto:${CONTACT}`}>{CONTACT}</a>:<em>[email επικοινωνίας — να συμπληρωθεί]</em>;
 
 function Page({title,children}:{title:string;children:React.ReactNode}){
- return <main className="screen no-nav legal">
+ return <main className="screen no-nav narrow legal">
   <div className="page-head"><button type="button" className="back-pill" onClick={()=>back('/movies')} aria-label="Πίσω"><CaretLeft weight="bold"/>Πίσω</button>
    <h1 style={{marginTop:14}}>{title}</h1><div className="over" style={{marginTop:6}}>Τελευταία ενημέρωση: {UPDATED}</div></div>
   <div className="pad legal-body">{children}
@@ -69,7 +69,7 @@ export function Terms(){
    <li>Μπορείς να διαγράψεις τον λογαριασμό σου οποιαδήποτε στιγμή από το προφίλ σου.</li>
   </ul>
   <h2>Πηγές και πνευματικά δικαιώματα</h2>
-  <p>Τα στοιχεία προγράμματος προέρχονται από το Αθηνόραμα. Τα στοιχεία των ταινιών (περιλήψεις, πόστερ, βαθμολογίες, συντελεστές) προέρχονται από το TMDB. Αυτό το προϊόν χρησιμοποιεί το TMDB API, αλλά δεν υποστηρίζεται ούτε πιστοποιείται από το TMDB. Τα πόστερ και τα ονόματα ανήκουν στους δικαιούχους τους. Οι χάρτες χρησιμοποιούν δεδομένα του OpenStreetMap (© συνεργάτες του OpenStreetMap).</p>
+  <p>Τα στοιχεία προγράμματος προέρχονται από δημόσιες πηγές. Τα στοιχεία των ταινιών (περιλήψεις, πόστερ, βαθμολογίες, συντελεστές) προέρχονται από το TMDB. Αυτό το προϊόν χρησιμοποιεί το TMDB API, αλλά δεν υποστηρίζεται ούτε πιστοποιείται από το TMDB. Τα πόστερ και τα ονόματα ανήκουν στους δικαιούχους τους. Οι χάρτες χρησιμοποιούν δεδομένα του OpenStreetMap (© συνεργάτες του OpenStreetMap).</p>
   <h2>Περιορισμός ευθύνης</h2>
   <p>Η εφαρμογή παρέχεται «ως έχει». Στο μέτρο που επιτρέπει ο νόμος, δεν ευθυνόμαστε για ζημιές από τη χρήση της ή από την αδυναμία χρήσης.</p>
   <h2>Αλλαγές και επικοινωνία</h2>

@@ -12,8 +12,8 @@ export function Link({to,replace,children,...rest}:{to:string;replace?:boolean;c
 }
 
 const NAV=[{to:'/movies',label:'Ταινίες',Icon:FilmStrip},{to:'/cinemas',label:'Σινεμά',Icon:ProjectorScreen},{to:'/map',label:'Χάρτης',Icon:MapTrifold},{to:'/saved',label:'Αγαπημένα',Icon:Heart}];
-export function BottomNav({active}:{active:number}){
- return <nav className="bottom-nav" aria-label="Κύρια πλοήγηση">{NAV.map((n,i)=><Link key={n.to} to={n.to} aria-current={i===active?'page':undefined}>
+export function BottomNav({active,desktopOnly}:{active:number;desktopOnly?:boolean}){
+ return <nav className={'bottom-nav'+(desktopOnly?' desktop-only':'')} aria-label="Κύρια πλοήγηση"><Link to="/movies" className="nav-brand" aria-label="Visto αρχική">visto<span>.</span></Link>{NAV.map((n,i)=><Link key={n.to} to={n.to} aria-current={i===active?'page':undefined}>
   <span className="pill"><n.Icon weight={i===active?'fill':'regular'}/></span>{n.label}</Link>)}</nav>;
 }
 

@@ -22,13 +22,13 @@ export function Cinemas(){
  useEntrance(ref,[venues.length>0,tab]);
  return <main className="screen" ref={ref}>
   <div data-a className="page-head"><div className="over">{venues.length} χώροι · {all.filter(x=>x.i.has).length} με πρόγραμμα σήμερα</div><h1>Σινεμά</h1></div>
-  <div data-a style={{display:'flex',gap:8,padding:'14px 20px 0'}}>
+  <div data-a className="c-search toolbar">
    <label className="search"><MagnifyingGlass size={17}/><span className="sr-only">Αναζήτηση κινηματογράφου</span><input type="search" value={q} placeholder="Όνομα ή γειτονιά" onChange={e=>setQuery({q:e.target.value})}/>
     {q&&<button type="button" className="clear" aria-label="Καθαρισμός" onClick={()=>setQuery({q:null})}><X size={15}/></button>}</label>
    <Link to="/map" className="icon-btn" aria-label="Χάρτης" style={{color:'var(--color-text)'}}><MapTrifold/></Link>
   </div>
-  <div data-a style={{padding:'12px 20px 0'}}><Segmented label="Εμφάνιση" options={['Όλα','Με πρόγραμμα','Αγαπημένα']} value={tab} onChange={i=>setQuery({show:i?TABS[i]:null})}/></div>
-  <div style={{display:'flex',flexDirection:'column',gap:10,padding:'16px 20px 0'}}>
+  <div data-a className="toolbar seg-bar"><Segmented label="Εμφάνιση" options={['Όλα','Με πρόγραμμα','Αγαπημένα']} value={tab} onChange={i=>setQuery({show:i?TABS[i]:null})}/></div>
+  <div className="stack-list pad" style={{paddingTop:16}}>
    {list.map(({v,i})=><article data-a key={v.id} className="cine-card">
     <div className="row">
      <div className="tile" style={{'--hue':venueHue(v.id)} as CSSProperties}>{i.types[0]==='summer'?<SunHorizon/>:<ProjectorScreen/>}</div>
@@ -64,10 +64,10 @@ export function CinemaPage({id}:{id:string}){
   return {title,route,m,poster:tmdbImage(m?.posterPath,'w185')||catalog.movies[rs[0].movieSourceUrl||title]?.poster||null,times:sortTimes(rs.map(r=>r.time)),rows:rs,
    sub:uniq(rs.map(r=>r.screen).filter(Boolean)).join(', ')+(rs[0].screen?' · ':'')+(m===null?'χωρίς στοιχεία TMDB':[m?.badge,uniq(rs.map(r=>VERSION_SHORT[version(r)])).join('/')].filter(Boolean).join(' · '))};
  }).sort((a,b)=>timeKey(a.times[0]).localeCompare(timeKey(b.times[0])));
- const booking=weekRows.find(r=>r.bookingUrl)?.bookingUrl;const sourceUrl=weekRows[0]?.sourceUrl||v.athinoramaUrl;
+ const booking=weekRows.find(r=>r.bookingUrl)?.bookingUrl;
  const actions=[
   {label:'Οδηγίες',Icon:NavigationArrow,href:directionsUrl(v)},
-  {label:'Website',Icon:Globe,href:v.website||sourceUrl},
+  {label:'Website',Icon:Globe,href:v.website},
   {label:'Κλήση',Icon:Phone,href:v.phone?'tel:'+v.phone.replace(/\s/g,''):undefined},
   {label:'Εισιτήρια',Icon:Ticket,href:ticketsUrl(v.name,undefined,booking)},
  ];
@@ -83,13 +83,13 @@ export function CinemaPage({id}:{id:string}){
    <h1 data-a>{v.name}</h1>
    <div data-a style={{fontSize:13,color:'var(--color-neutral-400)'}}>{v.address}</div>
    <div data-a className="action-grid">{actions.map(a=><a key={a.label} href={a.href||undefined} target={a.href?.startsWith('http')?'_blank':undefined} rel="noreferrer" aria-disabled={!a.href}
-    title={!a.href?'Δεν υπάρχει διαθέσιμο':a.label==='Website'&&!v.website?'Σελίδα του σινεμά στο Αθηνόραμα':undefined}><a.Icon/>{a.label}</a>)}</div>
+    title={!a.href?'Δεν υπάρχει διαθέσιμο':undefined}><a.Icon/>{a.label}</a>)}</div>
    {halls.length>0&&<div data-a className="halls">{halls.map(h=><div key={h.label}><span>{h.t==='summer'?<Sun color="var(--color-neutral-400)"/>:<Armchair color="var(--color-neutral-400)"/>}{h.label}</span><span className="note">{h.note}</span></div>)}</div>}
    <div data-a className="geo-line">{v.precision==='venue'?<><SealCheck/>Θέση επιβεβαιωμένη · <a href={v.coordinateSource} target="_blank" rel="noreferrer">© OpenStreetMap</a></>
     :v.precision==='address'?<><MapPinSimpleArea/>Θέση από τη διεύθυνση · <a href={v.coordinateSource} target="_blank" rel="noreferrer">© OpenStreetMap</a></>
     :<><MapPinSimpleArea/>{v.lng!=null?'Θέση κατά προσέγγιση · εκκρεμεί επιβεβαίωση OSM':'Χωρίς θέση στον χάρτη · εκκρεμεί γεωκωδικοποίηση'}</>}</div>
    <div data-a className="section-head" style={{margin:'26px 0 10px'}}><h2 style={{fontSize:20}}>Πρόγραμμα</h2><span className="aside">{week?'έως '+shortDay(week.weekEnd):''}</span></div>
-   <div data-a style={{margin:'0 -20px'}}><DateStrip className="pad" value={day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d})}/></div>
+   <div data-a className="bleed"><DateStrip className="pad" value={day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d})}/></div>
    {programme.length?<div style={{marginTop:6}}>{programme.map(p=>{const to=`/movies/${p.route.id}/${p.route.slug}${day!==todayIso?'?date='+day:''}`;
     return <div data-a key={p.title} className="cine-film">
      <Link to={to} tabIndex={-1} aria-hidden="true"><Poster src={p.poster} title={p.title} striped={p.m===null} style={{width:56,height:82,borderRadius:8}}/></Link>
@@ -98,8 +98,8 @@ export function CinemaPage({id}:{id:string}){
     </div>})}</div>
    :<div data-a className="empty-card" style={{marginTop:14,padding:'22px 18px'}}><CalendarDots size={24} color="var(--color-neutral-500)"/>
      <strong>Δεν υπάρχει διαθέσιμο πρόγραμμα για αυτή την ημερομηνία.</strong>
-     <p>Αυτό δεν σημαίνει απαραίτητα ότι ο κινηματογράφος είναι κλειστός. {(v.website||sourceUrl)?<a href={v.website||sourceUrl} target="_blank" rel="noreferrer">Δες την επίσημη σελίδα.</a>:'Δες την επίσημη σελίδα.'}</p></div>}
-   <div data-a className="source-line" style={{marginTop:16}}>Πηγή προγράμματος: Αθηνόραμα · ενημ. {updatedLabel(week?.checkedAt,todayIso)}</div>
+     <p>Αυτό δεν σημαίνει απαραίτητα ότι ο κινηματογράφος είναι κλειστός. {v.website&&<a href={v.website} target="_blank" rel="noreferrer">Δες την επίσημη σελίδα.</a>}</p></div>}
+   <div data-a className="source-line" style={{marginTop:16}}>Ενημ. {updatedLabel(week?.checkedAt,todayIso)}</div>
   </div>
  </main>;
 }
