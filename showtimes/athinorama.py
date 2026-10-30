@@ -30,7 +30,7 @@ EXPR=rf'{ITEM}(?:(?:\s*,\s*|\s+){ITEM})*'
 CLAUSE=re.compile(rf'({EXPR})\s*:?\s*((?:\d{{1,2}}[.:]\d{{2}})(?:\s*[/,]\s*\d{{1,2}}[.:]\d{{2}})*)')
 def expand(schedule,start):
     schedule=re.sub(r'\((?:με εισ\.|Εισ\.|special previews|\d+€ όλα τα εισιτήρια)[^)]*\)', '', schedule, flags=re.I)
-    schedule=re.sub(r'(?:μεταγλ\.|DOLBY ATMOS|υποτ.|με υπότιτλους)', '', schedule, flags=re.I).strip()
+    schedule=re.sub(r'(?:μεταγλ\.|DOLBY ATMOS|υποτ\.|με υπότιτλους)', '', schedule, flags=re.I).strip()
     matches=list(CLAUSE.finditer(schedule));res=[];last=0
     if not matches:raise ValueError('Unrecognized schedule: '+schedule)
     for m in matches:
