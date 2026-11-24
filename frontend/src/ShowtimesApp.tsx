@@ -1,4 +1,4 @@
-import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
+import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState,useSyncExternalStore,type CSSProperties} from 'react';
 import {BellSimple,UserCircle,MapPin,CaretDown,MagnifyingGlass,SlidersHorizontal,ClockCounterClockwise,X,Info,CalendarDots,SquaresFour,Rows,CaretLeft,CaretRight} from '@phosphor-icons/react';
 import type {Catalog,Cinema,FilmIndex,History,Region,Showtime,WeekData} from './lib/types';
 import {today} from './lib/types';
@@ -184,8 +184,9 @@ function Feed({preset}:{preset?:string}){
     <Poster className="hero-img" src={tmdbImage(nextUp.m.meta?.backdropPath,'w780')||tmdbImage(nextUp.m.meta?.posterPath,'w500')||nextUp.m.poster} title={nextUp.m.title}/>
     <div className="shade"/><div className="info"><span className="when-pill">{untilLabel(nextUp.t,now)}</span>
      <div className="t">{nextUp.m.title}</div><div className="m">{nextUp.t} · {nextUp.m.cinemas} σινεμά{nextUp.m.meta?.vote!=null&&` · ★ ${nextUp.m.meta.vote.toFixed(1)}`}</div></div></Link></div>}
-   {!q&&!view&&!preset&&(()=>{const live=sections.map(s=>({s,n:list.filter(m=>s.titles.has(m.title)).length})).filter(x=>x.n>0);return live.length>0&&<div className="pad" style={{paddingTop:22}}><div data-a className="section-head" style={{padding:'0 0 12px'}}><h2>Ενότητες</h2></div>
-    <div data-a className="sec-rail">{live.map(({s,n})=><Link key={s.slug} to={`/movies/in/${s.slug}`} className="sec-card">{s.sponsor&&<em>Χορηγούμενο · {s.sponsor}</em>}<b>{s.title}</b>{s.description&&<span>{s.description}</span>}<small>{n} {n===1?'ταινία':'ταινίες'}</small></Link>)}</div></div>})()}
+   {!q&&!view&&!preset&&(()=>{const live=sections.map(s=>{const ms=list.filter(m=>s.titles.has(m.title));const art=ms.filter(m=>m.meta?.backdropPath||m.meta?.posterPath);const pick=art.length?art[[...todayIso].reduce((a,c)=>a+c.charCodeAt(0),0)%art.length]:null;// the artwork rotates daily over the section's films
+    return {s,n:ms.length,bg:pick?tmdbImage(pick.meta!.backdropPath||pick.meta!.posterPath,'w500'):null}}).filter(x=>x.n>0);return live.length>0&&<div className="pad" style={{paddingTop:22}}><div data-a className="section-head" style={{padding:'0 0 12px'}}><h2>Ενότητες</h2></div>
+    <div data-a className="sec-rail">{live.map(({s,n,bg})=><Link key={s.slug} to={`/movies/in/${s.slug}`} className="sec-card" style={bg?{'--bg':`url(${bg})`} as CSSProperties:undefined}>{s.sponsor&&<em>Χορηγούμενο · {s.sponsor}</em>}<b>{s.title}</b>{s.description&&<span>{s.description}</span>}<small>{n} {n===1?'ταινία':'ταινίες'}</small></Link>)}</div></div>})()}
    {featured.length>0&&!q&&!view&&!preset&&<>
     <div className="pop-band"><div data-a className="section-head pad" style={{padding:'0 20px 12px'}}><h2>Δημοφιλείς</h2><span className="aside">κορυφαίες {scopeLabel}</span>
      <div className="rail-arrows"><button type="button" aria-label="Προηγούμενες" onClick={()=>carousel.current?.scrollBy({left:-carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretLeft/></button><button type="button" aria-label="Επόμενες" onClick={()=>carousel.current?.scrollBy({left:carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretRight/></button></div></div>
