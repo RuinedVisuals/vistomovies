@@ -108,7 +108,13 @@ export const nextTime=(times:string[],day:string,todayIso:string,now:string)=>da
 
 // ---------- 01 Τι παίζει ----------
 const PAGE=12;
-const HOME_REGIONS:(Region|null)[]=[null,'Κέντρο','Βόρεια','Νότια','Πειραιάς'];
+// Quick filters on the home screen; the rest (area, distance, …) lives in the filter sheet.
+const QUICK:{label:string;on:(f:Filters)=>boolean;patch:(f:Filters)=>Record<string,string|string[]|null>}[]=[
+ {label:'Από τώρα',on:f=>f.time==='now',patch:f=>({time:f.time==='now'?null:'now'})},
+ {label:'Μετά τις 20:00',on:f=>f.time==='20',patch:f=>({time:f.time==='20'?null:'20'})},
+ {label:'Θερινά',on:f=>f.type.includes('summer'),patch:f=>({type:f.type.includes('summer')?[]:['summer']})},
+ {label:'Με υπότιτλους',on:f=>f.ver.includes('subtitled'),patch:f=>({ver:f.ver.includes('subtitled')?[]:['subtitled']})},
+];
 const SORTS=[['cinemas','Περισσότερα σινεμά'],['next','Επόμενη προβολή'],['title','Αλφαβητικά']] as const;
 function Feed({preset}:{preset?:string}){
  const app=useApp();const {query}=useRoute();const ref=useRef<HTMLElement>(null);
@@ -169,9 +175,7 @@ function Feed({preset}:{preset?:string}){
     {q&&<button type="button" className="clear" aria-label="Καθαρισμός αναζήτησης" onClick={()=>setQuery({q:null})}><X size={15}/></button>}</label>
    <button type="button" className="icon-btn accent" aria-label={'Φίλτρα'+(badge?` (${badge} ενεργά)`:'')} aria-haspopup="dialog" onClick={()=>setSheet(true)}><SlidersHorizontal/>{badge>0&&<span className="badge">{badge}</span>}</button>
   </div>
-  <div data-a className="hscroll chip-row pad c-chips">{HOME_REGIONS.map(r=>{const on=r?f.area.length===1&&f.area[0]===r:!f.area.length;
-   return <button key={r||'all'} type="button" className="chip" aria-pressed={on} onClick={e=>{setQuery({area:r?[r]:null});pop(e.currentTarget,.9)}}>{r||'Όλη η Αθήνα'}</button>})}</div>
-  {sections.length>0&&!preset&&<div data-a className="hscroll chip-row pad c-chips">{sections.map(s=><Link key={s.slug} to={`/movies/in/${s.slug}`} className="chip">{s.title}</Link>)}</div>}
+  <div data-a className="hscroll chip-row pad c-chips">{QUICK.map(c=><button key={c.label} type="button" className="chip" aria-pressed={c.on(f)} onClick={e=>{setQuery(c.patch(f));pop(e.currentTarget,.9)}}>{c.label}</button>)}</div>
   <div data-a className="pad c-seg"><Segmented label="Προβολή" options={['Ταινίες','Σινεμά']} value={view} onChange={i=>setQuery({view:i?'cinemas':null})}/></div>
   </div>
   {!loading&&<SourceNotice/>}
@@ -180,6 +184,8 @@ function Feed({preset}:{preset?:string}){
     <Poster className="hero-img" src={tmdbImage(nextUp.m.meta?.backdropPath,'w780')||tmdbImage(nextUp.m.meta?.posterPath,'w500')||nextUp.m.poster} title={nextUp.m.title}/>
     <div className="shade"/><div className="info"><span className="when-pill">{untilLabel(nextUp.t,now)}</span>
      <div className="t">{nextUp.m.title}</div><div className="m">{nextUp.t} · {nextUp.m.cinemas} σινεμά{nextUp.m.meta?.vote!=null&&` · ★ ${nextUp.m.meta.vote.toFixed(1)}`}</div></div></Link></div>}
+   {!q&&!view&&!preset&&(()=>{const live=sections.map(s=>({s,n:list.filter(m=>s.titles.has(m.title)).length})).filter(x=>x.n>0);return live.length>0&&<div className="pad" style={{paddingTop:22}}><div data-a className="section-head" style={{padding:'0 0 12px'}}><h2>Ενότητες</h2></div>
+    <div data-a className="sec-rail">{live.map(({s,n})=><Link key={s.slug} to={`/movies/in/${s.slug}`} className="sec-card">{s.sponsor&&<em>Χορηγούμενο · {s.sponsor}</em>}<b>{s.title}</b>{s.description&&<span>{s.description}</span>}<small>{n} {n===1?'ταινία':'ταινίες'}</small></Link>)}</div></div>})()}
    {featured.length>0&&!q&&!view&&!preset&&<>
     <div className="pop-band"><div data-a className="section-head pad" style={{padding:'0 20px 12px'}}><h2>Δημοφιλείς</h2><span className="aside">κορυφαίες {scopeLabel}</span>
      <div className="rail-arrows"><button type="button" aria-label="Προηγούμενες" onClick={()=>carousel.current?.scrollBy({left:-carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretLeft/></button><button type="button" aria-label="Επόμενες" onClick={()=>carousel.current?.scrollBy({left:carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretRight/></button></div></div>

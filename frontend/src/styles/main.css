@@ -550,3 +550,10 @@ button.time-chip:active{transform:scale(.94)}
 .featured{cursor:grab}.featured.drag{scroll-snap-type:none;cursor:grabbing;user-select:none}
 .feat-card .rank{display:none}
 a.chip{text-decoration:none;color:inherit}
+.sec-rail{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.sec-rail::-webkit-scrollbar{display:none}
+.sec-card{flex:0 0 min(260px,78%);display:flex;flex-direction:column;gap:6px;padding:16px 18px;border-radius:18px;text-decoration:none;color:var(--color-text);background:linear-gradient(160deg,color-mix(in srgb,var(--color-accent) 16%,var(--color-bg)),var(--color-bg));border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)}
+.sec-card b{font-size:17px;line-height:1.25}
+.sec-card span{font-size:13px;color:var(--color-neutral-400);line-height:1.4}
+.sec-card small{margin-top:auto;padding-top:6px;font-size:12px;font-weight:600;color:var(--color-accent-300)}
+section.sec-card em,.sec-card em{font-style:normal;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--color-accent-300)}

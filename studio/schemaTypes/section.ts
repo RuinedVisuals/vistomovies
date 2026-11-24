@@ -16,6 +16,13 @@ export const section = defineType({
       type: 'array',
       of: [{type: 'string'}],
     }),
+    defineField({
+      name: 'cinemas',
+      title: 'Σινεμά',
+      description: 'Όλες οι ταινίες που παίζουν σε αυτά τα σινεμά μπαίνουν στην ενότητα (π.χ. για προώθηση ενός σινεμά). Όνομα ακριβώς όπως φαίνεται στην εφαρμογή.',
+      type: 'array',
+      of: [{type: 'string'}],
+    }),
     defineField({name: 'sponsor', title: 'Χορηγός / διοργανωτής', type: 'string'}),
   ],
 })

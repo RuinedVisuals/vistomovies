@@ -1,8 +1,8 @@
 import {useEffect,useState} from 'react';
 import type {FilmIndex,Showtime} from './types';
 
-export type Section={slug:string;title:string;description?:string;titles:Set<string>};
-type Manual={slug:string;title:string;description?:string;films:string[]};
+export type Section={slug:string;title:string;description?:string;sponsor?:string;titles:Set<string>};
+type Manual={slug:string;title:string;description?:string;sponsor?:string;films?:string[];cinemas?:string[]};
 const MIN=3; // an automatic section appears only with enough films to be worth a page
 
 /** Sections derived from the programme itself. Festivals and cycles are curated in public/sections.json. */
@@ -17,5 +17,7 @@ export function useSections(rows:Showtime[],films:FilmIndex):Section[]{
  useEffect(()=>{const c=new AbortController();
   fetch('/sections.json',{signal:c.signal}).then(r=>r.ok&&r.headers.get('content-type')?.includes('json')?r.json():null).then(d=>setManual(d?.sections||[])).catch(()=>{});
   return()=>c.abort()},[]);
- return [...autoSections(rows,films),...manual.map(m=>({slug:m.slug,title:m.title,description:m.description,titles:new Set(m.films)}))];
+ return [...autoSections(rows,films),...manual.map(m=>({slug:m.slug,title:m.title,description:m.description,sponsor:m.sponsor,
+  // a section lists hand-picked films and/or everything a given cinema is showing (e.g. a promoted cinema)
+  titles:new Set([...(m.films||[]),...rows.filter(r=>m.cinemas?.includes(r.cinema)).map(r=>r.movie)])}))];
 }

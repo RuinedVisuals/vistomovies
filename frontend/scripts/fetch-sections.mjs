@@ -3,7 +3,7 @@
 import {writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 
-const q = '*[_type=="section" && defined(slug.current)]{title,"slug":slug.current,description,sponsor,"films":coalesce(films,[])}';
+const q = '*[_type=="section" && defined(slug.current)]{title,"slug":slug.current,description,sponsor,"films":coalesce(films,[]),"cinemas":coalesce(cinemas,[])}';
 const url = `https://iqd4six9.apicdn.sanity.io/v2025-01-01/data/query/production?query=${encodeURIComponent(q)}`;
 try {
   const res = await fetch(url);
