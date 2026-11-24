@@ -9,6 +9,7 @@ is never stored under the new week's dates.
     differs enough from the stored week; then store it and prefetch TMDB metadata.
 """
 import json
+import re
 import threading
 import time
 from datetime import date, datetime, timedelta
@@ -86,12 +87,27 @@ def due(db, now=None):
 STATIC = Path('frontend/public')
 
 
+MORE_LISTING = 'https://www.more.com/gr-el/tickets/cinema/'
+
+
+def more_links():
+    """{normalised title: More event URL} from More's public listing page; {} when it is unreachable or changed."""
+    try:
+        html = fetch(MORE_LISTING)
+    except Exception:
+        return {}
+    cards = re.findall(r'href="(/gr-el/tickets/cinemas?/[^"]+)">.*?<h3 class="playinfo__title"[^>]*>([^<]+)</h3>', html, re.S)
+    return {films.norm(t): 'https://www.more.com' + u for u, t in cards}
+
+
 def export_static(db, out=STATIC):
     """Write the current week + TMDB metadata as static files (snapshot.json, films.json) for hosting
     without the Python API. The frontend falls back to them when /api is unavailable."""
     wk = storage.week(db)
     if not wk['showtimes']:
         return None
+    more = more_links()  # booking link from More for films it sells; rows keep their own link if the source gave one
+    wk['showtimes'] = [{**r, 'bookingUrl': r.get('bookingUrl') or more.get(films.norm(r['movie']))} for r in wk['showtimes']]
     sources = storage.status(db)
     export_history(wk, out)
     export_quality(wk, out)
