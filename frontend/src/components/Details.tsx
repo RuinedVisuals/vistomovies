@@ -30,8 +30,9 @@ export default function Details({id}:{id:string}){
  const title=filmRows[0]?.movie||(savedKey&&(catalog.movies[savedKey]?.title||savedKey))||'';
  const key=filmRows[0]?filmKey(filmRows[0]):savedKey||'';
  const meta=films[title];
- const [trailer,setTrailer]=useState<string|null>(null);
- useEffect(()=>{if(!meta?.tmdbId)return;const c=new AbortController();
+ const [apiTrailer,setTrailer]=useState<string|null>(null);const [playing,setPlaying]=useState(false);
+ const trailer=meta?.trailer||apiTrailer;
+ useEffect(()=>{if(!meta?.tmdbId||meta.trailer!==undefined)return;const c=new AbortController();
   fetch('/api/movies/'+meta.tmdbId,{signal:c.signal}).then(r=>r.ok?r.json():null).then(d=>{const v=d?.videos?.results?.find((v:{site:string;type:string;key:string})=>v.site==='YouTube'&&v.type==='Trailer'&&/^[\w-]+$/.test(v.key));if(v)setTrailer(v.key)}).catch(()=>{});
   return()=>c.abort()},[meta?.tmdbId]);
 
@@ -89,7 +90,8 @@ export default function Details({id}:{id:string}){
    </div></div>
    <div className="backdrop" style={{'--hue':hueOf(title)} as CSSProperties}>
     {meta?.backdropPath?<img ref={bg} src={tmdbImage(meta.backdropPath,'w1280')!} alt=""/>:(meta?.posterPath||catalog.movies[key]?.poster)&&<img ref={bg} src={tmdbImage(meta?.posterPath,'w780')||catalog.movies[key]!.poster!} alt="" style={{filter:'blur(18px) brightness(.7)',scale:'1.2'}}/>}
-    {trailer&&<a className="play" href={'https://www.youtube.com/watch?v='+trailer} target="_blank" rel="noreferrer" aria-label="Δες το trailer"><Play weight="fill"/></a>}
+    {trailer&&!playing&&<button type="button" className="play" onClick={()=>setPlaying(true)} aria-label="Δες το trailer"><Play weight="fill"/></button>}
+    {trailer&&playing&&<iframe className="trailer" src={'https://www.youtube-nocookie.com/embed/'+trailer+'?autoplay=1&rel=0'} title={'Trailer: '+title} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen/>}
     <div className="shade"/>
    </div>
    <div ref={body} className="detail-body">

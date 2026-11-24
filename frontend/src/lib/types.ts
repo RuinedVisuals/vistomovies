@@ -15,7 +15,7 @@ export type Quality={weekStart:string;reportWeek:string|null;rows:number;films:n
  skipped:{cinema:string;movie:string;screen:string|null;rawSchedule:string;reason:string}[];unmatchedTmdb:string[]};
 export type FilmMeta={tmdbId:number;imdbId:string|null;title:string;originalTitle:string|null;year:number|null;releaseDate?:string|null;runtime:number|null;
  genres:string[];countryCode:string|null;languageCode:string|null;vote:number|null;voteCount:number;overview:string;overviewLanguage?:string|null;
- posterPath:string|null;backdropPath:string|null;cast:CastMember[];badge?:string};
+ posterPath:string|null;backdropPath:string|null;cast:CastMember[];badge?:string;trailer?:string|null};
 /** title → metadata; null = looked up, no TMDB match; missing = not looked up yet. */
 export type FilmIndex=Record<string,FilmMeta|null>;
 export type Catalog={movies:Record<string,{title:string;poster:string|null;genre:string}>};

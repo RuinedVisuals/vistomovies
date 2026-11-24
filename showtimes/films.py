@@ -46,8 +46,8 @@ def save(cache):
 def fresh(entry, now):
     if not isinstance(entry, dict) or 'fetchedAt' not in entry:
         return False
-    if isinstance(entry.get('film'), dict) and 'releaseDate' not in entry['film']:
-        return False  # cached before releaseDate was stored
+    if isinstance(entry.get('film'), dict) and ('releaseDate' not in entry['film'] or 'trailer' not in entry['film']):
+        return False  # cached before releaseDate/trailer were stored
     return now - entry['fetchedAt'] < (HIT_TTL if entry.get('film') else MISS_TTL)
 
 
@@ -90,6 +90,7 @@ def describe(title, movie):
         'posterPath': movie.get('poster_path'),
         'backdropPath': movie.get('backdrop_path'),
         'cast': cast,
+        'trailer': next((v['key'] for v in (movie.get('videos') or {}).get('results', []) if v.get('site') == 'YouTube' and v.get('type') == 'Trailer'), None),
     }
     # Older titles showing in a current programme are re-releases.
     if year and year <= date.today().year - 3:
@@ -104,7 +105,7 @@ OVERRIDES = json.loads((Path(__file__).parent / 'tmdb_overrides.json').read_text
 def lookup(title):
     if title in OVERRIDES:
         resource = 'movie/' + str(OVERRIDES[title])
-        movie = tmdb.get(resource, append_to_response='credits,external_ids')
+        movie = tmdb.get(resource, append_to_response='credits,external_ids,videos', include_video_language='el,en,null')
         if not movie.get('overview'):
             movie['overview'] = tmdb.get(resource, language='en-US').get('overview', '')
             movie['overview_language'] = 'en' if movie['overview'] else None
@@ -114,7 +115,7 @@ def lookup(title):
     if not hit:
         return None
     resource = 'movie/' + str(hit['id'])
-    movie = tmdb.get(resource, append_to_response='credits,external_ids')
+    movie = tmdb.get(resource, append_to_response='credits,external_ids,videos', include_video_language='el,en,null')
     if not movie.get('overview'):
         movie['overview'] = tmdb.get(resource, language='en-US').get('overview', '')
         movie['overview_language'] = 'en' if movie['overview'] else None
