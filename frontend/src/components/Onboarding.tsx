@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {supabase} from '../lib/supabase';
 import {FilmStrip,MapPin,UsersThree} from '@phosphor-icons/react';
 import {useApp} from '../lib/context';
 import {tmdbImage} from '../lib/data';
@@ -54,7 +55,7 @@ export default function Onboarding({onDone}:{onDone:()=>void}){
    <div className="onb-dots" aria-hidden="true">{STEPS.map((_,i)=><i key={i} className={i===step?'on':''}/>)}</div>
    <button type="button" className="btn btn-primary onb-cta" onClick={next}>{step===1?'Χρήση τοποθεσίας':last?'Ξεκίνα':'Συνέχεια'}</button>
    {step===1&&<button type="button" className="auth-link" onClick={()=>setStep(2)}>Όχι τώρα</button>}
-   {last&&!session&&<button type="button" className="auth-link" onClick={()=>{finish();openAccount()}}>Έχω ήδη λογαριασμό · Σύνδεση</button>}
+   {last&&supabase&&!session&&<button type="button" className="auth-link" onClick={()=>{finish();openAccount()}}>Έχω ήδη λογαριασμό · Σύνδεση</button>}
   </div>
  </div>;
 }

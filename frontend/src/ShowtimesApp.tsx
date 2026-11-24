@@ -83,7 +83,7 @@ export default function ShowtimesApp(){
   {section==='map'&&<Suspense fallback={<div className="map-screen"/>}><MapScreen/></Suspense>}
   {section==='saved'&&<Saved/>}
   {section==='status'&&<Status/>}
-  {section==='plans'&&<Plans/>}
+  {section==='plans'&&supabase&&<Plans/>}
   {section==='privacy'&&<Privacy/>}
   {section==='terms'&&<Terms/>}
   {section&&!['movies','cinemas','map','saved','status','add','plans','privacy','terms'].includes(section)&&<NotFound/>}

@@ -3,8 +3,9 @@ import {useEffect,useState} from 'react';
 import type {Session} from '@supabase/supabase-js';
 
 const url=import.meta.env.VITE_SUPABASE_URL as string|undefined,key=import.meta.env.VITE_SUPABASE_KEY as string|undefined;
-/** null when the env vars are missing: the app then works as before, without accounts. */
-export const supabase=url&&key?createClient(url,key):null;
+/** null when accounts are off or the env vars are missing: the app then works without accounts.
+ *  Accounts are disabled for now; set VITE_ACCOUNTS=true to bring them back. */
+export const supabase=import.meta.env.VITE_ACCOUNTS==='true'&&url&&key?createClient(url,key):null;
 
 /** Current session (undefined while loading, null when signed out). */
 export function useSession(){
