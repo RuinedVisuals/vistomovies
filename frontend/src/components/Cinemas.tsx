@@ -7,21 +7,24 @@ import {useEntrance} from '../lib/motion';
 import {tmdbImage} from '../lib/data';
 import {directionsUrl,ticketsUrl,venueHue} from '../lib/geo';
 import {normalize,nowTime} from '../lib/types';
-import {HALL_LABEL,VERSION_SHORT,cinemaInfo,cinemaRoute,dayScope,filmRoute,groupBy,hallType,shortDay,sortTimes,timeKey,uniq,updatedLabel,version} from '../lib/derive';
+import {HALL_LABEL,VERSION_SHORT,cinemaInfo,cinemaRoute,dayScope,filmRoute,groupBy,hallType,shortDay,slugify,sortTimes,timeKey,uniq,updatedLabel,version} from '../lib/derive';
 import {DateStrip,Link,Poster,Segmented,StarButton,TimeChips} from './ui';
 
 const TABS=['all','programme','fav'] as const;
 
 /** 04 Σινεμά — every cinema stays listed; "no data" is not "closed". */
-export function Cinemas(){
+export function Cinemas({preset}:{preset?:string}={}){
  const {venues,rows,todayIso,favCinemas,loading}=useApp();const {query}=useRoute();const ref=useRef<HTMLElement>(null);
  const q=query.get('q')||'';const tab=Math.max(0,TABS.indexOf((query.get('show')||'all') as typeof TABS[number]));
  const todayBy=useMemo(()=>groupBy(rows.filter(r=>r.programmeDate===todayIso),r=>r.cinema),[rows,todayIso]);
- const all=useMemo(()=>venues.map(v=>({v,i:cinemaInfo(v,todayBy.get(v.name)||[])})).sort((a,b)=>Number(b.i.has)-Number(a.i.has)||a.v.name.localeCompare(b.v.name,'el')),[venues,todayBy]);
+
+ const scope=useMemo(()=>preset?venues.filter(v=>preset==='summer'?v.summer:slugify(v.area||'')===preset||slugify(v.region||'')===preset):venues,[venues,preset]);
+ const label=preset==='summer'?'Θερινά σινεμά':scope.find(v=>slugify(v.area||'')===preset)?.area||scope.find(v=>slugify(v.region||'')===preset)?.region||'Σινεμά';
+ const all=useMemo(()=>scope.map(v=>({v,i:cinemaInfo(v,todayBy.get(v.name)||[])})).sort((a,b)=>Number(b.i.has)-Number(a.i.has)||a.v.name.localeCompare(b.v.name,'el')),[scope,todayBy]);
  const list=all.filter(({v,i})=>(tab===0||(tab===1?i.has:favCinemas.has(v.id)))&&(!q||normalize(v.name+' '+v.area+' '+v.address).includes(normalize(q))));
  useEntrance(ref,[venues.length>0,tab]);
  return <main className="screen" ref={ref}>
-  <div data-a className="page-head"><div className="over">{venues.length} χώροι · {all.filter(x=>x.i.has).length} με πρόγραμμα σήμερα</div><h1>Σινεμά</h1></div>
+  <div data-a className="page-head"><div className="over">{scope.length} χώροι · {all.filter(x=>x.i.has).length} με πρόγραμμα σήμερα</div><h1>{preset?label:'Σινεμά'}</h1></div>
   <div data-a className="c-search toolbar">
    <label className="search"><MagnifyingGlass size={17}/><span className="sr-only">Αναζήτηση κινηματογράφου</span><input type="search" value={q} placeholder="Όνομα ή γειτονιά" onChange={e=>setQuery({q:e.target.value})}/>
     {q&&<button type="button" className="clear" aria-label="Καθαρισμός" onClick={()=>setQuery({q:null})}><X size={15}/></button>}</label>

@@ -79,7 +79,7 @@ export default function ShowtimesApp(){
   {sheet==='profile'&&<ProfileSheet onClose={()=>setSheet(null)} onDone={setNote}/>}
   {(section==='movies'||!section)&&<Feed/>}
   {section==='movies'&&id&&<Details key={id} id={id}/>}
-  {section==='cinemas'&&(id?<CinemaPage key={id} id={id}/>:<Cinemas/>)}
+  {section==='cinemas'&&(id==='in'?<Cinemas preset={parts[2]}/>:id?<CinemaPage key={id} id={id}/>:<Cinemas/>)}
   {section==='map'&&<Suspense fallback={<div className="map-screen"/>}><MapScreen/></Suspense>}
   {section==='saved'&&<Saved/>}
   {section==='status'&&<Status/>}
@@ -87,7 +87,7 @@ export default function ShowtimesApp(){
   {section==='privacy'&&<Privacy/>}
   {section==='terms'&&<Terms/>}
   {section&&!['movies','cinemas','map','saved','status','add','plans','privacy','terms'].includes(section)&&<NotFound/>}
-  <BottomNav desktopOnly={(section==='cinemas'&&!!id)||section==='privacy'||section==='terms'} active={section==='cinemas'?1:section==='map'?2:section==='saved'||section==='add'||section==='plans'?3:0}/>
+  <BottomNav desktopOnly={(section==='cinemas'&&!!id&&id!=='in')||section==='privacy'||section==='terms'} active={section==='cinemas'?1:section==='map'?2:section==='saved'||section==='add'||section==='plans'?3:0}/>
  </div></AppContext.Provider>;
 }
 

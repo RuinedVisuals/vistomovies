@@ -107,6 +107,25 @@ for (const [name, rs] of byCin) {
   urls.push(path);
 }
 
+// Landing pages: one per neighbourhood / region plus summer cinemas (the SPA renders the same list at /cinemas/in/<slug>)
+const groups = new Map();
+const add = (slug, title, v) => (groups.get(slug) ?? groups.set(slug, {title, venues: []}).get(slug)).venues.push(v);
+for (const v of cinemas) {
+  if (v.area) add(slugify(v.area), v.area, v);
+  if (v.region) add(slugify(v.region), v.region, v);
+  if (v.summer) add('summer', 'Θερινά σινεμά', v);
+}
+for (const [slug, {title, venues}] of groups) {
+  const path = `/cinemas/in/${slug}`;
+  const label = slug === 'summer' ? 'Θερινά σινεμά Αθήνας' : `Σινεμά ${title}`;
+  const filmsHere = new Set(venues.flatMap(v => (byCin.get(v.name) ?? []).map(r => r.movie)));
+  const description = `${label}: ${venues.length} κινηματογράφοι (${venues.slice(0, 4).map(v => v.name).join(', ')}${venues.length > 4 ? '…' : ''})` + (filmsHere.size ? ` με ${filmsHere.size} ταινίες αυτή την εβδομάδα.` : '.');
+  const body = `<main><h1>${esc(label)}</h1>` + list(venues.map(v => `<a href="${venueSlug(v)}">${esc(v.name)}</a>${v.address ? ' — ' + esc(v.address) : ''}`)) + `</main>`;
+  const jsonld = {'@context': 'https://schema.org', '@type': 'ItemList', name: label, itemListElement: venues.map((v, i) => ({'@type': 'ListItem', position: i + 1, url: abs(venueSlug(v)), name: v.name}))};
+  page({path, title: `${label} — πρόγραμμα ταινιών | Visto`, description, jsonld, body});
+  urls.push(path);
+}
+
 // Home: real content + site-wide description
 const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/Athens'}).format(new Date());
 page({
