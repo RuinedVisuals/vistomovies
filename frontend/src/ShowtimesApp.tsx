@@ -16,7 +16,7 @@ import AuthSheet from './components/AuthSheet';
 import ProfileSheet from './components/ProfileSheet';
 import {navigate,setQuery,useRoute} from './lib/router';
 import {useEntrance,pop} from './lib/motion';
-import {activeGroups,EMPTY_FILTERS,filmFlags,filmRoute,filmSub,groupBy,longDate,matchRow,scopeDays,shortDay,dayScope,summarize,timeKey,updatedLabel,cinemaRoute,type Filters,type FilmSummary,type HallType,type TimeFilter} from './lib/derive';
+import {activeGroups,EMPTY_FILTERS,filmFlags,filmRoute,filmSub,groupBy,longDate,matchRow,scopeDays,shortDay,dayScope,summarize,timeKey,updatedLabel,cinemaRoute,slugify,type Filters,type FilmSummary,type HallType,type TimeFilter} from './lib/derive';
 import type {Version} from './lib/types';
 import {BottomNav,DateStrip,HeartButton,Link,Poster,Segmented,SkeletonRows,TimeChips} from './components/ui';
 import FilterSheet from './components/FilterSheet';
@@ -77,8 +77,8 @@ export default function ShowtimesApp(){
   {sheet==='auth'&&<AuthSheet onClose={()=>setSheet(null)} onDone={setNote}/>}
   {sheet==='reset'&&<AuthSheet initial="reset" onClose={()=>setSheet(null)} onDone={setNote}/>}
   {sheet==='profile'&&<ProfileSheet onClose={()=>setSheet(null)} onDone={setNote}/>}
-  {(section==='movies'||!section)&&<Feed/>}
-  {section==='movies'&&id&&<Details key={id} id={id}/>}
+  {(section==='movies'||!section)&&<Feed preset={id==='in'?parts[2]:undefined}/>}
+  {section==='movies'&&id&&id!=='in'&&<Details key={id} id={id}/>}
   {section==='cinemas'&&(id==='in'?<Cinemas preset={parts[2]}/>:id?<CinemaPage key={id} id={id}/>:<Cinemas/>)}
   {section==='map'&&<Suspense fallback={<div className="map-screen"/>}><MapScreen/></Suspense>}
   {section==='saved'&&<Saved/>}
@@ -109,10 +109,11 @@ export const nextTime=(times:string[],day:string,todayIso:string,now:string)=>da
 const PAGE=12;
 const HOME_REGIONS:(Region|null)[]=[null,'Κέντρο','Βόρεια','Νότια','Πειραιάς'];
 const SORTS=[['cinemas','Περισσότερα σινεμά'],['next','Επόμενη προβολή'],['title','Αλφαβητικά']] as const;
-function Feed(){
+function Feed({preset}:{preset?:string}){
  const app=useApp();const {query}=useRoute();const ref=useRef<HTMLElement>(null);
  const {rows,week,films,catalog,history,todayIso,venueByName,userLoc,loading,error,mode}=app;
- const day=query.get('date')||todayIso;const f=readFilters(query);const q=query.get('q')||'';
+ const day=query.get('date')||todayIso;const f0=readFilters(query);const genreName=preset&&preset!=='today'?Object.values(films).flatMap(m=>m?.genres||[]).find(g=>slugify(g)===preset):undefined;
+ const f=genreName?{...f0,range:true,genre:[genreName]}:f0;const q=query.get('q')||'';
  const sort=(query.get('sort')||'cinemas') as typeof SORTS[number][0];
  const view=query.get('view')==='cinemas'?1:0;
  const [sheet,setSheet]=useState(false);
@@ -156,7 +157,7 @@ function Feed(){
     {app.session&&<Link to="/plans" className="bell-btn" aria-label={`Σχέδια${app.plans.pending.length?` (${app.plans.pending.length} νέες προσκλήσεις)`:''}`}><BellSimple weight={app.plans.pending.length?'fill':'regular'}/>{app.plans.pending.length>0&&<span className="badge">{app.plans.pending.length}</span>}</Link>}
     {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?<Avatar session={app.session} size={34}/>:<UserCircle size={20}/>}</button>}</div></div>
   <div className="controls">
-  <div data-a className="c-title"><div className="c-date">{longDate(day)}</div><h1>{day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>
+  <div data-a className="c-title"><div className="c-date">{longDate(day)}</div><h1>{genreName?`Ταινίες ${genreName}`:day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>
   <div data-a className="c-dates"><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>
   <div data-a className="c-search">
    <label className="search"><MagnifyingGlass size={17}/><span className="sr-only">Αναζήτηση</span><input type="search" value={q} placeholder="Ταινία, σινεμά ή γειτονιά" onChange={e=>setQuery({q:e.target.value})}/>

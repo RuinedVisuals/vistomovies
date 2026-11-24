@@ -126,6 +126,20 @@ for (const [slug, {title, venues}] of groups) {
   urls.push(path);
 }
 
+// Film landing pages: today + one per genre (the SPA renders the feed at /movies/in/<slug>)
+const filmLink = t => { const r = filmRoute(byFilm.get(t)[0]); return `<a href="/movies/${r.id}/${r.slug}">${esc(t)}</a>`; };
+const genres = new Map();
+for (const t of byFilm.keys()) for (const g of films[t]?.genres || []) (genres.get(g) ?? genres.set(g, []).get(g)).push(t);
+const landing = [['today', 'Ταινίες σήμερα στην Αθήνα', 'Τι παίζει σήμερα στα σινεμά της Αθήνας', [...byFilm.keys()]],
+  ...[...genres].map(([g, ts]) => [slugify(g), `${g} ταινίες στα σινεμά της Αθήνας`, `${g} ταινίες που παίζονται αυτή την εβδομάδα στην Αθήνα`, ts])];
+for (const [slug, label, lead, ts] of landing) {
+  const path = `/movies/in/${slug}`;
+  const description = `${lead}: ${ts.length} ταινίες, μεταξύ αυτών ${ts.slice(0, 4).join(', ')}${ts.length > 4 ? '…' : ''}. Ώρες και σινεμά.`;
+  const jsonld = {'@context': 'https://schema.org', '@type': 'ItemList', name: label, itemListElement: ts.map((t, i) => { const r = filmRoute(byFilm.get(t)[0]); return {'@type': 'ListItem', position: i + 1, url: abs(`/movies/${r.id}/${r.slug}`), name: t}; })};
+  page({path, title: `${label} | Visto`, description, jsonld, body: `<main><h1>${esc(label)}</h1>${list(ts.map(filmLink))}</main>`});
+  urls.push(path);
+}
+
 // Home: real content + site-wide description
 const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/Athens'}).format(new Date());
 page({
