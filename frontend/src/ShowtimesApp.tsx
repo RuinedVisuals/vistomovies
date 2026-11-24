@@ -15,7 +15,7 @@ import {Privacy,Terms} from './components/Legal';
 import Avatar from './components/Avatar';
 import AuthSheet from './components/AuthSheet';
 import ProfileSheet from './components/ProfileSheet';
-import {navigate,setQuery,useRoute} from './lib/router';
+import {back,navigate,setQuery,useRoute} from './lib/router';
 import {useEntrance,pop} from './lib/motion';
 import {activeGroups,EMPTY_FILTERS,filmFlags,filmRoute,filmSub,groupBy,longDate,matchRow,scopeDays,shortDay,dayScope,summarize,timeKey,updatedLabel,cinemaRoute,slugify,type Filters,type FilmSummary,type HallType,type TimeFilter} from './lib/derive';
 import type {Version} from './lib/types';
@@ -159,8 +159,11 @@ function Feed({preset}:{preset?:string}){
     {app.session&&<Link to="/plans" className="bell-btn" aria-label={`Σχέδια${app.plans.pending.length?` (${app.plans.pending.length} νέες προσκλήσεις)`:''}`}><BellSimple weight={app.plans.pending.length?'fill':'regular'}/>{app.plans.pending.length>0&&<span className="badge">{app.plans.pending.length}</span>}</Link>}
     {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?<Avatar session={app.session} size={34}/>:<UserCircle size={20}/>}</button>}</div></div>
   <div className="controls">
-  <div data-a className="c-title"><div className="c-date">{longDate(day)}</div><h1>{section?section.title:genreName?`Ταινίες ${genreName}`:day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>
-  <div data-a className="c-dates"><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>
+  {section||genreName?<div data-a className="c-title"><button type="button" className="back-pill" onClick={()=>back('/movies')}><CaretLeft weight="bold"/>Όλες οι ταινίες</button>
+   <div className="c-date" style={{marginTop:14}}>{section?'Ενότητα':'Είδος'}</div><h1>{section?section.title:`Ταινίες ${genreName}`}</h1>
+   {section?.description&&<p className="muted" style={{marginTop:8,maxWidth:560}}>{section.description}</p>}</div>
+  :<div data-a className="c-title"><div className="c-date">{longDate(day)}</div><h1>{day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>}
+  {!(section||genreName)&&<div data-a className="c-dates"><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>}
   <div data-a className="c-search">
    <label className="search"><MagnifyingGlass size={17}/><span className="sr-only">Αναζήτηση</span><input type="search" value={q} placeholder="Ταινία, σινεμά ή γειτονιά" onChange={e=>setQuery({q:e.target.value})}/>
     {q&&<button type="button" className="clear" aria-label="Καθαρισμός αναζήτησης" onClick={()=>setQuery({q:null})}><X size={15}/></button>}</label>
@@ -173,11 +176,11 @@ function Feed({preset}:{preset?:string}){
   </div>
   {!loading&&<SourceNotice/>}
   {loading?<div className="pad" style={{paddingTop:20}}><SkeletonRows/></div>:error?<div className="pad" style={{paddingTop:24}}><div className="empty-card" role="alert"><strong style={{marginTop:0}}>{error}</strong><button className="btn btn-primary" style={{marginTop:12}} onClick={app.retry}>Δοκίμασε ξανά</button></div></div>:<>
-   {nextUp&&!q&&!view&&<div data-a className="pad hero-wrap" style={{paddingTop:18}}><Link to={filmTo(nextUp.m)} className="hero-card">
+   {nextUp&&!q&&!view&&!preset&&<div data-a className="pad hero-wrap" style={{paddingTop:18}}><Link to={filmTo(nextUp.m)} className="hero-card">
     <Poster className="hero-img" src={tmdbImage(nextUp.m.meta?.backdropPath,'w780')||tmdbImage(nextUp.m.meta?.posterPath,'w500')||nextUp.m.poster} title={nextUp.m.title}/>
     <div className="shade"/><div className="info"><span className="when-pill">{untilLabel(nextUp.t,now)}</span>
      <div className="t">{nextUp.m.title}</div><div className="m">{nextUp.t} · {nextUp.m.cinemas} σινεμά{nextUp.m.meta?.vote!=null&&` · ★ ${nextUp.m.meta.vote.toFixed(1)}`}</div></div></Link></div>}
-   {featured.length>0&&!q&&!view&&<>
+   {featured.length>0&&!q&&!view&&!preset&&<>
     <div className="pop-band"><div data-a className="section-head pad" style={{padding:'0 20px 12px'}}><h2>Δημοφιλείς</h2><span className="aside">κορυφαίες {scopeLabel}</span>
      <div className="rail-arrows"><button type="button" aria-label="Προηγούμενες" onClick={()=>carousel.current?.scrollBy({left:-carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretLeft/></button><button type="button" aria-label="Επόμενες" onClick={()=>carousel.current?.scrollBy({left:carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretRight/></button></div></div>
     <div ref={carousel} className="hscroll featured">{featured.map(m=><div data-a key={m.key} className="feat-card">
