@@ -30,6 +30,7 @@ const films = read('films.json').films || {};
 const cinemas = read('cinemas.json').cinemas || [];
 const template = readFileSync(join(dist, 'index.html'), 'utf-8');
 const rows = snap.showtimes;
+const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/Athens'}).format(new Date());
 const abs = p => origin + p;
 const img = p => (p ? 'https://image.tmdb.org/t/p/w780' + p : '');
 
@@ -136,22 +137,30 @@ const landing = [['today', 'Ταινίες σήμερα στην Αθήνα', '�
 // Thematic sections: automatic (same rules as src/lib/sections.ts) plus curated ones from sections.json
 const reissue = [...byFilm.keys()].filter(t => films[t]?.badge);
 const midnight = [...new Set(rows.filter(r => r.afterMidnight || r.time >= '23:30').map(r => r.movie))];
+const cinemasOf = new Map([...byFilm].map(([t, rs]) => [t, new Set(rs.map(r => r.cinema))]));
+const since = new Date(Date.parse(today) - 21 * 864e5).toISOString().slice(0, 10);
+const fresh = [...byFilm.keys()].filter(t => { const d = films[t]?.releaseDate; return d && d >= since && d <= today; });
+const top = [...byFilm.keys()].filter(t => { const m = films[t]; return m && m.vote != null && m.vote >= 7.5 && m.voteCount >= 300; });
+const rare = [...byFilm.keys()].filter(t => cinemasOf.get(t).size === 1);
+if (fresh.length >= 3) landing.push(['nees-tainies', 'Νέες ταινίες στα σινεμά της Αθήνας', 'Νέες ταινίες των τελευταίων τριών εβδομάδων', fresh]);
+if (top.length >= 3) landing.push(['ypsili-vathmologia', 'Οι πιο αγαπημένες ταινίες στα σινεμά της Αθήνας', 'Ταινίες με βαθμολογία 7,5 και πάνω στο TMDB', top]);
+if (rare.length >= 3) landing.push(['spanies-provoles', 'Σπάνιες προβολές στην Αθήνα', 'Ταινίες που παίζονται σε ένα μόνο σινεμά', rare]);
 if (reissue.length >= 3) landing.push(['epanekdoseis', 'Επανεκδόσεις στα σινεμά της Αθήνας', 'Επανεκδόσεις κλασικών ταινιών στην Αθήνα', reissue]);
 if (midnight.length >= 3) landing.push(['metamesonyxties', 'Μεταμεσονύχτιες προβολές στην Αθήνα', 'Μεταμεσονύχτιες προβολές στα σινεμά της Αθήνας', midnight]);
 for (const m of read('sections.json').sections || []) {
   const ts = [...new Set([...(m.films || []), ...rows.filter(r => (m.cinemas || []).includes(r.cinema)).map(r => r.movie)])].filter(t => byFilm.has(t));
-  if (ts.length) landing.push([m.slug, m.title, m.description || m.title, ts]);
+  if (ts.length) landing.push([m.slug, m.title, m.description || m.title, ts, m.body]);
 }
-for (const [slug, label, lead, ts] of landing) {
+for (const [slug, label, lead, ts, text] of landing) {
   const path = `/movies/in/${slug}`;
   const description = `${lead}: ${ts.length} ταινίες, μεταξύ αυτών ${ts.slice(0, 4).join(', ')}${ts.length > 4 ? '…' : ''}. Ώρες και σινεμά.`;
   const jsonld = {'@context': 'https://schema.org', '@type': 'ItemList', name: label, itemListElement: ts.map((t, i) => { const r = filmRoute(byFilm.get(t)[0]); return {'@type': 'ListItem', position: i + 1, url: abs(`/movies/${r.id}/${r.slug}`), name: t}; })};
-  page({path, title: `${label} | Visto`, description, jsonld, body: `<main><h1>${esc(label)}</h1>${list(ts.map(filmLink))}</main>`});
+  page({path, title: `${label} | Visto`, description, jsonld, body: `<main><h1>${esc(label)}</h1>${text ? text.split(/\n\s*\n/).map(p => `<p>${esc(p)}</p>`).join('') : ''}${list(ts.map(filmLink))}</main>`});
   urls.push(path);
 }
 
 // Home: real content + site-wide description
-const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Europe/Athens'}).format(new Date());
+
 page({
   path: '/movies', title: 'Τι παίζει στα σινεμά της Αθήνας σήμερα | Visto',
   description: `Το πρόγραμμα ${byCin.size} κινηματογράφων της Αθήνας: ${byFilm.size} ταινίες, ώρες προβολών, χάρτης και αγαπημένα. Ενημερώνεται κάθε εβδομάδα.`,

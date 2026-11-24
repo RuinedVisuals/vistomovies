@@ -122,7 +122,7 @@ function Feed({preset}:{preset?:string}){
  const app=useApp();const {query}=useRoute();const ref=useRef<HTMLElement>(null);
  const {rows,week,films,catalog,history,todayIso,venueByName,userLoc,loading,error,mode}=app;
  const day=query.get('date')||todayIso;const f0=readFilters(query);const genreName=preset&&preset!=='today'?Object.values(films).flatMap(m=>m?.genres||[]).find(g=>slugify(g)===preset):undefined;
- const sections=useSections(rows,films);const section=sections.find(s=>s.slug===preset);
+ const sections=useSections(rows,films,todayIso);const section=sections.find(s=>s.slug===preset);
  const f=genreName||section?{...f0,range:true,...(genreName&&{genre:[genreName]})}:f0;const q=query.get('q')||'';
  const sort=(query.get('sort')||'cinemas') as typeof SORTS[number][0];
  const view=query.get('view')==='cinemas'?1:0;
@@ -172,7 +172,8 @@ function Feed({preset}:{preset?:string}){
   <div className="controls">
   {section||genreName?<div data-a className="c-title"><button type="button" className="back-pill" onClick={()=>back('/movies')}><CaretLeft weight="bold"/>Όλες οι ταινίες</button>
    <div className="c-date" style={{marginTop:14}}>{section?'Ενότητα':'Είδος'}</div><h1>{section?section.title:`Ταινίες ${genreName}`}</h1>
-   {section?.description&&<p className="muted" style={{marginTop:8,maxWidth:560}}>{section.description}</p>}</div>
+   {section?.description&&<p className="muted" style={{marginTop:8,maxWidth:560}}>{section.description}</p>}
+   {section?.body&&<div className="editorial">{section.body.split(/\n\s*\n/).map((p,i)=><p key={i}>{p}</p>)}</div>}</div>
   :<div data-a className="c-title"><div className="c-date">{longDate(day)}</div><h1>{day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>}
   {!(section||genreName)&&<div data-a className="c-dates"><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>}
   <div data-a className="c-search">
@@ -214,7 +215,7 @@ function Feed({preset}:{preset?:string}){
       :<><strong>Καμία ταινία με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p><button className="btn btn-secondary" style={{marginTop:12}} onClick={()=>navigate('/movies',{replace:true})}>Καθαρισμός φίλτρων</button></>}</div>}
    </div>
   </>}
-  <div className="source-line pad" style={{paddingTop:16}}><ClockCounterClockwise/>Πρόγραμμα ενημ. {updatedLabel(week?.checkedAt,todayIso)} · Metadata: TMDB · <Link to="/status">Ποιότητα δεδομένων</Link> · <Link to="/privacy">Απόρρητο</Link> · <Link to="/terms">Όροι</Link></div>
+  <div className="source-line pad" style={{paddingTop:16}}><ClockCounterClockwise style={{flex:'none'}}/><span className="sl-text">Πρόγραμμα ενημ. {updatedLabel(week?.checkedAt,todayIso)} · Metadata: TMDB</span><span className="sl-links"><Link to="/status">Ποιότητα δεδομένων</Link><Link to="/privacy">Απόρρητο</Link><Link to="/terms">Όροι</Link></span></div>
   {sheet&&<FilterSheet filters={f} day={day} onClose={()=>setSheet(false)}/>}
  </main>;
 }
