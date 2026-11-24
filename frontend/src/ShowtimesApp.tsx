@@ -109,7 +109,7 @@ export const nextTime=(times:string[],day:string,todayIso:string,now:string)=>da
 // ---------- 01 Τι παίζει ----------
 const PAGE=12;
 // One strong hue per section card (brown, wine, teal, violet, olive, rust).
-const SEC_HUES=[55,10,195,300,120,35];
+const SEC_HUES=[55,10,195,300,95,35];
 // Quick filters on the home screen; the rest (area, distance, …) lives in the filter sheet.
 const QUICK:{label:string;on:(f:Filters)=>boolean;patch:(f:Filters)=>Record<string,string|string[]|null>}[]=[
  {label:'Από τώρα',on:f=>f.time==='now',patch:f=>({time:f.time==='now'?null:'now'})},
