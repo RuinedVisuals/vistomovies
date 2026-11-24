@@ -133,6 +133,15 @@ const genres = new Map();
 for (const t of byFilm.keys()) for (const g of films[t]?.genres || []) (genres.get(g) ?? genres.set(g, []).get(g)).push(t);
 const landing = [['today', 'Ταινίες σήμερα στην Αθήνα', 'Τι παίζει σήμερα στα σινεμά της Αθήνας', [...byFilm.keys()]],
   ...[...genres].map(([g, ts]) => [slugify(g), `${g} ταινίες στα σινεμά της Αθήνας`, `${g} ταινίες που παίζονται αυτή την εβδομάδα στην Αθήνα`, ts])];
+// Thematic sections: automatic (same rules as src/lib/sections.ts) plus curated ones from sections.json
+const reissue = [...byFilm.keys()].filter(t => films[t]?.badge);
+const midnight = [...new Set(rows.filter(r => r.afterMidnight || r.time >= '23:30').map(r => r.movie))];
+if (reissue.length >= 3) landing.push(['epanekdoseis', 'Επανεκδόσεις στα σινεμά της Αθήνας', 'Επανεκδόσεις κλασικών ταινιών στην Αθήνα', reissue]);
+if (midnight.length >= 3) landing.push(['metamesonyxties', 'Μεταμεσονύχτιες προβολές στην Αθήνα', 'Μεταμεσονύχτιες προβολές στα σινεμά της Αθήνας', midnight]);
+for (const m of read('sections.json').sections || []) {
+  const ts = m.films.filter(t => byFilm.has(t));
+  if (ts.length) landing.push([m.slug, m.title, m.description || m.title, ts]);
+}
 for (const [slug, label, lead, ts] of landing) {
   const path = `/movies/in/${slug}`;
   const description = `${lead}: ${ts.length} ταινίες, μεταξύ αυτών ${ts.slice(0, 4).join(', ')}${ts.length > 4 ? '…' : ''}. Ώρες και σινεμά.`;

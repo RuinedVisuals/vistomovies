@@ -62,7 +62,7 @@
  .hero-card .info{left:40px;right:40px;bottom:34px}
  .hero-card .t{font-size:44px;margin-top:12px;max-width:760px}
  .hero-card .m{font-size:16px;margin-top:6px}
- .when-pill{font-size:13px;padding:6px 14px;border-radius:14px}
+ .when-pill{font-size:12px;padding:4px 11px;border-radius:12px}
  .pop-band{margin-top:44px}
  .pop-band .section-head{padding:0 var(--gut) 16px!important;align-items:center}
  .pop-band .section-head .aside{margin-right:auto;margin-left:12px;font-size:13px}

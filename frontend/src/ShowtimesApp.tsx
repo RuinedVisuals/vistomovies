@@ -8,6 +8,7 @@ import {AppContext,useApp,type AppData} from './lib/context';
 import {usePersistedSet} from './lib/store';
 import {supabase,useSession} from './lib/supabase';
 import {usePlans} from './lib/plans';
+import {useSections} from './lib/sections';
 import Plans from './components/Plans';
 import Onboarding,{onboardingSeen} from './components/Onboarding';
 import {Privacy,Terms} from './components/Legal';
@@ -113,7 +114,8 @@ function Feed({preset}:{preset?:string}){
  const app=useApp();const {query}=useRoute();const ref=useRef<HTMLElement>(null);
  const {rows,week,films,catalog,history,todayIso,venueByName,userLoc,loading,error,mode}=app;
  const day=query.get('date')||todayIso;const f0=readFilters(query);const genreName=preset&&preset!=='today'?Object.values(films).flatMap(m=>m?.genres||[]).find(g=>slugify(g)===preset):undefined;
- const f=genreName?{...f0,range:true,genre:[genreName]}:f0;const q=query.get('q')||'';
+ const sections=useSections(rows,films);const section=sections.find(s=>s.slug===preset);
+ const f=genreName||section?{...f0,range:true,...(genreName&&{genre:[genreName]})}:f0;const q=query.get('q')||'';
  const sort=(query.get('sort')||'cinemas') as typeof SORTS[number][0];
  const view=query.get('view')==='cinemas'?1:0;
  const [sheet,setSheet]=useState(false);
@@ -123,7 +125,7 @@ function Feed({preset}:{preset?:string}){
  const ctx=useMemo(()=>({venues:venueByName,films,todayIso,userLoc}),[venueByName,films,todayIso,userLoc]);
  const weekEnd=week?.weekEnd||todayIso;
  const days=scopeDays(f,day,todayIso,weekEnd);
- const scoped=useMemo(()=>rows.filter(r=>days.includes(r.programmeDate)&&matchRow(r,f,ctx,q)),[rows,days.join(),query.toString(),ctx]);
+ const scoped=useMemo(()=>rows.filter(r=>days.includes(r.programmeDate)&&(!section||section.titles.has(r.movie))&&matchRow(r,f,ctx,q)),[rows,days.join(),query.toString(),ctx,section]);
  const now=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Athens',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
  const list=useMemo(()=>{const l=summarize(scoped,films,catalog);
   if(sort==='title')l.sort((a,b)=>a.title.localeCompare(b.title,'el'));
@@ -157,7 +159,7 @@ function Feed({preset}:{preset?:string}){
     {app.session&&<Link to="/plans" className="bell-btn" aria-label={`Σχέδια${app.plans.pending.length?` (${app.plans.pending.length} νέες προσκλήσεις)`:''}`}><BellSimple weight={app.plans.pending.length?'fill':'regular'}/>{app.plans.pending.length>0&&<span className="badge">{app.plans.pending.length}</span>}</Link>}
     {supabase&&app.session!==undefined&&<button type="button" className={'acct-btn'+(app.session?' in':'')} onClick={app.openAccount} aria-label={app.session?'Λογαριασμός':'Σύνδεση'}>{app.session?<Avatar session={app.session} size={34}/>:<UserCircle size={20}/>}</button>}</div></div>
   <div className="controls">
-  <div data-a className="c-title"><div className="c-date">{longDate(day)}</div><h1>{genreName?`Ταινίες ${genreName}`:day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>
+  <div data-a className="c-title"><div className="c-date">{longDate(day)}</div><h1>{section?section.title:genreName?`Ταινίες ${genreName}`:day===todayIso&&!f.range?'Τι παίζει απόψε':'Τι παίζει'}</h1></div>
   <div data-a className="c-dates"><DateStrip className="pad" value={f.range?'':day} todayIso={todayIso} weekStart={week?.weekStart} weekEnd={week?.weekEnd} onPick={d=>setQuery({date:d===todayIso?null:d,range:null})}/></div>
   <div data-a className="c-search">
    <label className="search"><MagnifyingGlass size={17}/><span className="sr-only">Αναζήτηση</span><input type="search" value={q} placeholder="Ταινία, σινεμά ή γειτονιά" onChange={e=>setQuery({q:e.target.value})}/>
@@ -166,6 +168,7 @@ function Feed({preset}:{preset?:string}){
   </div>
   <div data-a className="hscroll chip-row pad c-chips">{HOME_REGIONS.map(r=>{const on=r?f.area.length===1&&f.area[0]===r:!f.area.length;
    return <button key={r||'all'} type="button" className="chip" aria-pressed={on} onClick={e=>{setQuery({area:r?[r]:null});pop(e.currentTarget,.9)}}>{r||'Όλη η Αθήνα'}</button>})}</div>
+  {sections.length>0&&!preset&&<div data-a className="hscroll chip-row pad c-chips">{sections.map(s=><Link key={s.slug} to={`/movies/in/${s.slug}`} className="chip">{s.title}</Link>)}</div>}
   <div data-a className="pad c-seg"><Segmented label="Προβολή" options={['Ταινίες','Σινεμά']} value={view} onChange={i=>setQuery({view:i?'cinemas':null})}/></div>
   </div>
   {!loading&&<SourceNotice/>}
