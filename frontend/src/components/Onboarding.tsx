@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {supabase} from '../lib/supabase';
-import {FilmStrip,MapPin,UsersThree} from '@phosphor-icons/react';
+import {FilmStrip,MapPin} from '@phosphor-icons/react';
 import {useApp} from '../lib/context';
 import {tmdbImage} from '../lib/data';
 import {gsap,reducedMotion} from '../lib/motion';
@@ -13,7 +13,6 @@ const markSeen=()=>{try{localStorage.setItem(KEY,'1')}catch{/* private mode: sho
 const STEPS=[
  {Icon:FilmStrip,title:'Τι παίζει απόψε',text:'Όλες οι προβολές της Αθήνας σε ένα μέρος, με ωράριο, αίθουσα και εκδοχή.'},
  {Icon:MapPin,title:'Κοντά σου',text:'Με την τοποθεσία σου βλέπεις πρώτα τα κοντινότερα σινεμά και πόσο μακριά είναι.'},
- {Icon:UsersThree,title:'Πάμε μαζί',text:'Κάλεσε φίλους σε μια προβολή και δες ποιος έρχεται, με ένα tap.'},
 ];
 
 /** First-run intro: three slides over the feed. Finishing or skipping never asks again. */
