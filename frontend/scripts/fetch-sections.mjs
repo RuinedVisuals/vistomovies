@@ -3,7 +3,7 @@
 import {writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 
-const q = '*[_type=="section" && defined(slug.current)]{title,"slug":slug.current,description,sponsor,"films":coalesce(films,[]),"cinemas":coalesce(cinemas,[])}';
+const q = '*[_type=="section" && defined(slug.current)]{title,"slug":slug.current,description,sponsor,"films":coalesce(films,[]),"cinemas":coalesce(cinemas,[]),fromTime}';
 const pickQ = '*[_type=="weeklyPick" && defined(film)]|order(_updatedAt desc)[0]{film,headline,body}';
 const api = qs => `https://iqd4six9.apicdn.sanity.io/v2025-01-01/data/query/production?query=${encodeURIComponent(qs)}`;
 const url = api(q);

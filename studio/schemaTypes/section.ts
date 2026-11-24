@@ -23,6 +23,13 @@ export const section = defineType({
       type: 'array',
       of: [{type: 'string'}],
     }),
+    defineField({
+      name: 'fromTime',
+      title: 'Μόνο προβολές από ώρα (προαιρετικό)',
+      description: 'Μαζί με τα Σινεμά: μετράνε μόνο προβολές από αυτή την ώρα και μετά, π.χ. 23:30 για Midnight στο Cinobo Πατησίων.',
+      type: 'string',
+      validation: (r) => r.regex(/^([01]\d|2[0-3]):[0-5]\d$/).error('Μορφή ΩΩ:ΛΛ, π.χ. 23:30'),
+    }),
     defineField({name: 'sponsor', title: 'Χορηγός / διοργανωτής', type: 'string'}),
   ],
 })

@@ -152,7 +152,7 @@ if (rare.length >= 3) landing.push(['spanies-provoles', 'Σπάνιες προβ
 if (reissue.length >= 3) landing.push(['epanekdoseis', 'Επανεκδόσεις στα σινεμά της Αθήνας', 'Επανεκδόσεις κλασικών ταινιών στην Αθήνα', reissue]);
 if (midnight.length >= 3) landing.push(['metamesonyxties', 'Μεταμεσονύχτιες προβολές στην Αθήνα', 'Μεταμεσονύχτιες προβολές στα σινεμά της Αθήνας', midnight]);
 for (const m of read('sections.json').sections || []) {
-  const ts = [...new Set([...(m.films || []), ...rows.filter(r => (m.cinemas || []).includes(r.cinema)).map(r => r.movie)])].filter(t => liveBy.has(t));
+  const ts = [...new Set([...(m.films || []), ...rows.filter(r => (m.cinemas || []).includes(r.cinema) && (!m.fromTime || r.afterMidnight || r.time >= m.fromTime)).map(r => r.movie)])].filter(t => liveBy.has(t));
   if (ts.length) landing.push([m.slug, m.title, m.description || m.title, ts, m.body]);
 }
 for (const [slug, label, lead, ts, text] of landing) {
