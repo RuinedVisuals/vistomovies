@@ -560,7 +560,7 @@ section.sec-card em,.sec-card em{font-style:normal;font-size:11px;font-weight:60
 .sec-card{position:relative;overflow:hidden;isolation:isolate}
 .sec-card::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--bg,none) center/cover;opacity:.16}
 .sec-card{background:linear-gradient(155deg,oklch(.44 var(--c,.12) var(--h,55)),oklch(.22 calc(var(--c,.12)/2) var(--h,55)));border-color:oklch(.6 var(--c,.12) var(--h,55) / .35)}
-.sec-card::before{opacity:.2}
+.sec-card::before{opacity:.28;filter:grayscale(1) contrast(1.1)}
 .sec-card small,.sec-card em{color:oklch(.9 .07 var(--h,55))}
 .sec-card span{color:oklch(.9 .03 var(--h,55) / .85)}
 .editorial{margin-top:14px;max-width:620px;display:flex;flex-direction:column;gap:12px;font-size:16px;line-height:1.6;color:var(--color-neutral-300)}
