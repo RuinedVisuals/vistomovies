@@ -17,7 +17,7 @@ import AuthSheet from './components/AuthSheet';
 import ProfileSheet from './components/ProfileSheet';
 import {back,navigate,setQuery,useRoute} from './lib/router';
 import {useEntrance,pop} from './lib/motion';
-import {activeGroups,EMPTY_FILTERS,filmFlags,filmRoute,filmSub,groupBy,longDate,matchRow,scopeDays,shortDay,dayScope,summarize,timeKey,updatedLabel,cinemaRoute,slugify,type Filters,type FilmSummary,type HallType,type TimeFilter} from './lib/derive';
+import {activeGroups,isPast,EMPTY_FILTERS,filmFlags,filmRoute,filmSub,groupBy,longDate,matchRow,scopeDays,shortDay,dayScope,summarize,timeKey,updatedLabel,cinemaRoute,slugify,type Filters,type FilmSummary,type HallType,type TimeFilter} from './lib/derive';
 import type {Version} from './lib/types';
 import {BottomNav,DateStrip,HeartButton,Link,Poster,Segmented,SkeletonRows,TimeChips} from './components/ui';
 import FilterSheet from './components/FilterSheet';
@@ -133,8 +133,9 @@ function Feed({preset}:{preset?:string}){
  const ctx=useMemo(()=>({venues:venueByName,films,todayIso,userLoc}),[venueByName,films,todayIso,userLoc]);
  const weekEnd=week?.weekEnd||todayIso;
  const days=scopeDays(f,day,todayIso,weekEnd);
- const scoped=useMemo(()=>rows.filter(r=>days.includes(r.programmeDate)&&(!section||section.titles.has(r.movie))&&matchRow(r,f,ctx,q)),[rows,days.join(),query.toString(),ctx,section]);
  const now=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Athens',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
+ // Section and genre pages show what is still to come this week, not films whose last screening has passed.
+ const scoped=useMemo(()=>rows.filter(r=>days.includes(r.programmeDate)&&(!(section||genreName)||!isPast(r,todayIso,now))&&(!section||section.titles.has(r.movie))&&matchRow(r,f,ctx,q)),[rows,days.join(),query.toString(),ctx,section]);
  const list=useMemo(()=>{const l=summarize(scoped,films,catalog);
   if(sort==='title')l.sort((a,b)=>a.title.localeCompare(b.title,'el'));
   if(sort==='near'&&userLoc){// nearest cinema with a screening still to come (today) or any screening (other days)
@@ -207,7 +208,7 @@ function Feed({preset}:{preset?:string}){
     <div className="lh-tools"><button type="button" className="layout-btn" aria-label={layout==='grid'?'Προβολή λίστας':'Προβολή πλέγματος'} onClick={()=>{const n=layout==='grid'?'list':'grid';setLayout(n);try{localStorage.setItem('visto.layout',n)}catch{/* ignore */}}}>{layout==='grid'?<Rows/>:<SquaresFour/>}</button><button type="button" className="sort-btn" onClick={async()=>{const i=SORTS.findIndex(s=>s[0]===sort);const nx=SORTS[(i+1)%SORTS.length][0];if(nx==='near'&&!userLoc&&!(await app.locate()))return setQuery({sort:null});setQuery({sort:nx==='cinemas'?null:nx})}} aria-label="Αλλαγή ταξινόμησης">{SORTS.find(s=>s[0]===sort)?.[1]}<CaretDown/></button></div></div>
    <div className="pad">
     {!!view&&!scoped.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/><strong>Κανένα σινεμά με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p></div>}
-    {view?<CinemaList rows={scoped} now={now}/>:<>{layout==='grid'?<div className="film-grid">{list.slice(0,shown).map(m=><FilmCard key={m.key} m={m} to={filmTo(m)} flags={flagsFor(m)} now={now}/>)}</div>
+    {view?<CinemaList rows={scoped} now={now}/>:<>{layout==='grid'?<div className="film-grid">{list.slice(0,shown).map(m=><FilmCard key={m.key} m={m} to={filmTo(m)} flags={flagsFor(m)} now={now} showDay={!!(section||genreName)||f.range}/>)}</div>
      :<div className="film-list">{list.slice(0,shown).map(m=><FilmRow key={m.key} m={m} to={filmTo(m)} flags={flagsFor(m)} now={now}/>)}</div>}
      {list.length>shown&&<button type="button" className="btn btn-secondary load-more" onClick={()=>setShown(n=>n+PAGE)}>Περισσότερες ταινίες · {list.length-shown}</button>}</>}
     {!list.length&&!view&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/>
@@ -255,7 +256,7 @@ function untilLabel(t:string,now:string){
  return mins>=0&&mins<=90?(mins<2?'Ξεκινά τώρα':`Επόμενη σε ${mins} λεπτά`):`Επόμενη στις ${t}`;
 }
 
-function FilmCard({m,to,flags,now}:{m:FilmSummary;to:string;flags:{kind:string;label:string}[];now:string}){
+function FilmCard({m,to,flags,now,showDay}:{m:FilmSummary;to:string;flags:{kind:string;label:string}[];now:string;showDay?:boolean}){
  const app=useApp();const noTmdb=m.meta===null;
  return <div data-a className="film-card">
   <Link to={to} className="fc-poster" aria-label={m.title}>
@@ -266,7 +267,7 @@ function FilmCard({m,to,flags,now}:{m:FilmSummary;to:string;flags:{kind:string;l
   <HeartButton on={app.savedFilms.has(m.key)} onToggle={()=>app.savedFilms.toggle(m.key)} title={m.title} className="heart"/>
   <Link to={to} className="fc-t">{m.title}</Link>
   <div className="fc-s">{m.cinemas} σινεμά{m.meta?.year?` · ${m.meta.year}`:''}{m.km!=null&&` · ${kmLabel(m.km)}`}</div>
-  <div className="times"><TimeChips rows={m.rows} todayIso={app.todayIso} now={now} limit={2}/></div>
+  <div className="times"><TimeChips rows={m.rows} todayIso={app.todayIso} now={now} limit={2} showDay={showDay}/></div>
  </div>;
 }
 

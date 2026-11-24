@@ -128,27 +128,31 @@ for (const [slug, {title, venues}] of groups) {
   urls.push(path);
 }
 
-// Film landing pages: today + one per genre (the SPA renders the feed at /movies/in/<slug>)
+// Film landing pages (only films with a screening still to come)
+const nowT = new Intl.DateTimeFormat('en-GB', {timeZone: 'Europe/Athens', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(new Date());
+const upcoming = rows.filter(r => r.date > today || (r.date === today && r.time >= nowT));
+const liveBy = by(upcoming, 'movie');
+// Landing: today + one per genre (the SPA renders the feed at /movies/in/<slug>)
 const filmLink = t => { const r = filmRoute(byFilm.get(t)[0]); return `<a href="/movies/${r.id}/${r.slug}">${esc(t)}</a>`; };
 const genres = new Map();
-for (const t of byFilm.keys()) for (const g of films[t]?.genres || []) (genres.get(g) ?? genres.set(g, []).get(g)).push(t);
-const landing = [['today', 'Ταινίες σήμερα στην Αθήνα', 'Τι παίζει σήμερα στα σινεμά της Αθήνας', [...byFilm.keys()]],
+for (const t of liveBy.keys()) for (const g of films[t]?.genres || []) (genres.get(g) ?? genres.set(g, []).get(g)).push(t);
+const landing = [['today', 'Ταινίες σήμερα στην Αθήνα', 'Τι παίζει σήμερα στα σινεμά της Αθήνας', [...liveBy.keys()]],
   ...[...genres].map(([g, ts]) => [slugify(g), `${g} ταινίες στα σινεμά της Αθήνας`, `${g} ταινίες που παίζονται αυτή την εβδομάδα στην Αθήνα`, ts])];
 // Thematic sections: automatic (same rules as src/lib/sections.ts) plus curated ones from sections.json
-const reissue = [...byFilm.keys()].filter(t => films[t]?.badge);
+const reissue = [...liveBy.keys()].filter(t => films[t]?.badge);
 const midnight = [...new Set(rows.filter(r => r.afterMidnight || r.time >= '23:30').map(r => r.movie))];
 const cinemasOf = new Map([...byFilm].map(([t, rs]) => [t, new Set(rs.map(r => r.cinema))]));
 const since = new Date(Date.parse(today) - 21 * 864e5).toISOString().slice(0, 10);
-const fresh = [...byFilm.keys()].filter(t => { const d = films[t]?.releaseDate; return d && d >= since && d <= today; });
-const top = [...byFilm.keys()].filter(t => { const m = films[t]; return m && m.vote != null && m.vote >= 7.5 && m.voteCount >= 300; });
-const rare = [...byFilm.keys()].filter(t => cinemasOf.get(t).size === 1);
+const fresh = [...liveBy.keys()].filter(t => { const d = films[t]?.releaseDate; return d && d >= since && d <= today; });
+const top = [...liveBy.keys()].filter(t => { const m = films[t]; return m && m.vote != null && m.vote >= 7.5 && m.voteCount >= 300; });
+const rare = [...liveBy.keys()].filter(t => cinemasOf.get(t).size === 1);
 if (fresh.length >= 3) landing.push(['nees-tainies', 'Νέες ταινίες στα σινεμά της Αθήνας', 'Νέες ταινίες των τελευταίων τριών εβδομάδων', fresh]);
 if (top.length >= 3) landing.push(['ypsili-vathmologia', 'Οι πιο αγαπημένες ταινίες στα σινεμά της Αθήνας', 'Ταινίες με βαθμολογία 7,5 και πάνω στο TMDB', top]);
 if (rare.length >= 3) landing.push(['spanies-provoles', 'Σπάνιες προβολές στην Αθήνα', 'Ταινίες που παίζονται σε ένα μόνο σινεμά', rare]);
 if (reissue.length >= 3) landing.push(['epanekdoseis', 'Επανεκδόσεις στα σινεμά της Αθήνας', 'Επανεκδόσεις κλασικών ταινιών στην Αθήνα', reissue]);
 if (midnight.length >= 3) landing.push(['metamesonyxties', 'Μεταμεσονύχτιες προβολές στην Αθήνα', 'Μεταμεσονύχτιες προβολές στα σινεμά της Αθήνας', midnight]);
 for (const m of read('sections.json').sections || []) {
-  const ts = [...new Set([...(m.films || []), ...rows.filter(r => (m.cinemas || []).includes(r.cinema)).map(r => r.movie)])].filter(t => byFilm.has(t));
+  const ts = [...new Set([...(m.films || []), ...rows.filter(r => (m.cinemas || []).includes(r.cinema)).map(r => r.movie)])].filter(t => liveBy.has(t));
   if (ts.length) landing.push([m.slug, m.title, m.description || m.title, ts, m.body]);
 }
 for (const [slug, label, lead, ts, text] of landing) {

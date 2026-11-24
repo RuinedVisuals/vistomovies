@@ -1,4 +1,5 @@
 import {useEffect,useState} from 'react';
+import {isPast} from './derive';
 import type {FilmIndex,Showtime} from './types';
 
 export type Section={slug:string;title:string;description?:string;body?:string;sponsor?:string;titles:Set<string>};
@@ -7,8 +8,12 @@ const MIN=3; // an automatic section appears only with enough films to be worth 
 
 /** Sections derived from the programme itself. Festivals and cycles are curated in public/sections.json. */
 export function autoSections(rows:Showtime[],films:FilmIndex,todayIso:string):Section[]{
+ // only screenings still to come count: a film that finished earlier this week has nothing to show
+ const nowT=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Athens',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
+ // cinema counts use the whole week, so a film is not 'rare' just because its last screenings are at one cinema
  const cinemasBy=new Map<string,Set<string>>();for(const r of rows)(cinemasBy.get(r.movie)??cinemasBy.set(r.movie,new Set()).get(r.movie)!).add(r.cinema);
- const titles=[...cinemasBy.keys()];
+ rows=rows.filter(r=>!isPast(r,todayIso,nowT));
+ const titles=[...new Set(rows.map(r=>r.movie))];
  const since=new Date(Date.parse(todayIso)-21*864e5).toISOString().slice(0,10);
  const fresh=new Set(titles.filter(t=>{const d=films[t]?.releaseDate;return !!d&&d>=since&&d<=todayIso}));
  const top=new Set(titles.filter(t=>{const m=films[t];return !!m&&m.vote!=null&&m.vote>=7.5&&m.voteCount>=300}));

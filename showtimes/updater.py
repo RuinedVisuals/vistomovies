@@ -107,7 +107,8 @@ def export_static(db, out=STATIC):
     if not wk['showtimes']:
         return None
     more = more_links()  # booking link from More for films it sells; rows keep their own link if the source gave one
-    wk['showtimes'] = [{**r, 'bookingUrl': r.get('bookingUrl') or more.get(films.norm(r['movie']))} for r in wk['showtimes']]
+    on_more = set(json.loads((Path(__file__).parent / 'more_cinemas.json').read_text(encoding='utf-8')))  # cinemas that sell through More
+    wk['showtimes'] = [{**r, 'bookingUrl': r.get('bookingUrl') or (more.get(films.norm(r['movie'])) if r['cinema'] in on_more else None)} for r in wk['showtimes']]
     sources = storage.status(db)
     export_history(wk, out)
     export_quality(wk, out)

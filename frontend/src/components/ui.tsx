@@ -4,7 +4,7 @@ import {navigate} from '../lib/router';
 import {pop,reducedMotion} from '../lib/motion';
 import {addDays} from '../lib/types';
 import type {Showtime} from '../lib/types';
-import {isPast,wd} from '../lib/derive';
+import {dayScope,isPast,wd} from '../lib/derive';
 
 /** In-app link: real href (open in new tab works), client-side navigation on plain click. */
 export function Link({to,replace,children,...rest}:{to:string;replace?:boolean;children?:ReactNode}&AnchorHTMLAttributes<HTMLAnchorElement>){
@@ -60,12 +60,12 @@ export function SkeletonRows({n=5,poster=[82,122]}:{n?:number;poster?:[number,nu
 }
 
 /** Showtimes in clock order; shows that already started are greyed, or collapsed into "N πέρασαν". */
-export function TimeChips({rows,todayIso,now,limit}:{rows:Showtime[];todayIso:string;now:string;limit?:number}){
+export function TimeChips({rows,todayIso,now,limit,showDay}:{rows:Showtime[];todayIso:string;now:string;limit?:number;showDay?:boolean}){
  const sorted=[...rows].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
  const all=sorted.filter((r,i)=>i===0||r.date+r.time!==sorted[i-1].date+sorted[i-1].time);
  const past=all.filter(r=>isPast(r,todayIso,now)),up=all.filter(r=>!isPast(r,todayIso,now));
  if(!up.length)return <><span className="over-note">Τέλος για σήμερα</span>{past.slice(-3).map(r=><span key={r.date+r.time} className="time-chip past">{r.time}</span>)}</>;
  const shown=limit?up.slice(0,limit):up;
- return <>{past.length>0&&<span className="over-note">{past.length} πέρασαν</span>}{shown.map(r=><span key={r.date+r.time} className="time-chip">{r.time}</span>)}{limit&&up.length>limit&&<span className="more-times">+{up.length-limit}</span>}</>;
+ return <>{past.length>0&&<span className="over-note">{past.length} πέρασαν</span>}{shown.map(r=><span key={r.date+r.time} className="time-chip">{showDay&&r.date!==todayIso&&<small className="chip-day">{dayScope(r.date,todayIso)} </small>}{r.time}</span>)}{limit&&up.length>limit&&<span className="more-times">+{up.length-limit}</span>}</>;
 }
 
