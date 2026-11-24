@@ -1,8 +1,8 @@
 name: Scrape showtimes
 on:
   schedule:
-    # Athinorama's week starts Thursday; retry Fri/Sat in case the page updates late (update is idempotent)
-    - cron: '0 6 * * 4,5,6'
+    # Daily: new week appears Thursday (retries cover late updates), other days pick up mid-week edits
+    - cron: '0 6 * * *'
   workflow_dispatch:
 permissions:
   contents: write
