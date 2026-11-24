@@ -117,7 +117,7 @@ const QUICK:{label:string;on:(f:Filters)=>boolean;patch:(f:Filters)=>Record<stri
  {label:'Θερινά',on:f=>f.type.includes('summer'),patch:f=>({type:f.type.includes('summer')?[]:['summer']})},
  {label:'Με υπότιτλους',on:f=>f.ver.includes('subtitled'),patch:f=>({ver:f.ver.includes('subtitled')?[]:['subtitled']})},
 ];
-const SORTS=[['cinemas','Περισσότερα σινεμά'],['next','Επόμενη προβολή'],['title','Αλφαβητικά'],['near','Κοντά μου']] as const;
+const SORTS=[['cinemas','Δημοφιλή'],['next','Επόμενη προβολή'],['title','Αλφαβητικά'],['near','Κοντά μου']] as const;
 function Feed({preset}:{preset?:string}){
  const app=useApp();const {query}=useRoute();const ref=useRef<HTMLElement>(null);
  const {rows,week,films,catalog,history,todayIso,venueByName,userLoc,loading,error,mode}=app;

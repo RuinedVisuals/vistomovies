@@ -134,9 +134,9 @@ img{display:block;max-width:100%}
 .film-row .meta{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--color-neutral-400)}
 .film-row .meta b{font-weight:600;color:var(--color-accent-200)}
 .film-row .times{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
-.sort-btn{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--color-neutral-400);background:none;border:0;min-height:32px}
+.sort-btn{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--color-neutral-400);background:none;border:0;min-height:32px;white-space:nowrap;flex:none}
 .list-head{display:flex;align-items:center;justify-content:space-between;padding:26px 20px 4px}
-.list-head h2{font-size:18px}
+.list-head h2{font-size:18px;min-width:0}
 .list-head h2 span{color:var(--color-neutral-500);font-weight:400;font-size:14px}
 
 /* Skeleton / empty */
