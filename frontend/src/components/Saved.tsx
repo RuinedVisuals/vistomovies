@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef} from 'react';
-import {CaretRight,ProjectorScreen,BellRinging} from '@phosphor-icons/react';
+import {CaretRight,ProjectorScreen} from '@phosphor-icons/react';
 import type {CSSProperties} from 'react';
 import {useApp} from '../lib/context';
 import {setQuery,useRoute} from '../lib/router';
@@ -77,6 +77,5 @@ export default function Saved(){
    {(tab===0?!filmItems.length:!cinemaItems.length)&&<div className="empty-card">{tab===0?'Πάτησε την καρδιά σε μια ταινία για να την κρατήσεις εδώ.':'Πάτησε το αστέρι σε ένα σινεμά για να το κρατήσεις εδώ.'}</div>}</>}
   </div>
   {addUser&&session&&<InviteSheet username={addUser} fr={fr} onClose={()=>setQuery({add:null})} onDone={notify}/>}
-  {tab!==2&&<div data-a className="info-card"><BellRinging/><span>Ειδοποίηση όταν μια αποθηκευμένη ταινία μπει σε πρόγραμμα κοντά σου — αργότερα, στο native app.</span></div>}
  </main>;
 }
