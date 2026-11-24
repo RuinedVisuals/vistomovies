@@ -34,6 +34,7 @@ const abs = p => origin + p;
 const img = p => (p ? 'https://image.tmdb.org/t/p/w780' + p : '');
 
 function page({path, title, description, image, jsonld, body}) {
+  image = image || (origin ? abs('/og.png') : '');
   const head = [
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}"/>`,
@@ -147,6 +148,10 @@ page({
   description: `Το πρόγραμμα ${byCin.size} κινηματογράφων της Αθήνας: ${byFilm.size} ταινίες, ώρες προβολών, χάρτης και αγαπημένα. Ενημερώνεται κάθε εβδομάδα.`,
   body: `<main><h1>Τι παίζει στα σινεμά της Αθήνας</h1>` + list([...byFilm.keys()].map(t => `<a href="/movies/${filmRoute(byFilm.get(t)[0]).id}/${filmRoute(byFilm.get(t)[0]).slug}">${esc(t)}</a>`)) + `</main>`,
 });
+
+// 404 page (noindex) that Vercel serves with status 404
+const shell = template.replace('</head>', `<meta property="og:title" content="Visto — Τι παίζει στην Αθήνα"/><meta property="og:type" content="website"/>${origin ? `<meta property="og:image" content="${abs('/og.png')}"/><meta name="twitter:card" content="summary_large_image"/>` : ''}</head>`);
+writeFileSync(join(dist, '404.html'), shell.replace('</head>', '<meta name="robots" content="noindex"/></head>'));
 
 writeFileSync(join(dist, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
