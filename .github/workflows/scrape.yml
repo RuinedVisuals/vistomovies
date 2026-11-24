@@ -9,6 +9,8 @@ permissions:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    env:
+      TMDB_READ_TOKEN: ${{ secrets.TMDB_READ_TOKEN }}  # update fetches TMDB metadata too, not only export
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18,8 +20,6 @@ jobs:
         run: mkdir -p data && cp frontend/public/history.json data/history.json
       - run: python -m showtimes update
       - run: python -m showtimes export-static
-        env:
-          TMDB_READ_TOKEN: ${{ secrets.TMDB_READ_TOKEN }}
       - name: Commit if changed
         run: |
           git config user.name "github-actions"
