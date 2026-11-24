@@ -143,7 +143,6 @@ export default function Details({id}:{id:string}){
       <small className={r.afterMidnight?'late':''}>{r.afterMidnight?shortDay(r.date):VERSION_SHORT[version(r)]}</small></button>)}</div>
      <div className="actions">
       <a className="btn btn-primary" href={ticketsUrl(p.name,title,p.booking)} target="_blank" rel="noreferrer" title={p.booking?undefined:'Η πηγή δεν δίνει σύνδεσμο κράτησης — αναζήτηση της σελίδας εισιτηρίων του σινεμά'}><Ticket/>Εισιτήρια</a>
-      <button type="button" className="btn btn-secondary" onClick={()=>openPlan(p)}><PaperPlaneTilt/>{copied===p.name?'Αντιγράφηκε':'Πάμε μαζί'}</button>
       {p.v&&<Link className="btn btn-secondary" to={`/map?mode=film&film=${filmId}&cinema=${p.v.id}`} aria-label="Στον χάρτη"><MapTrifold/></Link>}
      </div>
     </div>)}</div>
