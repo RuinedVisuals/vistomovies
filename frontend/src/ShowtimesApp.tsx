@@ -109,7 +109,7 @@ export const nextTime=(times:string[],day:string,todayIso:string,now:string)=>da
 // ---------- 01 Τι παίζει ----------
 const PAGE=12;
 // One strong hue per section card (brown, wine, teal, violet, olive, rust).
-const SEC_HUES=[55,10,195,300,95,35];
+const SEC_HUES:[number,number][]=[[55,.12],[10,.12],[195,.1],[300,.12],[95,.07],[35,.12]];// [hue, chroma]: olive stays muted, it turns neon at full chroma
 // Quick filters on the home screen; the rest (area, distance, …) lives in the filter sheet.
 const QUICK:{label:string;on:(f:Filters)=>boolean;patch:(f:Filters)=>Record<string,string|string[]|null>}[]=[
  {label:'Από τώρα',on:f=>f.time==='now',patch:f=>({time:f.time==='now'?null:'now'})},
@@ -193,7 +193,7 @@ function Feed({preset}:{preset?:string}){
      <div className="t">{nextUp.m.title}</div><div className="m">{nextUp.t} · {nextUp.m.cinemas} σινεμά{nextUp.m.meta?.vote!=null&&` · ★ ${nextUp.m.meta.vote.toFixed(1)}`}</div></div></Link></div>}
    {!q&&!view&&!preset&&(()=>{const live=sections.map(s=>{const ms=list.filter(m=>s.titles.has(m.title));const art=ms.filter(m=>m.meta?.backdropPath||m.meta?.posterPath);const pick=art.length?art[[...todayIso].reduce((a,c)=>a+c.charCodeAt(0),0)%art.length]:null;// the artwork rotates daily over the section's films
     return {s,n:ms.length,bg:pick?tmdbImage(pick.meta!.backdropPath||pick.meta!.posterPath,'w500'):null}}).filter(x=>x.n>0);return live.length>0&&<div className="pad" style={{paddingTop:22}}><div data-a className="section-head" style={{padding:'0 0 12px'}}><h2>Ενότητες</h2></div>
-    <div data-a className="sec-rail">{live.map(({s,n,bg},i)=><Link key={s.slug} to={`/movies/in/${s.slug}`} className="sec-card" style={{'--h':SEC_HUES[i%SEC_HUES.length],...(bg&&{'--bg':`url(${bg})`})} as CSSProperties}>{s.sponsor&&<em>Χορηγούμενο · {s.sponsor}</em>}<b>{s.title}</b>{s.description&&<span>{s.description}</span>}<small>{n} {n===1?'ταινία':'ταινίες'}</small></Link>)}</div></div>})()}
+    <div data-a className="sec-rail">{live.map(({s,n,bg},i)=><Link key={s.slug} to={`/movies/in/${s.slug}`} className="sec-card" style={{'--h':SEC_HUES[i%SEC_HUES.length][0],'--c':SEC_HUES[i%SEC_HUES.length][1],...(bg&&{'--bg':`url(${bg})`})} as CSSProperties}>{s.sponsor&&<em>Χορηγούμενο · {s.sponsor}</em>}<b>{s.title}</b>{s.description&&<span>{s.description}</span>}<small>{n} {n===1?'ταινία':'ταινίες'}</small></Link>)}</div></div>})()}
    {featured.length>0&&!q&&!view&&!preset&&<>
     <div className="pop-band"><div data-a className="section-head pad" style={{padding:'0 20px 12px'}}><h2>Δημοφιλείς</h2><span className="aside">κορυφαίες {scopeLabel}</span>
      <div className="rail-arrows"><button type="button" aria-label="Προηγούμενες" onClick={()=>carousel.current?.scrollBy({left:-carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretLeft/></button><button type="button" aria-label="Επόμενες" onClick={()=>carousel.current?.scrollBy({left:carousel.current.clientWidth*.8,behavior:'smooth'})}><CaretRight/></button></div></div>
