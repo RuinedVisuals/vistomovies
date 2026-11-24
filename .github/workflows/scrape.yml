@@ -1,0 +1,28 @@
+name: Scrape showtimes
+on:
+  schedule:
+    # Athinorama's week starts Thursday; retry Fri/Sat in case the page updates late (update is idempotent)
+    - cron: '0 6 * * 4,5,6'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements.txt
+      - name: Restore history (data/ is gitignored) so new films are flagged
+        run: mkdir -p data && cp frontend/public/history.json data/history.json
+      - run: python -m showtimes update
+      - run: python -m showtimes export-static
+        env:
+          TMDB_READ_TOKEN: ${{ secrets.TMDB_READ_TOKEN }}
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add frontend/public
+          git diff --cached --quiet || (git commit -m "Auto-refresh showtimes" && git push)
