@@ -97,7 +97,18 @@ def describe(title, movie):
     return film
 
 
+# Titles TMDB's Greek search cannot find (e.g. accent differences): programme title -> TMDB movie id.
+OVERRIDES = json.loads((Path(__file__).parent / 'tmdb_overrides.json').read_text(encoding='utf-8'))
+
+
 def lookup(title):
+    if title in OVERRIDES:
+        resource = 'movie/' + str(OVERRIDES[title])
+        movie = tmdb.get(resource, append_to_response='credits,external_ids')
+        if not movie.get('overview'):
+            movie['overview'] = tmdb.get(resource, language='en-US').get('overview', '')
+            movie['overview_language'] = 'en' if movie['overview'] else None
+        return describe(title, movie)
     results = tmdb.get('search/movie', query=title, include_adult='false', region='GR').get('results', [])
     hit = pick(title, results)
     if not hit:
