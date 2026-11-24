@@ -71,7 +71,7 @@ export function matchRow(r:Showtime,f:Filters,ctx:Ctx,q=''){
 }
 
 // ---------- film summaries ----------
-export type FilmSummary={key:string;title:string;id:string;slug:string;meta:FilmMeta|null|undefined;rows:Showtime[];cinemas:number;times:string[];poster:string|null;genre:string|null};
+export type FilmSummary={key:string;title:string;id:string;slug:string;meta:FilmMeta|null|undefined;rows:Showtime[];cinemas:number;times:string[];poster:string|null;genre:string|null;km?:number|null};
 export function summarize(rows:Showtime[],films:FilmIndex,catalog:Catalog):FilmSummary[]{
  return [...groupBy(rows,r=>r.movie)].map(([title,rs])=>{
   const meta=films[title],cat=catalog.movies[filmKey(rs[0])];

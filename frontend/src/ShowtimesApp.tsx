@@ -117,7 +117,7 @@ const QUICK:{label:string;on:(f:Filters)=>boolean;patch:(f:Filters)=>Record<stri
  {label:'Θερινά',on:f=>f.type.includes('summer'),patch:f=>({type:f.type.includes('summer')?[]:['summer']})},
  {label:'Με υπότιτλους',on:f=>f.ver.includes('subtitled'),patch:f=>({ver:f.ver.includes('subtitled')?[]:['subtitled']})},
 ];
-const SORTS=[['cinemas','Περισσότερα σινεμά'],['next','Επόμενη προβολή'],['title','Αλφαβητικά']] as const;
+const SORTS=[['cinemas','Περισσότερα σινεμά'],['next','Επόμενη προβολή'],['title','Αλφαβητικά'],['near','Κοντά μου']] as const;
 function Feed({preset}:{preset?:string}){
  const app=useApp();const {query}=useRoute();const ref=useRef<HTMLElement>(null);
  const {rows,week,films,catalog,history,todayIso,venueByName,userLoc,loading,error,mode}=app;
@@ -137,8 +137,11 @@ function Feed({preset}:{preset?:string}){
  const now=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Athens',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date());
  const list=useMemo(()=>{const l=summarize(scoped,films,catalog);
   if(sort==='title')l.sort((a,b)=>a.title.localeCompare(b.title,'el'));
+  if(sort==='near'&&userLoc){// nearest cinema with a screening still to come (today) or any screening (other days)
+   for(const m of l){let best=Infinity;for(const r of m.rows){if(day===todayIso&&r.time<now)continue;const v=venueByName.get(r.cinema);const k=v?km(v,userLoc):null;if(k!=null&&k<best)best=k}m.km=best<Infinity?best:null}
+   l.sort((a,b)=>(a.km??Infinity)-(b.km??Infinity)||b.cinemas-a.cinemas)}
   if(sort==='next')l.sort((a,b)=>timeKey(nextTime(a.times,day,todayIso,now)).localeCompare(timeKey(nextTime(b.times,day,todayIso,now)))||b.cinemas-a.cinemas);
-  return l},[scoped,films,catalog,sort]);
+  return l},[scoped,films,catalog,sort,userLoc,venueByName]);
  const weekByMovie=useMemo(()=>groupBy(rows,r=>r.movie),[rows]);
  const flagsFor=(m:FilmSummary)=>filmFlags(m.title,weekByMovie.get(m.title)||[],week,todayIso,history,m.meta);
  const anyMeta=Object.values(films).some(Boolean);
@@ -200,7 +203,7 @@ function Feed({preset}:{preset?:string}){
      <div className="info"><div className="t">{m.title}</div><div className="m">{m.meta?.vote!=null&&<span className="vote-badge">★ {m.meta.vote.toFixed(1)}</span>}<span>{nextTime(m.times,day,todayIso,now)}</span></div></div>
     </div>)}</div></div></>}
    <div data-a className="list-head"><h2>{view?`${new Set(scoped.map(r=>r.cinema)).size} σινεμά`:`${list.length} ${list.length===1?'ταινία':'ταινίες'}`} <span>· {scopeLabel}</span></h2>
-    <div className="lh-tools"><button type="button" className="layout-btn" aria-label={layout==='grid'?'Προβολή λίστας':'Προβολή πλέγματος'} onClick={()=>{const n=layout==='grid'?'list':'grid';setLayout(n);try{localStorage.setItem('visto.layout',n)}catch{/* ignore */}}}>{layout==='grid'?<Rows/>:<SquaresFour/>}</button><button type="button" className="sort-btn" onClick={()=>{const i=SORTS.findIndex(s=>s[0]===sort);setQuery({sort:i===SORTS.length-1?null:SORTS[i+1][0]})}} aria-label="Αλλαγή ταξινόμησης">{SORTS.find(s=>s[0]===sort)?.[1]}<CaretDown/></button></div></div>
+    <div className="lh-tools"><button type="button" className="layout-btn" aria-label={layout==='grid'?'Προβολή λίστας':'Προβολή πλέγματος'} onClick={()=>{const n=layout==='grid'?'list':'grid';setLayout(n);try{localStorage.setItem('visto.layout',n)}catch{/* ignore */}}}>{layout==='grid'?<Rows/>:<SquaresFour/>}</button><button type="button" className="sort-btn" onClick={async()=>{const i=SORTS.findIndex(s=>s[0]===sort);const nx=SORTS[(i+1)%SORTS.length][0];if(nx==='near'&&!userLoc&&!(await app.locate()))return setQuery({sort:null});setQuery({sort:nx==='cinemas'?null:nx})}} aria-label="Αλλαγή ταξινόμησης">{SORTS.find(s=>s[0]===sort)?.[1]}<CaretDown/></button></div></div>
    <div className="pad">
     {!!view&&!scoped.length&&<div data-a className="empty-card" style={{marginTop:12}}><CalendarDots size={24} color="var(--color-neutral-500)"/><strong>Κανένα σινεμά με αυτά τα κριτήρια.</strong><p>Δοκίμασε άλλη ημέρα ή λιγότερα φίλτρα.</p></div>}
     {view?<CinemaList rows={scoped} now={now}/>:<>{layout==='grid'?<div className="film-grid">{list.slice(0,shown).map(m=><FilmCard key={m.key} m={m} to={filmTo(m)} flags={flagsFor(m)} now={now}/>)}</div>
@@ -261,7 +264,7 @@ function FilmCard({m,to,flags,now}:{m:FilmSummary;to:string;flags:{kind:string;l
   </Link>
   <HeartButton on={app.savedFilms.has(m.key)} onToggle={()=>app.savedFilms.toggle(m.key)} title={m.title} className="heart"/>
   <Link to={to} className="fc-t">{m.title}</Link>
-  <div className="fc-s">{m.cinemas} σινεμά{m.meta?.year?` · ${m.meta.year}`:''}</div>
+  <div className="fc-s">{m.cinemas} σινεμά{m.meta?.year?` · ${m.meta.year}`:''}{m.km!=null&&` · ${kmLabel(m.km)}`}</div>
   <div className="times"><TimeChips rows={m.rows} todayIso={app.todayIso} now={now} limit={2}/></div>
  </div>;
 }
